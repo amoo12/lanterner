@@ -35,11 +35,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Lanterner',
       theme: ThemeData(
         primarySwatch: MaterialColor(0xFF1B1E28, color),
         accentColor: MaterialColor(0xFF2CC1D7, color2),
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        fontFamily: 'OpenSans-Regular',
+        textTheme: TextTheme(
+          headline1: TextStyle(
+            fontSize: 72.0,
+          ),
+          bodyText2: TextStyle(color: Colors.grey, fontSize: 16),
+          headline4:
+              TextStyle(color: Theme.of(context).accentColor, fontSize: 16),
+          button: TextStyle(
+              color: Colors.white,
+              fontSize: 18), //text with the accent color for links
+        ),
       ),
       home: Login(),
     );
