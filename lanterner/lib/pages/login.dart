@@ -27,6 +27,10 @@ class _LoginState extends State<Login> {
     }
   }
 
+  _goToSignup() {
+    Navigator.pushNamed(context, '/signup');
+  }
+
   onSavedEmail(String value) {
     if (!EmailValidator.validate(value)) {
       error = "enter a valid email";
@@ -110,32 +114,47 @@ class _LoginState extends State<Login> {
                         ),
                         SizedBox(
                           width: double.infinity,
-                          child: buttonWidget(context, 'Login', _submit),
+                          child: ButtonWidget(
+                              context: context,
+                              text: 'Login',
+                              onPressed: _submit),
                         ),
                         SizedBox(
                           height: 20,
                         ),
-                        RichText(
-                          text: TextSpan(
-                              style: Theme.of(context).textTheme.bodyText2,
-                              children: [
-                                TextSpan(
-                                  text: "Don't have an account? ",
-                                ),
-                                TextSpan(
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2
-                                        .copyWith(
-                                            color:
-                                                Theme.of(context).accentColor),
-                                    text: 'Register',
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        // Navigator.pushNamed(context, 'Signup');
-                                      }),
-                              ]),
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: ButtonWidget(
+                              buttonType: 2,
+                              context: context,
+                              text: 'Create an Account',
+                              onPressed: _goToSignup),
                         ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        // RichText(
+                        //   text: TextSpan(
+                        //       style: Theme.of(context).textTheme.bodyText2,
+                        //       children: [
+                        //         TextSpan(
+                        //           text: "Don't have an account? ",
+                        //         ),
+                        //         TextSpan(
+                        //             style: Theme.of(context)
+                        //                 .textTheme
+                        //                 .bodyText2
+                        //                 .copyWith(
+                        //                     color:
+                        //                         Theme.of(context).accentColor),
+                        //             text: 'Register',
+                        //             recognizer: TapGestureRecognizer()
+                        //               ..onTap = () {
+                        //                 // Navigator.pushNamed(context, 'Signup');
+                        //               }),
+                        //       ]),
+                        // ),
                       ],
                     ),
                   ),
