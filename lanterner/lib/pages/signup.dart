@@ -3,6 +3,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:lanterner/widgets/buttons.dart';
 import 'package:lanterner/widgets/customTextField.dart';
+import 'package:lanterner/widgets/languagesList.dart';
+import 'package:lanterner/widgets/radioButtons.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:smart_select/smart_select.dart';
 
 import 'dart:math' as math;
@@ -20,6 +23,9 @@ class _SignupState extends State<Signup> {
   String password = '';
   String error;
   int pageIndex;
+
+  double height = 100;
+  double width = 100;
 
   @override
   void initState() {
@@ -74,125 +80,7 @@ class _SignupState extends State<Signup> {
   String targetLanguage = '';
   String level = '';
 
-  List<S2Choice<String>> languages = [
-    S2Choice<String>(value: 'af', title: 'Afrikaans'),
-    S2Choice<String>(value: 'sq', title: 'Albanian'),
-    S2Choice<String>(value: 'am', title: 'Amharic'),
-    S2Choice<String>(value: 'ar', title: 'Arabic'),
-    S2Choice<String>(value: 'hy', title: 'Armenian'),
-    S2Choice<String>(value: 'az', title: 'Azerbaijani'),
-    S2Choice<String>(value: 'eu', title: 'Basque'),
-    S2Choice<String>(value: 'be', title: 'Belarusian'),
-    S2Choice<String>(value: 'bn', title: 'Bengali'),
-    S2Choice<String>(value: 'bs', title: 'Bosnian'),
-    S2Choice<String>(value: 'bg', title: 'Bulgarian'),
-    S2Choice<String>(value: 'ca', title: 'Catalan'),
-    S2Choice<String>(value: 'ceb', title: 'Cebuano'),
-    S2Choice<String>(value: 'zh', title: 'Chinese (Simplified)'),
-    S2Choice<String>(value: 'zh-TW', title: 'Chinese (Traditional)'),
-    S2Choice<String>(value: 'co', title: 'Corsican'),
-    S2Choice<String>(value: 'hr', title: 'Croatian'),
-    S2Choice<String>(value: 'cs', title: 'Czech'),
-    S2Choice<String>(value: 'da', title: 'Danish'),
-    S2Choice<String>(value: 'nl', title: 'Dutch'),
-    S2Choice<String>(value: 'en', title: 'English'),
-    S2Choice<String>(value: 'eo', title: 'Esperanto'),
-    S2Choice<String>(value: 'et', title: 'Estonian'),
-    S2Choice<String>(value: 'fi', title: 'Finnish'),
-    S2Choice<String>(value: 'fr', title: 'French'),
-    S2Choice<String>(value: 'fy', title: 'Frisian'),
-    S2Choice<String>(value: 'gl', title: 'Galician'),
-    S2Choice<String>(value: 'ka', title: 'Georgian'),
-    S2Choice<String>(value: 'de', title: 'German'),
-    S2Choice<String>(value: 'el', title: 'Greek'),
-    S2Choice<String>(value: 'gu', title: 'Gujarati'),
-    S2Choice<String>(value: 'ht', title: 'Haitian Creole'),
-    S2Choice<String>(value: 'ha', title: 'Hausa'),
-    S2Choice<String>(value: 'haw', title: 'Hawaiian'),
-    S2Choice<String>(value: 'he', title: 'Hebrew'),
-    S2Choice<String>(value: 'hi', title: 'Hindi'),
-    S2Choice<String>(value: 'hmn', title: 'Hmong'),
-    S2Choice<String>(value: 'hu', title: 'Hungarian'),
-    S2Choice<String>(value: 'is', title: 'Icelandic'),
-    S2Choice<String>(value: 'ig', title: 'Igbo'),
-    S2Choice<String>(value: 'id', title: 'Indonesian'),
-    S2Choice<String>(value: 'ga', title: 'Irish'),
-    S2Choice<String>(value: 'it', title: 'Italian'),
-    S2Choice<String>(value: 'ja', title: 'Japanese'),
-    S2Choice<String>(value: 'jv', title: 'Javanese'),
-    S2Choice<String>(value: 'kn', title: 'Kannada'),
-    S2Choice<String>(value: 'kk', title: 'Kazakh'),
-    S2Choice<String>(value: 'km', title: 'Khmer'),
-    S2Choice<String>(value: 'rw', title: 'Kinyarwanda'),
-    S2Choice<String>(value: 'ko', title: 'Korean'),
-    S2Choice<String>(value: 'ku', title: 'Kurdish'),
-    S2Choice<String>(value: 'ky', title: 'Kyrgyz'),
-    S2Choice<String>(value: 'lo', title: 'Lao'),
-    S2Choice<String>(value: 'la', title: 'Latin'),
-    S2Choice<String>(value: 'lv', title: 'Latvian'),
-    S2Choice<String>(value: 'lt', title: 'Lithuanian'),
-    S2Choice<String>(value: 'lb', title: 'Luxembourgish'),
-    S2Choice<String>(value: 'mk', title: 'Macedonian'),
-    S2Choice<String>(value: 'mg', title: 'Malagasy'),
-    S2Choice<String>(value: 'ms', title: 'Malay'),
-    S2Choice<String>(value: 'ml', title: 'Malayalam'),
-    S2Choice<String>(value: 'mt', title: 'Maltese'),
-    S2Choice<String>(value: 'mi', title: 'Maori'),
-    S2Choice<String>(value: 'mr', title: 'Marathi'),
-    S2Choice<String>(value: 'mn', title: 'Mongolian'),
-    S2Choice<String>(value: 'my', title: 'Myanmar (Burmese)'),
-    S2Choice<String>(value: 'ne', title: 'Nepali'),
-    S2Choice<String>(value: 'no', title: 'Norwegian'),
-    S2Choice<String>(value: 'ny', title: 'Nyanja (Chichewa)'),
-    S2Choice<String>(value: 'or', title: 'Odia (Oriya)'),
-    S2Choice<String>(value: 'ps', title: 'Pashto'),
-    S2Choice<String>(value: 'fa', title: 'Persian'),
-    S2Choice<String>(value: 'pl', title: 'Polish'),
-    S2Choice<String>(value: 'pt', title: 'Portuguese (Portugal, Brazil)'),
-    S2Choice<String>(value: 'pa', title: 'Punjabi'),
-    S2Choice<String>(value: 'ro', title: 'Romanian'),
-    S2Choice<String>(value: 'ru', title: 'Russian'),
-    S2Choice<String>(value: 'sm', title: 'Samoan'),
-    S2Choice<String>(value: 'gd', title: 'Scots Gaelic'),
-    S2Choice<String>(value: 'sr', title: 'Serbian'),
-    S2Choice<String>(value: 'st', title: 'Sesotho'),
-    S2Choice<String>(value: 'sn', title: 'Shona'),
-    S2Choice<String>(value: 'sd', title: 'Sindhi'),
-    S2Choice<String>(value: 'si', title: 'Sinhala (Sinhalese)'),
-    S2Choice<String>(value: 'sk', title: 'Slovak'),
-    S2Choice<String>(value: 'sl', title: 'Slovenian'),
-    S2Choice<String>(value: 'so', title: 'Somali'),
-    S2Choice<String>(value: 'es', title: 'Spanish'),
-    S2Choice<String>(value: 'su', title: 'Sundanese'),
-    S2Choice<String>(value: 'sw', title: 'Swahili'),
-    S2Choice<String>(value: 'sv', title: 'Swedish'),
-    S2Choice<String>(value: 'tl', title: 'Tagalog (Filipino)'),
-    S2Choice<String>(value: 'tg', title: 'Tajik'),
-    S2Choice<String>(value: 'ta', title: 'Tamil'),
-    S2Choice<String>(value: 'tt', title: 'Tatar'),
-    S2Choice<String>(value: 'te', title: 'Telugu'),
-    S2Choice<String>(value: 'th', title: 'Thai'),
-    S2Choice<String>(value: 'tr', title: 'Turkish'),
-    S2Choice<String>(value: 'tk', title: 'Turkmen'),
-    S2Choice<String>(value: 'uk', title: 'Ukrainian'),
-    S2Choice<String>(value: 'ur', title: 'Urdu'),
-    S2Choice<String>(value: 'ug', title: 'Uyghur'),
-    S2Choice<String>(value: 'uz', title: 'Uzbek'),
-    S2Choice<String>(value: 'vi', title: 'Vietnamese'),
-    S2Choice<String>(value: 'cy', title: 'Welsh'),
-    S2Choice<String>(value: 'xh', title: 'Xhosa'),
-    S2Choice<String>(value: 'yi', title: 'Yiddish'),
-    S2Choice<String>(value: 'yo', title: 'Yoruba'),
-    S2Choice<String>(value: 'zu', title: 'Zulu'),
-  ];
-
-  List<S2Choice<String>> levels = [
-    S2Choice<String>(value: '1', title: 'Beginner'),
-    S2Choice<String>(value: '2', title: 'Elementary'),
-    S2Choice<String>(value: '3', title: 'Intermediate'),
-    S2Choice<String>(value: '4', title: 'Advanced'),
-    S2Choice<String>(value: '5', title: 'Proficient'),
-  ];
+  String gender = '';
 
   @override
   Widget build(BuildContext context) {
@@ -332,14 +220,20 @@ class _SignupState extends State<Signup> {
                         SignupStep2(
                           size: _size,
                           nativeLanguage: nativeLanguage,
-                          languages: languages,
                           targetLanguage: targetLanguage,
                           level: level,
-                          levels: levels,
                           next: next,
                         ),
                         Container(
-                          child: Center(child: Text("step 3")),
+                          height: _size.height * 0.9,
+                          width: _size.width * 0.9,
+                          child: Column(
+                            children: [
+                              Container(
+                                  height: _size.height * 0.5,
+                                  child: CustomRadio(gender)),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -357,20 +251,16 @@ class SignupStep2 extends StatefulWidget {
     Key key,
     @required Size size,
     @required this.nativeLanguage,
-    @required this.languages,
     @required this.targetLanguage,
     @required this.level,
-    @required this.levels,
     @required this.next,
   })  : _size = size,
         super(key: key);
 
   final Size _size;
   String nativeLanguage;
-  final List<S2Choice<String>> languages;
   String targetLanguage;
   String level;
-  final List<S2Choice<String>> levels;
   Function next;
 
   @override
@@ -378,52 +268,172 @@ class SignupStep2 extends StatefulWidget {
 }
 
 class _SignupStep2State extends State<SignupStep2> {
+  String nativeLanguage = ''; //target language value i.e ar
+  String nTitle =
+      ''; //target language title i.e Arabic (acts as placeholder for the choice tile)
+  String targetLanguage = ''; //target language value i.e ar
+  String tTitle =
+      ''; //target language title i.e Arabic (acts as placeholder for the choice tile)
+  String level = '';
+  String lTitle = '';
+
+  GlobalKey<S2SingleState<String>> _nativeSelectKey =
+      GlobalKey<S2SingleState<String>>();
+  GlobalKey<S2SingleState<String>> _targetSelectKey =
+      GlobalKey<S2SingleState<String>>();
+  GlobalKey<S2SingleState<String>> _levelSelectKey =
+      GlobalKey<S2SingleState<String>>();
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: widget._size.height * 0.9,
-      child: Column(
-        // mainAxisAlignment:,
-        children: [
-          Container(
-            padding: EdgeInsets.only(top: 20),
-            height: widget._size.height * 0.65,
-            child: Column(
-              children: [
-                Text(
-                  'Languages',
-                  style: TextStyle(fontSize: 20),
-                ),
-                //select Native language
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Native',
-                        style: TextStyle(
-                            // color: Colors.white,
-                            // fontSize: 20,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Container(
+        height: widget._size.height * 0.9,
+        child: Column(
+          // mainAxisAlignment:,
+          children: [
+            Container(
+              padding: EdgeInsets.only(top: 20),
+              height: widget._size.height * 0.65,
+              child: Column(
+                children: [
+                  Text(
+                    'Languages',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  //select Native language
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Native',
+                          style: TextStyle(
+                              // color: Colors.white,
+                              // fontSize: 20,
+                              ),
+                        ),
+                        SmartSelect<String>.single(
+                            key: _nativeSelectKey,
+                            title: 'Native Language',
+                            placeholder: nTitle == '' ? 'select' : nTitle,
+                            tileBuilder: (context, state) {
+                              return S2Tile.fromState(
+                                state,
+                                title: Text('Native Language',
+                                    style: TextStyle(color: Colors.white)),
+                              );
+                            },
+                            modalFilterHint: 'search languages',
+                            choiceHeaderStyle: S2ChoiceHeaderStyle(
+                                textStyle: TextStyle(color: Colors.white)),
+                            choiceBuilder: (context, choice, searchText) {
+                              return ListTile(
+                                leading: Text(
+                                  choice.title,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                trailing: choice.title == nTitle
+                                    ? Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                      )
+                                    : null,
+                                // trailing: ,
+                                onTap: () {
+                                  nativeLanguage = choice.value;
+                                  nTitle = choice.title;
+                                  setState(() {
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((_) =>
+                                            _nativeSelectKey.currentState
+                                                .closeModal());
+                                  });
+                                },
+                              );
+                            },
+                            modalHeaderStyle: S2ModalHeaderStyle(
+                              actionsIconTheme:
+                                  IconThemeData(color: Colors.white),
+                              iconTheme: IconThemeData(color: Colors.white),
+                              textStyle: TextStyle(color: Colors.white),
+                              backgroundColor: Theme.of(context).primaryColor,
+                              elevation: 0,
                             ),
-                      ),
-                      SmartSelect<String>.single(
-                          title: 'Native Language',
-                          placeholder: 'selecet',
+                            modalStyle: S2ModalStyle(
+                                backgroundColor: Theme.of(context).cardColor),
+                            modalFilter: true,
+                            modalFilterAuto: true,
+                            value: nativeLanguage,
+                            choiceItems: LanguagesList.languages,
+                            onChange: (state) => setState(() {})),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Divider(
+                    thickness: 1.5,
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  //select target language
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Target'),
+                        SmartSelect<String>.single(
+                          key: _targetSelectKey,
+                          placeholder: tTitle == '' ? 'select' : tTitle,
+                          title: 'Language',
                           tileBuilder: (context, state) {
                             return S2Tile.fromState(
                               state,
-                              title: Text('Native Language',
+                              leading: Text('Language',
                                   style: TextStyle(color: Colors.white)),
+                              title: Center(
+                                child: Text(level == '' ? '' : '($level)',
+                                    style: TextStyle(color: Colors.white)),
+                              ),
                             );
                           },
                           modalFilterHint: 'search languages',
+                          choiceBuilder: (context, choice, searchText) {
+                            return ListTile(
+                              leading: Text(
+                                choice.title,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              trailing: choice.title == tTitle
+                                  ? Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                    )
+                                  : null,
+                              onTap: () {
+                                targetLanguage = choice.value;
+                                tTitle = choice.title;
+                                setState(() {
+                                  WidgetsBinding.instance.addPostFrameCallback(
+                                      (_) => _targetSelectKey.currentState
+                                          .closeModal());
+                                  WidgetsBinding.instance.addPostFrameCallback(
+                                      (_) => _levelSelectKey.currentState
+                                          .showModal());
+                                });
+                              },
+                            );
+                          },
                           choiceHeaderStyle: S2ChoiceHeaderStyle(
                               textStyle: TextStyle(color: Colors.white)),
-                          choiceStyle: S2ChoiceStyle(
-                            activeColor: Theme.of(context).accentColor,
-                            color: Colors.grey,
-                            titleStyle: TextStyle(color: Colors.white),
-                          ),
                           modalHeaderStyle: S2ModalHeaderStyle(
                             actionsIconTheme:
                                 IconThemeData(color: Colors.white),
@@ -435,170 +445,111 @@ class _SignupStep2State extends State<SignupStep2> {
                           modalStyle: S2ModalStyle(
                               backgroundColor: Theme.of(context).cardColor),
                           modalFilter: true,
-                          // modalConfig: S2ModalConfig(
-                          //   filterAuto: true,
-                          //   useConfirm: true,
-                          //   confirmColor: Colors.green,
-                          // ),
-                          // modalConfirm: true,
-                          // modalValidation: (value) {
-                          //   if (value == '') {
-                          //     return 'please select a language';
-                          //   }
-                          //   return null;
-                          // },
-                          value: widget.nativeLanguage,
-                          choiceItems: widget.languages,
-                          onChange: (state) => setState(
-                              () => widget.nativeLanguage = state.value)),
-                    ],
+                          modalFilterAuto: true,
+                          value: targetLanguage,
+                          choiceItems: LanguagesList.languages,
+                          onChange: (state) {
+                            setState(() {});
+                          },
+                        ),
+                        // Native language level selector
+                        SmartSelect<String>.single(
+                          key: _levelSelectKey,
+                          title: 'Level',
+                          tileBuilder: (context, state) {
+                            return Container();
+                          },
+                          choiceBuilder: (context, choice, searchText) {
+                            return ListTile(
+                              leading: Text(
+                                choice.title,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              trailing: choice.title == lTitle
+                                  ? Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                    )
+                                  : null,
+                              onTap: () {
+                                level = choice.value;
+                                lTitle = choice.title;
+                                setState(() {
+                                  WidgetsBinding.instance.addPostFrameCallback(
+                                      (_) => _levelSelectKey.currentState
+                                          .closeModal());
+                                });
+                              },
+                            );
+                          },
+                          choiceHeaderStyle: S2ChoiceHeaderStyle(
+                              textStyle: TextStyle(color: Colors.white)),
+                          modalHeaderStyle: S2ModalHeaderStyle(
+                            textStyle: TextStyle(color: Colors.white),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            elevation: 0,
+                          ),
+                          modalStyle: S2ModalStyle(
+                            backgroundColor: Theme.of(context).cardColor,
+                          ),
+                          modalConfig: S2ModalConfig(
+                            barrierDismissible: false,
+                          ),
+                          modalType: S2ModalType.popupDialog,
+                          value: level,
+                          choiceItems: LanguagesList.levels,
+                          onChange: (state) => setState(() {}),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                //select Native language
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Target'),
-                      SmartSelect<String>.single(
-                        title: 'Language',
-                        placeholder: 'selecet',
-                        tileBuilder: (context, state) {
-                          return S2Tile.fromState(
-                            state,
-                            title: Text('Language',
-                                style: TextStyle(color: Colors.white)),
-                          );
-                        },
-                        modalFilterHint: 'search languages',
-                        choiceHeaderStyle: S2ChoiceHeaderStyle(
-                            textStyle: TextStyle(color: Colors.white)),
-                        choiceStyle: S2ChoiceStyle(
-                          activeColor: Theme.of(context).accentColor,
-                          color: Colors.grey,
-                          titleStyle: TextStyle(color: Colors.white),
-                        ),
-                        modalHeaderStyle: S2ModalHeaderStyle(
-                          actionsIconTheme: IconThemeData(color: Colors.white),
-                          iconTheme: IconThemeData(color: Colors.white),
-                          textStyle: TextStyle(color: Colors.white),
-                          backgroundColor: Theme.of(context).primaryColor,
-                          elevation: 0,
-                        ),
-                        modalStyle: S2ModalStyle(
-                            backgroundColor: Theme.of(context).cardColor),
-                        modalFilter: true,
-                        // modalConfig: S2ModalConfig(
-                        //   filterAuto: true,
-                        //   useConfirm: true,
-                        //   confirmColor: Colors.green,
-                        // ),
-                        // modalConfirm: true,
-                        // modalValidation: (value) {
-                        //   if (value == '') {
-                        //     return 'please select a language';
-                        //   }
-                        //   return null;
-                        // },
-                        value: widget.targetLanguage,
-                        choiceItems: widget.languages,
-                        onChange: (state) {
-                          setState(() {
-                            widget.targetLanguage = state.value;
-                          });
-                        },
-                      ),
-                      Divider(
-                        thickness: 1.5,
-                      ),
-                      // Native language level selector
-                      SmartSelect<String>.single(
-                        title: 'Level',
-                        tileBuilder: (context, state) {
-                          return S2Tile.fromState(
-                            state,
-                            title: Text('Level',
-                                style: TextStyle(color: Colors.white)),
-                          );
-                        },
-                        placeholder: 'selecet',
-                        choiceHeaderStyle: S2ChoiceHeaderStyle(
-                            textStyle: TextStyle(color: Colors.white)),
-                        choiceStyle: S2ChoiceStyle(
-                          activeColor: Theme.of(context).accentColor,
-                          color: Colors.grey,
-                          titleStyle: TextStyle(color: Colors.white),
-                        ),
-                        modalHeaderStyle: S2ModalHeaderStyle(
-                          actionsIconTheme: IconThemeData(color: Colors.white),
-                          iconTheme: IconThemeData(color: Colors.white),
-                          textStyle: TextStyle(color: Colors.white),
-                          backgroundColor: Theme.of(context).primaryColor,
-                          elevation: 0,
-                        ),
-                        modalStyle: S2ModalStyle(
-                          backgroundColor: Theme.of(context).cardColor,
-                        ),
-                        // modalConfig: S2ModalConfig(
-                        //   useConfirm: true,
-                        //   confirmColor: Colors.green,
-                        // ),
-                        // modalConfirm: true,
-                        // modalValidation: (value) {
-                        //   if (value == '') {
-                        //     return 'please select a level';
-                        //   }
-                        //   return null;
-                        // },
-                        value: widget.level,
-                        choiceItems: widget.levels,
-                        onChange: (state) =>
-                            setState(() => widget.level = state.value),
-                      ),
-                    ],
+                ],
+              ),
+            ),
+            Container(
+              height: widget._size.height * 0.20,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ButtonWidget(
+                        context: context,
+                        text: 'Next',
+                        onPressed: () async {
+                          print(nativeLanguage);
+                          print(targetLanguage);
+                          print(level);
+                          if (nativeLanguage == '' ||
+                              targetLanguage == '' ||
+                              level == '') {
+                            // error = 'please fill all fields';
+                            SnackBar registrationBar = SnackBar(
+                              duration: Duration(milliseconds: 300),
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.only(
+                                  bottom: widget._size.height * 0.15,
+                                  left: widget._size.width * 0.09,
+                                  right: widget._size.width * 0.09),
+                              content: Text(
+                                'please fill all fields',
+                              ),
+                            );
+                            Scaffold.of(context).showSnackBar(registrationBar);
+                          } else {
+                            widget.nativeLanguage = nativeLanguage;
+                            widget.targetLanguage = targetLanguage;
+                            widget.level = level;
+
+                            widget.next();
+                          }
+                        }),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Container(
-            height: widget._size.height * 0.20,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: ButtonWidget(
-                      context: context,
-                      text: 'Next',
-                      onPressed: () async {
-                        if (widget.nativeLanguage == '' ||
-                            widget.targetLanguage == '' ||
-                            widget.level == '') {
-                          // error = 'please fill all fields';
-                          SnackBar registrationBar = SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            margin: EdgeInsets.only(
-                                bottom: widget._size.height * 0.15,
-                                left: widget._size.width * 0.09,
-                                right: widget._size.width * 0.09),
-                            content: Text(
-                              'please fill all fields',
-                            ),
-                          );
-                          Scaffold.of(context).showSnackBar(registrationBar);
-                        } else {
-                          widget.next();
-                        }
-                      }),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
