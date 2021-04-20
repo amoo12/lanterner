@@ -23,6 +23,7 @@ class _SignupState extends State<Signup> {
   String password = '';
   String error;
   int pageIndex;
+  // DateTime selectedDate = DateTime.now();
 
   double height = 100;
   double width = 100;
@@ -47,8 +48,9 @@ class _SignupState extends State<Signup> {
     }
   }
 
-  _goToLogin() {
-    Navigator.popAndPushNamed(context, '/login');
+  //callback to track gender changes in the radion widget
+  void genderChanged(String value) {
+    gender = value;
   }
 
   onSavedEmail(String value) {
@@ -228,10 +230,62 @@ class _SignupState extends State<Signup> {
                           height: _size.height * 0.9,
                           width: _size.width * 0.9,
                           child: Column(
+                            // mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                  height: _size.height * 0.5,
-                                  child: CustomRadio(gender)),
+                                  height: _size.height * 0.65,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Gender',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline2,
+                                      ),
+                                      Container(
+                                          // color:
+                                          // Theme.of(context).backgroundColor,
+                                          height: _size.height * 0.3,
+                                          width: _size.width * 0.9,
+                                          child: CustomRadio(genderChanged)),
+                                    ],
+                                  )),
+                              Container(
+                                height: _size.height * 0.20,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ButtonWidget(
+                                          context: context,
+                                          text: 'Next',
+                                          onPressed: () async {
+                                            // SnackBar registrationBar = SnackBar(
+                                            //   duration:
+                                            //       Duration(milliseconds: 300),
+                                            //   behavior:
+                                            //       SnackBarBehavior.floating,
+                                            //   margin: EdgeInsets.only(
+                                            //       bottom: _size.height * 0.15,
+                                            //       left: _size.width * 0.09,
+                                            //       right: _size.width * 0.09),
+                                            //   content: Text(
+                                            //     'please fill all fields',
+                                            //   ),
+                                            // );
+                                            // Scaffold.of(context)
+                                            //     .showSnackBar(registrationBar);
+                                            print(gender);
+                                            // next();
+                                          }),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),

@@ -32,6 +32,7 @@ dependencies:
   smart_select: ^4.3.2
   smooth_page_indicator: ^0.2.3
   material_design_icons_flutter: ^4.0.5955
+  syncfusion_flutter_datepicker: ^19.1.57-beta
 
 dev_dependencies:
   flutter_test:

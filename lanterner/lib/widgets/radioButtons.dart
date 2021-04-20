@@ -3,8 +3,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 // import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class CustomRadio extends StatefulWidget {
-  CustomRadio(this.gender);
-  String gender;
+  CustomRadio(this.genderChanged);
+  Function genderChanged;
   @override
   createState() {
     return CustomRadioState();
@@ -26,44 +26,46 @@ class CustomRadioState extends State<CustomRadio> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body:
-          // ListView.builder(
-          //   scrollDirection: Axis.horizontal,
-          //   itemCount: sampleData.length,
-          //   itemBuilder: (BuildContext context, int index) {
-          //     return
-          Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          InkWell(
-            //highlightColor: Colors.red,
-            splashColor: Colors.blueAccent,
-            onTap: () {
-              setState(() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          //highlightColor: Colors.red,
+          // splashColor: Theme.of(context).accentColor,
+          onTap: () {
+            setState(() {
+              if (sampleData[0].isSelected) {
+                sampleData[0].isSelected = false;
+                widget.genderChanged('');
+              } else {
                 sampleData.forEach((element) => element.isSelected = false);
                 sampleData[0].isSelected = true;
-                widget.gender = sampleData[0].text;
-              });
-            },
-            child: RadioItem(sampleData[0]),
-          ),
-          InkWell(
-            //highlightColor: Colors.red,
-            splashColor: Colors.blueAccent,
-            onTap: () {
-              setState(() {
+                widget.genderChanged(sampleData[0].text);
+                // print(widget.gender);
+              }
+            });
+          },
+          child: RadioItem(sampleData[0]),
+        ),
+        GestureDetector(
+          //highlightColor: Colors.red,
+          // splashColor: Theme.of(context).accentColor,
+          onTap: () {
+            setState(() {
+              if (sampleData[1].isSelected) {
+                sampleData[1].isSelected = false;
+                widget.genderChanged('');
+              } else {
                 sampleData.forEach((element) => element.isSelected = false);
                 sampleData[1].isSelected = true;
-                widget.gender = sampleData[1].text;
-              });
-            },
-            child: RadioItem(sampleData[1]),
-          ),
-        ],
-      ),
-      // },
-      // ),
+                widget.genderChanged(sampleData[1].text);
+                // print(widget.gender);
+              }
+            });
+          },
+          child: RadioItem(sampleData[1]),
+        ),
+      ],
     );
   }
 }
@@ -78,16 +80,23 @@ class RadioItem extends StatelessWidget {
       if (_item.text == 'Male') {
         return Theme.of(context).accentColor;
       } else {
-        return Colors.pinkAccent[400];
+        return Colors.pink[300];
       }
     } else {
-      return isBorder ? Colors.grey : Colors.transparent;
+      if (isBorder) {
+        return _item.text == 'Male'
+            ? Theme.of(context).accentColor
+            : Colors.pink[300];
+      } else {
+        return Colors.transparent;
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 150,
       margin: EdgeInsets.all(15.0),
       child: Column(
         mainAxisSize: MainAxisSize.max,
@@ -96,16 +105,18 @@ class RadioItem extends StatelessWidget {
             duration: Duration(milliseconds: 300),
             height: _item.isSelected ? 110 : 100,
             width: _item.isSelected ? 110 : 100,
-            curve: Curves.easeInOut,
+            curve: Curves.ease,
             child: Center(
                 child: _item.text == 'Male'
                     ? Icon(
                         MdiIcons.genderMale,
                         color: _item.isSelected ? Colors.white : Colors.grey,
+                        size: _item.isSelected ? 32 : 24,
                       )
                     : Icon(
                         MdiIcons.genderFemale,
                         color: _item.isSelected ? Colors.white : Colors.grey,
+                        size: _item.isSelected ? 32 : 24,
                       )
                 // Text(_item.buttonText,
                 //     style: TextStyle(
@@ -119,12 +130,17 @@ class RadioItem extends StatelessWidget {
               border: Border.all(
                   width: 1.0,
                   color: genderColor(_item, context, isBorder: true)),
-              borderRadius: const BorderRadius.all(const Radius.circular(2.0)),
+              borderRadius: const BorderRadius.all(const Radius.circular(8.0)),
             ),
           ),
           Container(
             margin: EdgeInsets.only(top: 10.0),
-            child: Text(_item.text),
+            child: Text(
+              _item.text,
+              style: TextStyle(
+                color: _item.isSelected ? Colors.white : Colors.grey,
+              ),
+            ),
           )
         ],
       ),
