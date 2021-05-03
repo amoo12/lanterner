@@ -131,6 +131,27 @@ class RadioItem extends StatelessWidget {
                   width: 1.0,
                   color: genderColor(_item, context, isBorder: true)),
               borderRadius: const BorderRadius.all(const Radius.circular(8.0)),
+              boxShadow: [
+                // BoxShadow(
+                // color: _item.isSelected
+                //     ? Colors.black
+                //     : Colors.black.withOpacity(0),
+                // blurRadius: 25.0, // soften the shadow
+                // spreadRadius: 5.0, //extend the shadow
+                // offset: Offset(
+                //   15.0, // Move to right 10  horizontally
+                //   15.0, // Move to bottom 10 Vertically
+                // ),
+                // ),
+                BoxShadow(
+                  color: _item.isSelected
+                      ? Colors.black.withOpacity(0.2)
+                      : Colors.black.withOpacity(0.0),
+                  spreadRadius: 4,
+                  blurRadius: 3,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
             ),
           ),
           Container(

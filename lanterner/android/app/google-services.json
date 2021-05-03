@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "163979855868",
+    "project_id": "lanterner",
+    "storage_bucket": "lanterner.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:163979855868:android:0ea084115389512ddb9479",
+        "android_client_info": {
+          "package_name": "com.amo.lanterner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "163979855868-8uf6usl29g43o3jcem841vgldp4lhj5p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.amo.lanterner",
+            "certificate_hash": "2c1fdab3fac53bfb192f113cc73169491032f623"
+          }
+        },
+        {
+          "client_id": "163979855868-chmkqpjttk7ciu11h9c2nc7biuogtaq1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBklmUZeLtljlbnQ2qLyIyIv8PuczXYM5U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "163979855868-chmkqpjttk7ciu11h9c2nc7biuogtaq1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

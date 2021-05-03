@@ -67,6 +67,7 @@ class MyApp extends StatelessWidget {
         accentColor: MaterialColor(0xFF2CC1D7, color2),
         scaffoldBackgroundColor: MaterialColor(0xFF1B1E28, color3),
         cardColor: MaterialColor(0xFF444A66, color4),
+        dialogBackgroundColor: MaterialColor(0xFF444A66, color4),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: 'OpenSans-Regular',
         textTheme: TextTheme(
@@ -75,8 +76,7 @@ class MyApp extends StatelessWidget {
           ),
           headline2: TextStyle(fontSize: 25.0, color: Colors.white),
           bodyText2: TextStyle(color: Colors.grey, fontSize: 16),
-          headline4:
-              TextStyle(color: Theme.of(context).accentColor, fontSize: 16),
+          headline4: TextStyle(color: Colors.red, fontSize: 16),
           // text for main button
           button: TextStyle(color: Colors.white, fontSize: 18),
           // text for secondary button

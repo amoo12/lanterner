@@ -23,7 +23,9 @@ class _SignupState extends State<Signup> {
   String password = '';
   String error;
   int pageIndex;
-  // DateTime selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.now();
+
+  bool isSelected = false;
 
   double height = 100;
   double width = 100;
@@ -51,6 +53,26 @@ class _SignupState extends State<Signup> {
   //callback to track gender changes in the radion widget
   void genderChanged(String value) {
     gender = value;
+  }
+
+  //shows the date picker
+  _selectDate(BuildContext context) async {
+    print(selectedDate.toString());
+    print(DateTime.now().year);
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate:
+          DateTime(selectedDate.year, selectedDate.month, selectedDate.day - 1),
+      firstDate: DateTime(1950),
+      lastDate: DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day),
+      initialDatePickerMode: DatePickerMode.year,
+    );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+        isSelected = true;
+      });
   }
 
   onSavedEmail(String value) {
@@ -251,6 +273,98 @@ class _SignupState extends State<Signup> {
                                           height: _size.height * 0.3,
                                           width: _size.width * 0.9,
                                           child: CustomRadio(genderChanged)),
+                                      Text(
+                                        'Date of birth',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline2,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => _selectDate(context),
+                                        child: Container(
+                                          child: Container(
+                                            height: 150,
+                                            margin: EdgeInsets.all(15.0),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: <Widget>[
+                                                AnimatedContainer(
+                                                  duration: Duration(
+                                                      milliseconds: 300),
+                                                  height: 100,
+                                                  width: 100,
+                                                  curve: Curves.ease,
+                                                  child: Center(
+                                                      child: Icon(
+                                                    Icons.cake_outlined,
+                                                    color: isSelected
+                                                        ? Theme.of(context)
+                                                            .primaryColor
+                                                        : Colors.grey,
+                                                    size: isSelected ? 32 : 24,
+                                                  )),
+                                                  decoration: BoxDecoration(
+                                                    color: isSelected
+                                                        ? Colors.white
+                                                        : Colors.transparent,
+                                                    border: Border.all(
+                                                        width: 1.0,
+                                                        color: isSelected
+                                                            ? Theme.of(context)
+                                                                .primaryColor
+                                                            : Colors.grey),
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            const Radius
+                                                                .circular(8.0)),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: isSelected
+                                                            ? Colors.black
+                                                                .withOpacity(
+                                                                    0.2)
+                                                            : Colors.black
+                                                                .withOpacity(
+                                                                    0.0),
+                                                        spreadRadius: 4,
+                                                        blurRadius: 3,
+                                                        offset: Offset(0,
+                                                            3), // changes position of shadow
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                      top: 10.0),
+                                                  child: Text(
+                                                    isSelected
+                                                        ? selectedDate.day
+                                                                .toString() +
+                                                            ' - ' +
+                                                            selectedDate.month
+                                                                .toString() +
+                                                            ' - ' +
+                                                            selectedDate.year
+                                                                .toString()
+                                                        : '',
+                                                    style: TextStyle(
+                                                      color: isSelected
+                                                          ? Colors.white
+                                                          : Colors.grey,
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      // FloatingActionButton(
+                                      //     onPressed: () => _selectDate(context),
+                                      //     child: Icon(Icons.cake)
+                                      //     // color: Colors.greenAccent,
+                                      //     )
                                     ],
                                   )),
                               Container(
