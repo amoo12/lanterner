@@ -65,7 +65,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
           enabledBorder:
               UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         ),
-        // controller: widget.controller,
+        controller: widget.controller,
         validator: (value) {
           if (widget.functionValidate != null) {
             String resultValidate = widget.functionValidate(

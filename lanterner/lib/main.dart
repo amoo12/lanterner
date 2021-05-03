@@ -1,9 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/pages/login.dart';
 import 'package:lanterner/pages/signup.dart';
 
-void main() {
-  runApp(MyApp());
+import 'auth_wrapper.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(ProviderScope(child: MyApp()));
 }
 
 Map<int, Color> color = {
@@ -83,7 +89,7 @@ class MyApp extends StatelessWidget {
           //text with the accent color for links
         ),
       ),
-      home: Login(),
+      home: Wrapper(),
       routes: {
         '/signup': (context) => Signup(),
         '/login': (context) => Login(),
