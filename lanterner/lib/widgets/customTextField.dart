@@ -74,6 +74,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
             if (resultValidate != null) {
               return resultValidate;
             }
+            
           } else {
             return commonValidation(value, widget.validatorMessage);
           }

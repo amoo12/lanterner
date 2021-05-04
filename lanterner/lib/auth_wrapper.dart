@@ -6,17 +6,20 @@ import 'package:lanterner/providers/auth_provider.dart';
 class Wrapper extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    // final user = Provider.of<User>(context);
     // return either home or authenticate widget
     final _authState = watch(authStateProvider);
-    // print(user);
+    final _auth = watch(authServicesProvider);
     return _authState.when(
       data: (value) {
-        print('ok');
         if (value != null) {
           return Scaffold(
             body: Center(
-              child: Text('home'),
+              child: TextButton(
+                onPressed: () {
+                  _auth.signout();
+                },
+                child: Text('signout'),
+              ),
             ),
           );
         }

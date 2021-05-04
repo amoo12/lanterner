@@ -1,14 +1,20 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lanterner/providers/auth_provider.dart';
+import 'package:lanterner/services/auth_service.dart';
 import 'package:lanterner/widgets/buttons.dart';
 import 'package:lanterner/widgets/customTextField.dart';
 import 'package:lanterner/widgets/languagesList.dart';
 import 'package:lanterner/widgets/radioButtons.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+// import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:smart_select/smart_select.dart';
 
 import 'dart:math' as math;
+
+import '../models/user.dart';
+// import '../models/user.dart';
 
 class Signup extends StatefulWidget {
   @override
@@ -17,13 +23,19 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   PageController pageController;
+
   String fullName = '';
   String email = '';
   String password = '';
   String error;
   int pageIndex;
   DateTime selectedDate = DateTime.now();
+
+  User _user = User.signup();
 
   bool isSelected = false;
 
@@ -42,11 +54,15 @@ class _SignupState extends State<Signup> {
     super.dispose();
   }
 
-  _submit() {
+// validates the input for the first create account page (naem, email, password) id everything next
+  step1Submit() {
     final form = _formKey.currentState;
     if (form.validate()) {
-      print('saved');
       form.save();
+      _user.email = emailController.text.trim();
+      _user.password = passwordController.text.trim();
+      _user.name = nameController.text.trim();
+      next();
     }
   }
 
@@ -100,6 +116,11 @@ class _SignupState extends State<Signup> {
         duration: Duration(milliseconds: 600), curve: Curves.easeInOutExpo);
   }
 
+  createAcount(BuildContext context, AuthenticationService _auth) async {
+    await _auth.signUp(_user);
+    Navigator.pop(context);
+  }
+
   String nativeLanguage = '';
   String targetLanguage = '';
   String level = '';
@@ -109,308 +130,332 @@ class _SignupState extends State<Signup> {
   @override
   Widget build(BuildContext context) {
     final _size = MediaQuery.of(context).size;
-    return Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
-        appBar: AppBar(
-          elevation: 0,
-          leading: Transform.rotate(
-            angle: 45 * math.pi / 180,
-            child: IconButton(
-              icon: Icon(
-                Icons.add,
-                size: 30,
+    return Consumer(builder: (context, watch, child) {
+      final _auth = watch(authServicesProvider);
+      return Scaffold(
+          backgroundColor: Theme.of(context).primaryColor,
+          appBar: AppBar(
+            elevation: 0,
+            leading: Transform.rotate(
+              angle: 45 * math.pi / 180,
+              child: IconButton(
+                icon: Icon(
+                  Icons.add,
+                  size: 30,
+                ),
+                // tooltip: 'Show Snackbar',
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-              // tooltip: 'Show Snackbar',
-              onPressed: () {
-                Navigator.pop(context);
-              },
             ),
           ),
-        ),
-        body: NotificationListener<OverscrollIndicatorNotification>(
-          child: SafeArea(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: SingleChildScrollView(
-                child: Container(
-                  height: _size.height * 0.9,
-                  width: _size.width,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 24,
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: PageView(
-                      // physics: NeverScrollableScrollPhysics(),
-                      controller: pageController,
-                      children: [
-                        Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: _size.height * 0.65,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      height: _size.height * 0.1,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "Let's setup your account ",
-                                            style: TextStyle(
-                                                fontFamily: 'OpenSans-Regular',
-                                                fontSize: 25,
-                                                color: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          TextFormFieldWidget(
-                                            lableText: 'Name',
-                                            onSaved: onSavedFullName,
-                                            validatorMessage: 'Enter a name',
-                                          ),
-                                          TextFormFieldWidget(
-                                            lableText: 'Email',
-                                            onSaved: onSavedEmail,
-                                            validatorMessage: 'Enter an email',
-                                          ),
-                                          TextFormFieldWidget(
-                                            lableText: 'Password',
-                                            onSaved: onSavedPassword,
-                                            validatorMessage:
-                                                'Enter a password',
-                                            obscureText: true,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                height: _size.height * 0.20,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: ButtonWidget(
-                                          context: context,
-                                          text: 'Create an Acount',
-                                          onPressed: () {
-                                            // _submit();
-                                            // if (fullName == '' ||
-                                            //     email == '' ||
-                                            //     password == '') {
-                                            // error = 'please fill all fields';
-                                            // SnackBar registrationBar =
-                                            //     SnackBar(
-                                            //   behavior:
-                                            //       SnackBarBehavior.floating,
-                                            //   margin: EdgeInsets.only(
-                                            //       bottom: _size.height * 0.15,
-                                            //       left: _size.width * 0.09,
-                                            //       right: _size.width * 0.09),
-                                            //   content: Text(
-                                            //     'please fill all fields',
-                                            //   ),
-                                            // );
-                                            // Scaffold.of(context).showSnackBar(
-                                            //     registrationBar);
-                                            // } else {
-                                            next();
-                                            // }
-                                          }),
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SignupStep2(
-                          size: _size,
-                          nativeLanguage: nativeLanguage,
-                          targetLanguage: targetLanguage,
-                          level: level,
-                          next: next,
-                        ),
-                        Container(
-                          height: _size.height * 0.9,
-                          width: _size.width * 0.9,
-                          child: Column(
-                            // mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
+          body: NotificationListener<OverscrollIndicatorNotification>(
+            child: SafeArea(
+              child: GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: SingleChildScrollView(
+                  child: Container(
+                    height: _size.height * 0.9,
+                    width: _size.width,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24,
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: PageView(
+                        // physics: NeverScrollableScrollPhysics(),
+                        controller: pageController,
+                        children: [
+                          Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
                                   height: _size.height * 0.65,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
                                     children: [
-                                      Text(
-                                        'Gender',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline2,
+                                      Container(
+                                        height: _size.height * 0.1,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "Let's setup your account ",
+                                              style: TextStyle(
+                                                  fontFamily:
+                                                      'OpenSans-Regular',
+                                                  fontSize: 25,
+                                                  color: Colors.white),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       Container(
-                                          // color:
-                                          // Theme.of(context).backgroundColor,
-                                          height: _size.height * 0.3,
-                                          width: _size.width * 0.9,
-                                          child: CustomRadio(genderChanged)),
-                                      Text(
-                                        'Date of birth',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline2,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            TextFormFieldWidget(
+                                              lableText: 'Name',
+                                              onSaved: onSavedFullName,
+                                              validatorMessage: 'Enter a name',
+                                              controller: nameController,
+                                            ),
+                                            TextFormFieldWidget(
+                                              lableText: 'Email',
+                                              onSaved: onSavedEmail,
+                                              validatorMessage:
+                                                  'Enter an email',
+                                              controller: emailController,
+                                            ),
+                                            TextFormFieldWidget(
+                                              lableText: 'Password',
+                                              onSaved: onSavedPassword,
+                                              validatorMessage:
+                                                  'Enter a password',
+                                              controller: passwordController,
+                                              obscureText: true,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      GestureDetector(
-                                        onTap: () => _selectDate(context),
-                                        child: Container(
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  height: _size.height * 0.20,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ButtonWidget(
+                                            context: context,
+                                            text: 'Create an Acount',
+                                            onPressed: () {
+                                              step1Submit();
+                                              // if (fullName == '' ||
+                                              //     email == '' ||
+                                              //     password == '') {
+                                              //   error = 'please fill all fields';
+                                              //   SnackBar registrationBar =
+                                              //       SnackBar(
+                                              //     duration:
+                                              //         Duration(milliseconds: 300),
+                                              //     behavior:
+                                              //         SnackBarBehavior.floating,
+                                              //     margin: EdgeInsets.only(
+                                              //         bottom: _size.height * 0.15,
+                                              //         left: _size.width * 0.09,
+                                              //         right: _size.width * 0.09),
+                                              //     content: Text(
+                                              //       'please fill all fields',
+                                              //     ),
+                                              //   );
+                                              //   ScaffoldMessenger.of(context)
+                                              //       .showSnackBar(
+                                              //           registrationBar);
+                                              // } else {}
+                                            }),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SignupStep2(
+                            user: _user,
+                            size: _size,
+                            nativeLanguage: nativeLanguage,
+                            targetLanguage: targetLanguage,
+                            level: level,
+                            next: next,
+                          ),
+                          Container(
+                            height: _size.height * 0.9,
+                            width: _size.width * 0.9,
+                            child: Column(
+                              // mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                    height: _size.height * 0.65,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Gender',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline2,
+                                        ),
+                                        Container(
+                                            // color:
+                                            // Theme.of(context).backgroundColor,
+                                            height: _size.height * 0.3,
+                                            width: _size.width * 0.9,
+                                            child: CustomRadio(genderChanged)),
+                                        Text(
+                                          'Date of birth',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline2,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () => _selectDate(context),
                                           child: Container(
-                                            height: 150,
-                                            margin: EdgeInsets.all(15.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              children: <Widget>[
-                                                AnimatedContainer(
-                                                  duration: Duration(
-                                                      milliseconds: 300),
-                                                  height: 100,
-                                                  width: 100,
-                                                  curve: Curves.ease,
-                                                  child: Center(
-                                                      child: Icon(
-                                                    Icons.cake_outlined,
-                                                    color: isSelected
-                                                        ? Theme.of(context)
-                                                            .primaryColor
-                                                        : Colors.grey,
-                                                    size: isSelected ? 32 : 24,
-                                                  )),
-                                                  decoration: BoxDecoration(
-                                                    color: isSelected
-                                                        ? Colors.white
-                                                        : Colors.transparent,
-                                                    border: Border.all(
-                                                        width: 1.0,
-                                                        color: isSelected
-                                                            ? Theme.of(context)
-                                                                .primaryColor
-                                                            : Colors.grey),
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                            const Radius
-                                                                .circular(8.0)),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: isSelected
-                                                            ? Colors.black
-                                                                .withOpacity(
-                                                                    0.2)
-                                                            : Colors.black
-                                                                .withOpacity(
-                                                                    0.0),
-                                                        spreadRadius: 4,
-                                                        blurRadius: 3,
-                                                        offset: Offset(0,
-                                                            3), // changes position of shadow
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Container(
-                                                  margin: EdgeInsets.only(
-                                                      top: 10.0),
-                                                  child: Text(
-                                                    isSelected
-                                                        ? selectedDate.day
-                                                                .toString() +
-                                                            ' - ' +
-                                                            selectedDate.month
-                                                                .toString() +
-                                                            ' - ' +
-                                                            selectedDate.year
-                                                                .toString()
-                                                        : '',
-                                                    style: TextStyle(
+                                            child: Container(
+                                              height: 150,
+                                              margin: EdgeInsets.all(15.0),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: <Widget>[
+                                                  AnimatedContainer(
+                                                    duration: Duration(
+                                                        milliseconds: 300),
+                                                    height: 100,
+                                                    width: 100,
+                                                    curve: Curves.ease,
+                                                    child: Center(
+                                                        child: Icon(
+                                                      Icons.cake_outlined,
+                                                      color: isSelected
+                                                          ? Theme.of(context)
+                                                              .primaryColor
+                                                          : Colors.grey,
+                                                      size:
+                                                          isSelected ? 32 : 24,
+                                                    )),
+                                                    decoration: BoxDecoration(
                                                       color: isSelected
                                                           ? Colors.white
-                                                          : Colors.grey,
+                                                          : Colors.transparent,
+                                                      border: Border.all(
+                                                          width: 1.0,
+                                                          color: isSelected
+                                                              ? Theme.of(
+                                                                      context)
+                                                                  .primaryColor
+                                                              : Colors.grey),
+                                                      borderRadius:
+                                                          const BorderRadius
+                                                                  .all(
+                                                              const Radius
+                                                                      .circular(
+                                                                  8.0)),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: isSelected
+                                                              ? Colors.black
+                                                                  .withOpacity(
+                                                                      0.2)
+                                                              : Colors.black
+                                                                  .withOpacity(
+                                                                      0.0),
+                                                          spreadRadius: 4,
+                                                          blurRadius: 3,
+                                                          offset: Offset(0,
+                                                              3), // changes position of shadow
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                )
-                                              ],
+                                                  Container(
+                                                    margin: EdgeInsets.only(
+                                                        top: 10.0),
+                                                    child: Text(
+                                                      isSelected
+                                                          ? selectedDate.day
+                                                                  .toString() +
+                                                              ' - ' +
+                                                              selectedDate.month
+                                                                  .toString() +
+                                                              ' - ' +
+                                                              selectedDate.year
+                                                                  .toString()
+                                                          : '',
+                                                      style: TextStyle(
+                                                        color: isSelected
+                                                            ? Colors.white
+                                                            : Colors.grey,
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
+                                        // FloatingActionButton(
+                                        //     onPressed: () => _selectDate(context),
+                                        //     child: Icon(Icons.cake)
+                                        //     // color: Colors.greenAccent,
+                                        //     )
+                                      ],
+                                    )),
+                                Container(
+                                  height: _size.height * 0.20,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ButtonWidget(
+                                            context: context,
+                                            text: "Let's Go",
+                                            onPressed: () async {
+                                              if (gender == '' || !isSelected) {
+                                                SnackBar registrationBar =
+                                                    SnackBar(
+                                                  duration: Duration(
+                                                      milliseconds: 300),
+                                                  behavior:
+                                                      SnackBarBehavior.floating,
+                                                  margin: EdgeInsets.only(
+                                                      bottom:
+                                                          _size.height * 0.15,
+                                                      left: _size.width * 0.09,
+                                                      right:
+                                                          _size.width * 0.09),
+                                                  content: Text(
+                                                    'please fill all fields',
+                                                  ),
+                                                );
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                        registrationBar);
+                                              } else {
+                                                _user.gender = gender;
+                                                _user.dateOfBirth =
+                                                    selectedDate.toString();
+                                                createAcount(context, _auth);
+                                              }
+                                            }),
                                       ),
-                                      // FloatingActionButton(
-                                      //     onPressed: () => _selectDate(context),
-                                      //     child: Icon(Icons.cake)
-                                      //     // color: Colors.greenAccent,
-                                      //     )
                                     ],
-                                  )),
-                              Container(
-                                height: _size.height * 0.20,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: ButtonWidget(
-                                          context: context,
-                                          text: 'Next',
-                                          onPressed: () async {
-                                            // SnackBar registrationBar = SnackBar(
-                                            //   duration:
-                                            //       Duration(milliseconds: 300),
-                                            //   behavior:
-                                            //       SnackBarBehavior.floating,
-                                            //   margin: EdgeInsets.only(
-                                            //       bottom: _size.height * 0.15,
-                                            //       left: _size.width * 0.09,
-                                            //       right: _size.width * 0.09),
-                                            //   content: Text(
-                                            //     'please fill all fields',
-                                            //   ),
-                                            // );
-                                            // Scaffold.of(context)
-                                            //     .showSnackBar(registrationBar);
-                                            print(gender);
-                                            // next();
-                                          }),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ));
+          ));
+    });
   }
 }
 
@@ -422,6 +467,7 @@ class SignupStep2 extends StatefulWidget {
     @required this.targetLanguage,
     @required this.level,
     @required this.next,
+    @required this.user,
   })  : _size = size,
         super(key: key);
 
@@ -430,6 +476,7 @@ class SignupStep2 extends StatefulWidget {
   String targetLanguage;
   String level;
   Function next;
+  final User user;
 
   @override
   _SignupStep2State createState() => _SignupStep2State();
@@ -685,9 +732,9 @@ class _SignupStep2State extends State<SignupStep2> {
                         context: context,
                         text: 'Next',
                         onPressed: () async {
-                          print(nativeLanguage);
-                          print(targetLanguage);
-                          print(level);
+                          // print(nativeLanguage);
+                          // print(targetLanguage);
+                          // print(level);
                           if (nativeLanguage == '' ||
                               targetLanguage == '' ||
                               level == '') {
@@ -703,11 +750,25 @@ class _SignupStep2State extends State<SignupStep2> {
                                 'please fill all fields',
                               ),
                             );
-                            Scaffold.of(context).showSnackBar(registrationBar);
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(registrationBar);
                           } else {
-                            widget.nativeLanguage = nativeLanguage;
-                            widget.targetLanguage = targetLanguage;
-                            widget.level = level;
+                            widget.user.nativeLanguage = Language(
+                                code: nativeLanguage,
+                                title: nTitle,
+                                isNative: true);
+
+                            widget.user.targetLanguage = Language(
+                              code: targetLanguage,
+                              title: tTitle,
+                              isNative: false,
+                              level: level,
+                            );
+                            print(tTitle);
+
+                            // widget.nativeLanguage = nativeLanguage;
+                            // widget.targetLanguage = targetLanguage;
+                            // widget.level = level;
 
                             widget.next();
                           }

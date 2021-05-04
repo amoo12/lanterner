@@ -2,10 +2,12 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+// import 'package:lanterner/models/user.dart';
 import 'package:lanterner/widgets/buttons.dart';
 import 'package:lanterner/widgets/customTextField.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 
+// import '../models/user.dart';
 import '../services/auth_service.dart';
 
 class Login extends StatefulWidget {
@@ -32,6 +34,11 @@ class _LoginState extends State<Login> {
       _auth.signIn(
           email: emailController.text.trim(),
           password: passwordController.text.trim());
+      // }
+
+      // _auth.signUp(User(
+      //     email: emailController.text.trim(),
+      //     password: passwordController.text.trim()));
     }
   }
 
@@ -56,8 +63,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    // final _auth = watch(authServicesProvider);
     return Consumer(builder: (context, watch, child) {
+      // listen to the AuthenticationService class
       final _auth = watch(authServicesProvider);
 
       return Scaffold(
