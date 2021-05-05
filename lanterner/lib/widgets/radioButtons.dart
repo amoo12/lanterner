@@ -12,16 +12,13 @@ class CustomRadio extends StatefulWidget {
 }
 
 class CustomRadioState extends State<CustomRadio> {
-  List<RadioModel> sampleData = List<RadioModel>();
+  List<RadioModel> sampleData = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     sampleData.add(RadioModel(false, 'Male', 'Male'));
     sampleData.add(RadioModel(false, 'Female', 'Female'));
-    // sampleData.add( RadioModel(false, 'C', 'April 16'));
-    // sampleData.add( RadioModel(false, 'D', 'April 15'));
   }
 
   @override

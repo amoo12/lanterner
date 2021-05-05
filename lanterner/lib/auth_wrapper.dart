@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lanterner/pages/bottomNavigationBar.dart';
 import 'package:lanterner/pages/login.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 
@@ -12,16 +13,7 @@ class Wrapper extends ConsumerWidget {
     return _authState.when(
       data: (value) {
         if (value != null) {
-          return Scaffold(
-            body: Center(
-              child: TextButton(
-                onPressed: () {
-                  _auth.signout();
-                },
-                child: Text('signout'),
-              ),
-            ),
-          );
+          return MyBottomNavBar();
         }
         return Login();
       },
