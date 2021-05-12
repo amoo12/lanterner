@@ -16,23 +16,30 @@ class TextFormFieldWidget extends StatefulWidget {
   final Function onSubmitField;
   final Function onFieldTap;
   final Function onSaved;
+  final bool expands;
+  final bool bottomBorder;
+  final bool autofocus;
 
-  const TextFormFieldWidget(
-      {this.hintText,
-      this.lableText,
-      this.focusNode,
-      this.textInputType,
-      // this.defaultText,
-      this.obscureText = false,
-      this.controller,
-      this.functionValidate,
-      this.validatorMessage,
-      this.parametersValidate,
-      this.actionKeyboard = TextInputAction.next,
-      this.onSubmitField,
-      this.onSaved,
-      this.onFieldTap,
-      this.prefixIcon});
+  const TextFormFieldWidget({
+    this.hintText,
+    this.lableText,
+    this.focusNode,
+    this.textInputType,
+    // this.defaultText,
+    this.obscureText = false,
+    this.controller,
+    this.functionValidate,
+    this.validatorMessage,
+    this.parametersValidate,
+    this.actionKeyboard = TextInputAction.next,
+    this.onSubmitField,
+    this.onSaved,
+    this.onFieldTap,
+    this.prefixIcon,
+    this.expands = false,
+    this.autofocus = false,
+    this.bottomBorder = true,
+  });
 
   @override
   _TextFormFieldWidgetState createState() => _TextFormFieldWidgetState();
@@ -51,6 +58,12 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
       child: TextFormField(
         cursorColor: Colors.white,
         obscureText: widget.obscureText,
+        expands: widget.expands,
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
+        // maxLines: null,
+        autofocus: widget.autofocus,
+
         // keyboardType: widget.textInputType,
         // textInputAction: widget.actionKeyboard,
         // focusNode: widget.focusNode,
@@ -58,12 +71,18 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
         // initialValue: widget.defaultText,
         decoration: InputDecoration(
           labelText: widget.lableText,
+          hintText: widget.hintText,
+          hintStyle: TextStyle(color: Colors.grey),
           labelStyle: TextStyle(color: Colors.white),
           focusColor: Colors.white,
-          focusedBorder:
-              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-          enabledBorder:
-              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+          focusedBorder: widget.bottomBorder
+              ? UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white))
+              : InputBorder.none,
+          enabledBorder: widget.bottomBorder
+              ? UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white))
+              : InputBorder.none,
         ),
         controller: widget.controller,
         validator: (value) {
@@ -74,7 +93,6 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
             if (resultValidate != null) {
               return resultValidate;
             }
-            
           } else {
             return commonValidation(value, widget.validatorMessage);
           }

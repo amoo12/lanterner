@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lanterner/pages/upload.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class Home extends StatefulWidget {
@@ -70,6 +71,28 @@ class _HomeState extends State<Home> {
       width: MediaQuery.of(context).size.width,
       child: Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
+        // floatingActionButton: AnimatedContainer(
+        //   duration: Duration(milliseconds: 300),
+        //   padding: EdgeInsets.only(bottom: isScrollingDown ? 0 : 50),
+        //   child: FloatingActionButton(
+        //     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        //     child: Icon(
+        //       Icons.add_comment,
+        //       color: Colors.white,
+        //     ),
+        //     onPressed: () {
+        //       // pushDynamicScreen(context, screen: Upload());
+        //       pushNewScreen(context, screen: Upload());
+        //       // pushNewScreenWithRouteSettings(
+        //       //   context,
+        //       //   settings: RouteSettings(name: '/upload'),
+        //       //   screen: Upload(),
+        //       //   pageTransitionAnimation: PageTransitionAnimation.cupertino,
+        //       //   withNavBar: false,
+        //       // );
+        //     },
+        //   ),
+        // ),
         body: SafeArea(
           child: Column(
             children: [

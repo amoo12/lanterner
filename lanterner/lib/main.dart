@@ -2,7 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/pages/login.dart';
+import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/signup.dart';
+import 'package:lanterner/pages/upload.dart';
 
 import 'auth_wrapper.dart';
 
@@ -89,10 +91,11 @@ class MyApp extends StatelessWidget {
           //text with the accent color for links
         ),
       ),
-      home: Wrapper(),
+      home: NewPost(),
       routes: {
         '/signup': (context) => Signup(),
         '/login': (context) => Login(),
+        '/upload': (context) => Upload(),
       },
     );
   }

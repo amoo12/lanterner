@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lanterner/pages/profile.dart';
+import 'package:lanterner/pages/upload.dart';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -146,24 +147,33 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
       //     ),
       //   ),
       // ),
-      floatingActionButton:
-          _controller.index == 0 // makes sure the button only appears in home
-              ? AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  padding: EdgeInsets.only(bottom: _hideNavBar ? 0 : 50),
-                  child: FloatingActionButton(
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    child: Icon(
-                      Icons.add_comment,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {},
-                  ),
-                )
-              : Container(
-                  width: 0.0,
-                  height: 0.0,
+      floatingActionButton: _controller.index ==
+              0 // makes sure the button only appears in home
+          ? AnimatedContainer(
+              duration: Duration(milliseconds: 300),
+              padding: EdgeInsets.only(bottom: _hideNavBar ? 0 : 50),
+              child: FloatingActionButton(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                child: Icon(
+                  Icons.add_comment,
+                  color: Colors.white,
                 ),
+                onPressed: () {
+                  
+                  pushNewScreenWithRouteSettings(
+                    context,
+                    settings: RouteSettings(name: '/upload'),
+                    screen: Upload(),
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                    withNavBar: false,
+                  );
+                },
+              ),
+            )
+          : Container(
+              width: 0.0,
+              height: 0.0,
+            ),
       body: PersistentTabView(
         context,
         onItemSelected: (index) {

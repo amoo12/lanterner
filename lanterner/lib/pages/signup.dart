@@ -1,7 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/services/auth_service.dart';
 import 'package:lanterner/widgets/buttons.dart';
@@ -150,6 +150,7 @@ class _SignupState extends State<Signup> {
               ),
             ),
           ),
+         
           body: NotificationListener<OverscrollIndicatorNotification>(
             child: SafeArea(
               child: GestureDetector(
@@ -158,9 +159,6 @@ class _SignupState extends State<Signup> {
                   child: Container(
                     height: _size.height * 0.9,
                     width: _size.width,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24,
-                    ),
                     child: Form(
                       key: _formKey,
                       child: PageView(
@@ -168,6 +166,9 @@ class _SignupState extends State<Signup> {
                         controller: pageController,
                         children: [
                           Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 24,
+                            ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -279,6 +280,9 @@ class _SignupState extends State<Signup> {
                             next: next,
                           ),
                           Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 24,
+                            ),
                             height: _size.height * 0.9,
                             width: _size.width * 0.9,
                             child: Column(
@@ -509,6 +513,9 @@ class _SignupStep2State extends State<SignupStep2> {
       onWillPop: () async => false,
       child: Container(
         height: widget._size.height * 0.9,
+        padding: EdgeInsets.symmetric(
+          horizontal: 24,
+        ),
         child: Column(
           // mainAxisAlignment:,
           children: [
