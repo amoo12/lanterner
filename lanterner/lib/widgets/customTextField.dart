@@ -19,6 +19,7 @@ class TextFormFieldWidget extends StatefulWidget {
   final bool expands;
   final bool bottomBorder;
   final bool autofocus;
+  final bool isMultiline;
 
   const TextFormFieldWidget({
     this.hintText,
@@ -39,6 +40,7 @@ class TextFormFieldWidget extends StatefulWidget {
     this.expands = false,
     this.autofocus = false,
     this.bottomBorder = true,
+    this.isMultiline = false,
   });
 
   @override
@@ -59,8 +61,9 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
         cursorColor: Colors.white,
         obscureText: widget.obscureText,
         expands: widget.expands,
-        keyboardType: TextInputType.multiline,
-        maxLines: null,
+        keyboardType: widget.isMultiline ? TextInputType.multiline : null,
+
+        maxLines: widget.isMultiline ? null : 1,
         // maxLines: null,
         autofocus: widget.autofocus,
 

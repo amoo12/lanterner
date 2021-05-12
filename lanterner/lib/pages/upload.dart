@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as Im;
 import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid.dart';
 
 class Upload extends StatefulWidget {
   // final User currentUser;
@@ -39,17 +40,14 @@ class _UploadState extends State<Upload>
       maxHeight: 675,
       maxWidth: 960,
     );
-    setState(() {
-      this.file = File(pickedFile.path);
-    });
+    this.file = File(pickedFile.path);
   }
 
   handleChooseFromGallery() async {
     Navigator.pop(context);
     PickedFile pickedFile = await _picker.getImage(source: ImageSource.gallery);
-    setState(() {
-      this.file = File(pickedFile.path);
-    });
+    this.file = File(pickedFile.path);
+    setState(() {});
   }
 
   selectImage(parentContext) {

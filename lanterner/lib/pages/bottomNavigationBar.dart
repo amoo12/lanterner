@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/pages/upload.dart';
 
@@ -159,11 +160,10 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
                   color: Colors.white,
                 ),
                 onPressed: () {
-                  
                   pushNewScreenWithRouteSettings(
                     context,
-                    settings: RouteSettings(name: '/upload'),
-                    screen: Upload(),
+                    settings: RouteSettings(name: '/newPost'),
+                    screen: NewPost(),
                     pageTransitionAnimation: PageTransitionAnimation.cupertino,
                     withNavBar: false,
                   );

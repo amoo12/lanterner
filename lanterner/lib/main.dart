@@ -91,11 +91,12 @@ class MyApp extends StatelessWidget {
           //text with the accent color for links
         ),
       ),
-      home: NewPost(),
+      home: Wrapper(),
       routes: {
         '/signup': (context) => Signup(),
         '/login': (context) => Login(),
         '/upload': (context) => Upload(),
+        '/newPost': (context) => NewPost(),
       },
     );
   }

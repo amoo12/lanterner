@@ -1,5 +1,6 @@
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
 
 // this class talks to cloud firestore and manages queries
@@ -9,6 +10,8 @@ class DatabaseService {
 
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');
+  final CollectionReference postsCollection =
+      FirebaseFirestore.instance.collection('posts');
 
   // inserts a new user record in Firestore
   Future insertUser(User user) async {
@@ -30,5 +33,10 @@ class DatabaseService {
         'isNative': user.targetLanguage.isNative,
       },
     });
+  }
+
+  // inserts a new post record
+  Future createPost(Post post) async {
+    return await postsCollection.add(post.toMap(post));
   }
 }
