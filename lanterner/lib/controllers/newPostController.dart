@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lanterner/models/post.dart';
+import 'package:lanterner/models/user.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart';
@@ -41,19 +44,31 @@ class NewPostController {
     file = null;
   }
 
-  handleSubmit() async {
+  handleSubmit(String uid) async {
+    User user = await db.getUser(uid);
     isUploading = true;
-
-    await compressImage();
-    String mediaUrl = await uploadImage(file);
+    String mediaUrl;
+    if (file != null) {
+      await compressImage();
+      mediaUrl = await uploadImage(file);
+    }
     // createPostInFirestore(
     //   mediaUrl: mediaUrl,
     //   location: locationController.text,
     //   description: captionController.text,
     // );
+    // TODO change to global (this returns a local date)
+    Timestamp timestamp = Timestamp.now();
 
     db.createPost(Post(
-        postId: postId, photoUrl: mediaUrl, caption: captionController.text));
+      postId: postId,
+      photoUrl: mediaUrl,
+      caption: captionController.text,
+      username: user.name,
+      ownerId: user.uid,
+      ownerNativeLanguage: user.nativeLanguage,
+      timestamp: timestamp,
+    ));
 
     captionController.clear();
     // locationController.clear();

@@ -15,7 +15,7 @@ class DatabaseService {
 
   // inserts a new user record in Firestore
   Future insertUser(User user) async {
-    return await usersCollection.add({
+    return await usersCollection.doc(uid).set({
       'name': user.name,
       'email': user.email,
       'gender': user.gender,
@@ -38,5 +38,12 @@ class DatabaseService {
   // inserts a new post record
   Future createPost(Post post) async {
     return await postsCollection.add(post.toMap(post));
+  }
+
+  Future<User> getUser(String uid) async {
+    return await usersCollection
+        .doc(uid)
+        .get()
+        .then((doc) => User.fromMap(doc));
   }
 }
