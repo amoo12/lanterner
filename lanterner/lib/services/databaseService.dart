@@ -46,4 +46,32 @@ class DatabaseService {
         .get()
         .then((doc) => User.fromMap(doc));
   }
+
+  Future<List<Post>> getPosts() async {
+    // // List<Post> list;
+    // return list = await postsCollection.get().then((value) {
+    //   // Post post = Post();
+    //   for (var i = 0; i < value.docs.length; i++) {
+    //     Post post = Post.fromMap(value.docs[i]);
+    //     list.add(post);
+    //   }
+    //   return list;
+    // for (var item in value.docs) {
+    //   // print(item);
+    //   // Post post = Post.fromMap(item);
+    //   Post post = Post.fromMap(item);
+
+    //   print(post.username);
+    // print(post.photoUrl);
+    // return post;
+    // }
+    // });
+
+    // .get()
+    // .then((doc) => User.fromMap(doc));
+  }
+
+  List<Post> postFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) => Post.fromMap(doc)).toList();
+  }
 }

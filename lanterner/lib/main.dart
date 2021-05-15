@@ -5,6 +5,7 @@ import 'package:lanterner/pages/login.dart';
 import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/signup.dart';
 import 'package:lanterner/pages/upload.dart';
+import 'package:lanterner/widgets/postCard.dart';
 
 import 'auth_wrapper.dart';
 
@@ -97,6 +98,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => Login(),
         '/upload': (context) => Upload(),
         '/newPost': (context) => NewPost(),
+        '/imageViewer': (context) => ImageViewer(),
       },
     );
   }

@@ -1,9 +1,12 @@
 import 'package:auto_direction/auto_direction.dart';
 import 'package:flutter/material.dart';
+import 'package:lanterner/models/post.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class PostCard extends StatefulWidget {
-  const PostCard({Key key}) : super(key: key);
+  final Post post;
+  const PostCard(this.post, {Key key}) : super(key: key);
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -12,9 +15,9 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   bool isRTL;
 
-  String text =
-      "رحلة الألف ميل تبدأ بخطوة,رحلة الألف ميل تبدأ بخطوة, رحلة الألف ميل تبدأ بخطوة, رحلة الألف ميل تبدأ بخطوة رحلة الألف ميل تبدأ بخطوة,رحلة الألف ميل تبدأ بخطوة, رحلة الألف ميل تبدأ بخطوة, رحلة الألف ميل تبدأ بخطوة";
-  // String text = 'hello';
+  // String text =
+  //     "رحلة الألف ميل تبدأ بخطوة,رحلة الألف ميل تبدأ بخطوة, رحلة الألف ميل تبدأ بخطوة, رحلة الألف ميل تبدأ بخطوة رحلة الألف ميل تبدأ بخطوة,رحلة الألف ميل تبدأ بخطوة, رحلة الألف ميل تبدأ بخطوة, رحلة الألف ميل تبدأ بخطوة";
+  // // String text = 'hello';
 
   String firstHalf;
   String secondHalf;
@@ -24,7 +27,9 @@ class _PostCardState extends State<PostCard> {
   @override
   void initState() {
     super.initState();
+  }
 
+  splitCaption(String text) {
     if (text.length > 100) {
       firstHalf = text.substring(0, 100);
       secondHalf = text.substring(100, text.length);
@@ -36,6 +41,8 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
+    splitCaption(widget.post.caption);
+
     return Container(
       width: MediaQuery.of(context).size.width,
       child: Card(
@@ -73,7 +80,7 @@ class _PostCardState extends State<PostCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'display name',
+                            '${widget.post.username}',
                             style: TextStyle(fontSize: 14, color: Colors.grey),
                           ),
                           Text(
@@ -111,7 +118,7 @@ class _PostCardState extends State<PostCard> {
                     this.isRTL = isRTL;
                   });
                 },
-                text: text,
+                text: widget.post.caption != null ? widget.post.caption : '',
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.95,
                   padding: new EdgeInsets.symmetric(
@@ -147,8 +154,76 @@ class _PostCardState extends State<PostCard> {
                         ),
                 ),
               ),
-              PostCardFooter()
+              // media
+              widget.post.photoUrl != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: GestureDetector(
+                          onTap: () {
+                            pushNewScreenWithRouteSettings(
+                              context,
+                              settings: RouteSettings(name: '/imageViewer'),
+                              screen:
+                                  ImageViewer(photoUrl: widget.post.photoUrl),
+                              pageTransitionAnimation:
+                                  PageTransitionAnimation.cupertino,
+                              withNavBar: false,
+                            );
+                          },
+                          child: Container(
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: Image.network(
+                                widget.post.photoUrl,
+                                height: 180,
+                                // centerSlice: Rect,
+                                fit: BoxFit.fitWidth,
+                              ))),
+                    )
+                  : Container(),
+
+              PostCardFooter(),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ImageViewer extends StatefulWidget {
+  final String photoUrl;
+
+  const ImageViewer({
+    Key key,
+    this.photoUrl,
+  }) : super(key: key);
+
+  @override
+  _ImageViewerState createState() => _ImageViewerState();
+}
+
+class _ImageViewerState extends State<ImageViewer> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+      ),
+      body: Container(
+        child: Center(
+          child: GestureDetector(
+            onVerticalDragEnd: (drag) {
+              Navigator.pop(context);
+            },
+            child: InteractiveViewer(
+              child: Image.network(widget.photoUrl),
+              maxScale: 4,
+              minScale: .1,
+              panEnabled: true,
+              constrained: true,
+              scaleEnabled: true,
+            ),
           ),
         ),
       ),
@@ -170,13 +245,13 @@ class _PostCardFooterState extends State<PostCardFooter> {
 
   void like() {
     setState(() {
-      isLiked = isLiked ? false : true;
+      isLiked = !isLiked;
     });
   }
 
   void savePost() {
     setState(() {
-      isSaved = isSaved ? false : true;
+      isSaved = !isSaved;
     });
   }
 
