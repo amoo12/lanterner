@@ -1,3 +1,4 @@
+import 'package:auto_direction/auto_direction.dart';
 import 'package:flutter/material.dart';
 
 class TextFormFieldWidget extends StatefulWidget {
@@ -50,6 +51,8 @@ class TextFormFieldWidget extends StatefulWidget {
 class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
   double bottomPaddingToError = 12;
 
+  String text = "";
+
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -57,58 +60,66 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
       // .copyWith(
       // primaryColor: primaryColor,
       // ),
-      child: TextFormField(
-        cursorColor: Colors.white,
-        obscureText: widget.obscureText,
-        expands: widget.expands,
-        keyboardType: widget.isMultiline ? TextInputType.multiline : null,
+      child: AutoDirection(
+        text: text,
+        child: TextFormField(
+          cursorColor: Colors.white,
+          obscureText: widget.obscureText,
+          expands: widget.expands,
+          keyboardType: widget.isMultiline ? TextInputType.multiline : null,
 
-        maxLines: widget.isMultiline ? null : 1,
-        // maxLines: null,
-        autofocus: widget.autofocus,
+          maxLines: widget.isMultiline ? null : 1,
+          // maxLines: null,
+          autofocus: widget.autofocus,
 
-        // keyboardType: widget.textInputType,
-        // textInputAction: widget.actionKeyboard,
-        // focusNode: widget.focusNode,
-        style: TextStyle(color: Colors.white),
-        // initialValue: widget.defaultText,
-        decoration: InputDecoration(
-          labelText: widget.lableText,
-          hintText: widget.hintText,
-          hintStyle: TextStyle(color: Colors.grey),
-          labelStyle: TextStyle(color: Colors.white),
-          focusColor: Colors.white,
-          focusedBorder: widget.bottomBorder
-              ? UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white))
-              : InputBorder.none,
-          enabledBorder: widget.bottomBorder
-              ? UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white))
-              : InputBorder.none,
-        ),
-        controller: widget.controller,
-        validator: (value) {
-          if (widget.functionValidate != null) {
-            String resultValidate = widget.functionValidate(
-                value.trim(), widget.parametersValidate);
-            commonValidation(value, widget.validatorMessage);
-            if (resultValidate != null) {
-              return resultValidate;
+          // keyboardType: widget.textInputType,
+          // textInputAction: widget.actionKeyboard,
+          // focusNode: widget.focusNode,
+          style: TextStyle(color: Colors.white),
+          // initialValue: widget.defaultText,
+          decoration: InputDecoration(
+            labelText: widget.lableText,
+            hintText: widget.hintText,
+            hintStyle: TextStyle(color: Colors.grey),
+            labelStyle: TextStyle(color: Colors.white),
+            focusColor: Colors.white,
+            focusedBorder: widget.bottomBorder
+                ? UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white))
+                : InputBorder.none,
+            enabledBorder: widget.bottomBorder
+                ? UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white))
+                : InputBorder.none,
+          ),
+          controller: widget.controller,
+          validator: (value) {
+            if (widget.functionValidate != null) {
+              String resultValidate = widget.functionValidate(
+                  value.trim(), widget.parametersValidate);
+              commonValidation(value, widget.validatorMessage);
+              if (resultValidate != null) {
+                return resultValidate;
+              }
+            } else {
+              return commonValidation(value, widget.validatorMessage);
             }
-          } else {
-            return commonValidation(value, widget.validatorMessage);
-          }
-        },
-        onFieldSubmitted: (value) {
-          if (widget.onSubmitField != null) widget.onSubmitField();
-        },
-        onTap: () {
-          if (widget.onFieldTap != null) widget.onFieldTap();
-        },
-        onSaved: (value) {
-          if (widget.onSaved != null) widget.onSaved(value.trim());
-        },
+          },
+          onFieldSubmitted: (value) {
+            if (widget.onSubmitField != null) widget.onSubmitField();
+          },
+          onTap: () {
+            if (widget.onFieldTap != null) widget.onFieldTap();
+          },
+          onSaved: (value) {
+            if (widget.onSaved != null) widget.onSaved(value.trim());
+          },
+          onChanged: (value) {
+            setState(() {
+              text = value;
+            });
+          },
+        ),
       ),
     );
   }

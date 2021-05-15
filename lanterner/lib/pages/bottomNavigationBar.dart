@@ -152,7 +152,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
               0 // makes sure the button only appears in home
           ? AnimatedContainer(
               duration: Duration(milliseconds: 300),
-              padding: EdgeInsets.only(bottom: _hideNavBar ? 0 : 50),
+              padding: EdgeInsets.only(bottom: _hideNavBar ? 0 : 56),
               child: FloatingActionButton(
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 child: Icon(
