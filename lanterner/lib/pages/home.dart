@@ -87,20 +87,33 @@ class _HomeState extends State<Home> {
                               .collection('posts')
                               .get(),
                           builder: (context, snapshot) {
-                            // snapshot.data
-                            final List<DocumentSnapshot> documents =
-                                snapshot.data.docs;
-                            List<Post> posts = documents
-                                .map((doc) => Post.fromMap(doc))
-                                .toList();
+                            if (snapshot.hasData) {
+                              final List<DocumentSnapshot> documents =
+                                  snapshot.data.docs;
+                              List<Post> posts = documents
+                                  .map((doc) => Post.fromMap(doc))
+                                  .toList();
 
-                            return ListView.builder(
-                                controller: _scrollViewController,
-                                itemCount: posts.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return PostCard(posts[index]);
-                                });
-                          }))
+                              if (posts.length > 0) {
+                                return ListView.builder(
+                                    controller: _scrollViewController,
+                                    itemCount: posts.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return PostCard(posts[index]);
+                                    });
+                              } else {
+                                return Container(
+                                    child: Center(
+                                  child: Text('No posts uploaded yet'),
+                                ));
+                              }
+                            } else {
+                              return Container(
+                                  child: Center(
+                                      child: CircularProgressIndicator()));
+                            }
+                          })),
                 ],
               ),
             )

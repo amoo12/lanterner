@@ -71,6 +71,12 @@ class DatabaseService {
     // .then((doc) => User.fromMap(doc));
   }
 
+  Future updateProfilePicture(String uid, String photoUrl) {
+    usersCollection.doc(uid).update({
+      'photoUrl': photoUrl,
+    });
+  }
+
   List<Post> postFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) => Post.fromMap(doc)).toList();
   }

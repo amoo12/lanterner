@@ -66,8 +66,10 @@ class _PostCardState extends State<PostCard> {
                             radius: 25,
                             child: ClipOval(
                               child: Container(
-                                child: Icon(Icons.person,
-                                    size: 40, color: Colors.grey),
+                                child: widget.post.userPhotoUrl != null
+                                    ? Image.network(widget.post.userPhotoUrl)
+                                    : Icon(Icons.person,
+                                        size: 40, color: Colors.grey),
                               ),
                             ),
                           ),

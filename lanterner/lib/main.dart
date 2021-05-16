@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lanterner/pages/login.dart';
+import 'package:lanterner/pages/authentication/login.dart';
 import 'package:lanterner/pages/new_post.dart';
-import 'package:lanterner/pages/signup.dart';
+import 'package:lanterner/pages/authentication/signup.dart';
 import 'package:lanterner/pages/upload.dart';
 import 'package:lanterner/widgets/postCard.dart';
 

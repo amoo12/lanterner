@@ -5,6 +5,8 @@ import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/widgets/customTextField.dart';
 import 'dart:math' as math;
 
+import 'package:lanterner/widgets/progressIndicator.dart';
+
 class NewPost extends StatefulWidget {
   NewPost({Key key}) : super(key: key);
 
@@ -27,23 +29,14 @@ class _NewPostState extends State<NewPost> {
             IconButton(
               onPressed: () async {
                 if (postController.captionController.text.trim().isNotEmpty ||
-                    postController.file != null) {
-                  showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                              backgroundColor: Colors.white),
-                        );
-                      });
-                  print('user id is ' + _authState.data.value.uid);
-                  uid = _authState.data.value.uid;
+                    postController.uploadPhoto.file != null) {
+                  customProgressIdicator(context);
 
-                  await postController.handleSubmit(uid);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  setState(() {});
+                  await postController.handleSubmit(_authState.data.value.uid);
+                  setState(() {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  });
                 } else {
                   // TODO change to snackbar or other type of alerts
                   showDialog(
@@ -94,7 +87,7 @@ class _NewPostState extends State<NewPost> {
                         isMultiline: true,
                       ),
                     ),
-                    postController.file == null
+                    postController.uploadPhoto.file == null
                         ? Container(
                             height: 0.0,
                           )
@@ -119,7 +112,8 @@ class _NewPostState extends State<NewPost> {
                                       borderRadius: BorderRadius.circular(12.0),
                                       image: DecorationImage(
                                         fit: BoxFit.cover,
-                                        image: FileImage(postController.file),
+                                        image: FileImage(
+                                            postController.uploadPhoto.file),
                                       ),
                                     ),
                                   ),
@@ -129,7 +123,7 @@ class _NewPostState extends State<NewPost> {
                                     icon: Icon(Icons.cancel),
                                     onPressed: () {
                                       setState(() {
-                                        postController.clearImage();
+                                        postController.uploadPhoto.clearImage();
                                       });
                                     })
                               ],
@@ -179,14 +173,14 @@ class _NewPostState extends State<NewPost> {
                                     SimpleDialogOption(
                                         child: Text("Photo with Camera"),
                                         onPressed: () async {
-                                          await postController
+                                          await postController.uploadPhoto
                                               .handleTakePhoto(context);
                                           setState(() {});
                                         }),
                                     SimpleDialogOption(
                                         child: Text("Image from Gallery"),
                                         onPressed: () async {
-                                          await postController
+                                          await postController.uploadPhoto
                                               .handleChooseFromGallery(context);
                                           setState(() {});
                                         }),

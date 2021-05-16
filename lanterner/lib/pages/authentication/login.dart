@@ -7,7 +7,7 @@ import 'package:lanterner/widgets/customTextField.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 
 // import '../models/user.dart';
-import '../services/auth_service.dart';
+import '../../services/auth_service.dart';
 
 class Login extends StatefulWidget {
   const Login({Key key}) : super(key: key);

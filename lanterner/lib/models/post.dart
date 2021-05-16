@@ -7,6 +7,7 @@ class Post {
   String audioUrl;
   String ownerId;
   String username;
+  String userPhotoUrl;
   String caption;
   Language ownerNativeLanguage;
   Timestamp timestamp;
@@ -18,6 +19,7 @@ class Post {
     this.postId,
     this.ownerId,
     this.username,
+    this.userPhotoUrl,
     this.ownerNativeLanguage,
     this.timestamp,
   });
@@ -29,6 +31,7 @@ class Post {
       audioUrl: data['audioUrl'],
       ownerId: data['ownerId'],
       username: data['username'],
+      userPhotoUrl: data['userPhotoUrl'],
       caption: data['caption'],
       timestamp: data['timestamp'],
       ownerNativeLanguage: Language.fromMap(
@@ -44,6 +47,7 @@ class Post {
       'audioUrl': post.audioUrl,
       'ownerId': post.ownerId,
       'username': post.username,
+      'userPhotoUrl': post.userPhotoUrl,
       'caption': post.caption,
       'timestamp': post.timestamp,
       'ownerNativeLanguage':

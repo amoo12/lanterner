@@ -2,18 +2,21 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lanterner/controllers/uploadPhoto.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/services/auth_service.dart';
+import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/buttons.dart';
 import 'package:lanterner/widgets/customTextField.dart';
 import 'package:lanterner/widgets/languagesList.dart';
+import 'package:lanterner/widgets/progressIndicator.dart';
 import 'package:lanterner/widgets/radioButtons.dart';
 // import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:smart_select/smart_select.dart';
 
 import 'dart:math' as math;
 
-import '../models/user.dart';
+import '../../models/user.dart';
 // import '../models/user.dart';
 
 class Signup extends StatefulWidget {
@@ -27,7 +30,8 @@ class _SignupState extends State<Signup> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   PageController pageController;
-
+  UploadPhoto uploadPhoto;
+  DatabaseService db = DatabaseService();
   String fullName = '';
   String email = '';
   String password = '';
@@ -44,6 +48,7 @@ class _SignupState extends State<Signup> {
 
   @override
   void initState() {
+    uploadPhoto = UploadPhoto();
     super.initState();
     pageController = PageController(initialPage: 0, keepPage: true);
   }
@@ -118,7 +123,15 @@ class _SignupState extends State<Signup> {
 
   createAcount(BuildContext context, AuthenticationService _auth) async {
     await _auth.signUp(_user);
+    next();
     Navigator.pop(context);
+  }
+
+  uploadImage(String uid) async {
+    String photoUrl;
+    await uploadPhoto.compressImage(uid);
+    photoUrl = await uploadPhoto.uploadImage(uploadPhoto.file, uid);
+    await db.updateProfilePicture(uid, photoUrl);
   }
 
   String nativeLanguage = '';
@@ -132,6 +145,7 @@ class _SignupState extends State<Signup> {
     final _size = MediaQuery.of(context).size;
     return Consumer(builder: (context, watch, child) {
       final _auth = watch(authServicesProvider);
+      final _authState = watch(authStateProvider);
       return Scaffold(
           backgroundColor: Theme.of(context).primaryColor,
           appBar: AppBar(
@@ -150,7 +164,6 @@ class _SignupState extends State<Signup> {
               ),
             ),
           ),
-         
           body: NotificationListener<OverscrollIndicatorNotification>(
             child: SafeArea(
               child: GestureDetector(
@@ -415,7 +428,7 @@ class _SignupState extends State<Signup> {
                                         width: double.infinity,
                                         child: ButtonWidget(
                                             context: context,
-                                            text: "Let's Go",
+                                            text: "Next",
                                             onPressed: () async {
                                               if (gender == '' || !isSelected) {
                                                 SnackBar registrationBar =
@@ -438,11 +451,223 @@ class _SignupState extends State<Signup> {
                                                     .showSnackBar(
                                                         registrationBar);
                                               } else {
+                                                customProgressIdicator(context);
                                                 _user.gender = gender;
                                                 _user.dateOfBirth =
                                                     selectedDate.toString();
                                                 createAcount(context, _auth);
                                               }
+                                            }),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 24,
+                            ),
+                            height: _size.height * 0.9,
+                            width: _size.width * 0.9,
+                            child: Column(
+                              // mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                    height: _size.height * 0.65,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Last step',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline2,
+                                        ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+
+                                        Text(
+                                          'Upload a profile photo',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline2
+                                              .copyWith(fontSize: 20),
+                                        ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return SimpleDialog(
+                                                  title: Text("Upload image"),
+                                                  children: <Widget>[
+                                                    SimpleDialogOption(
+                                                        child: Text(
+                                                            "Photo with Camera"),
+                                                        onPressed: () async {
+                                                          await uploadPhoto
+                                                              .handleTakePhoto(
+                                                                  context);
+                                                          setState(() {});
+                                                        }),
+                                                    SimpleDialogOption(
+                                                        child: Text(
+                                                            "Image from Gallery"),
+                                                        onPressed: () async {
+                                                          await uploadPhoto
+                                                              .handleChooseFromGallery(
+                                                                  context);
+                                                          setState(() {});
+                                                        }),
+                                                    SimpleDialogOption(
+                                                      child: Text("Cancel"),
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                    )
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: uploadPhoto.file == null
+                                              ? Container(
+                                                  child: Container(
+                                                    height: 185,
+                                                    margin:
+                                                        EdgeInsets.all(15.0),
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      children: <Widget>[
+                                                        AnimatedContainer(
+                                                          duration: Duration(
+                                                              milliseconds:
+                                                                  300),
+                                                          height: 180,
+                                                          width: 180,
+                                                          curve: Curves.ease,
+                                                          child: Center(
+                                                              child: Icon(
+                                                            Icons.add,
+                                                            color: Colors.grey,
+                                                            size: 32,
+                                                          )),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors
+                                                                .transparent,
+                                                            border: Border.all(
+                                                              width: 1.0,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                            borderRadius:
+                                                                const BorderRadius
+                                                                        .all(
+                                                                    const Radius
+                                                                            .circular(
+                                                                        8.0)),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
+                                              : Container(
+                                                  // alignment: Alignment.centerLeft,
+                                                  height: 175.0,
+                                                  width: 175.0,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16.0),
+                                                      border: Border.all(
+                                                        color: Theme.of(context)
+                                                            .accentColor,
+                                                        width: 0.5,
+                                                      )),
+                                                  // width: MediaQuery.of(context).size.width * 0.8,
+                                                  child: Stack(
+                                                    children: <Widget>[
+                                                      Center(
+                                                        child: Container(
+                                                          height: 170.0,
+                                                          width: 170.0,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        12.0),
+                                                            image:
+                                                                DecorationImage(
+                                                              fit: BoxFit.cover,
+                                                              image: FileImage(
+                                                                  uploadPhoto
+                                                                      .file),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      IconButton(
+                                                          color: Colors.grey[50]
+                                                              .withOpacity(0.8),
+                                                          icon: Icon(
+                                                              Icons.cancel),
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              uploadPhoto
+                                                                  .clearImage();
+                                                            });
+                                                          })
+                                                    ],
+                                                  ),
+                                                ),
+                                        ),
+                                        // FloatingActionButton(
+                                        //     onPressed: () => _selectDate(context),
+                                        //     child: Icon(Icons.cake)
+                                        //     // color: Colors.greenAccent,
+                                        //     )
+                                      ],
+                                    )),
+                                Container(
+                                  height: _size.height * 0.20,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ButtonWidget(
+                                            context: context,
+                                            text: "Skip",
+                                            buttonType: 2,
+                                            onPressed: () async {}),
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ButtonWidget(
+                                            context: context,
+                                            text: "Let's Go",
+                                            onPressed: () async {
+                                              customProgressIdicator(context);
+                                              await uploadImage(
+                                                  _authState.data.value.uid);
+                                              Navigator.pop(context);
+                                              Navigator.pop(context);
                                             }),
                                       ),
                                     ],

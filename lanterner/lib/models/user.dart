@@ -6,6 +6,7 @@ class User {
   String password;
   String gender;
   String name;
+  String photoUrl;
   String dateOfBirth;
   Language nativeLanguage;
   Language targetLanguage;
@@ -16,6 +17,7 @@ class User {
     this.password,
     this.gender,
     this.name,
+    this.photoUrl,
     this.dateOfBirth,
     this.nativeLanguage,
     this.targetLanguage,
@@ -27,6 +29,7 @@ class User {
     this.password,
     this.gender,
     this.name,
+    this.photoUrl,
     this.dateOfBirth,
     this.nativeLanguage,
     this.targetLanguage,
@@ -34,12 +37,15 @@ class User {
 
   factory User.fromMap(DocumentSnapshot doc) {
     Map data = doc.data();
+    print('user id: ${doc.id}');
+    print('user email: ${data['email']}');
     return User(
       uid: doc.id,
       email: data['email'],
       password: data['password'],
       gender: data['gender'],
       name: data['name'],
+      photoUrl: data['photoUrl'],
       dateOfBirth: data['dateOfBirth'],
       nativeLanguage: Language.fromMap(data['nativeLanguage']),
       targetLanguage: Language.fromMap(data['targetLanguage']),
