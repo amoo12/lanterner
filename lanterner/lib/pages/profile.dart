@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 
+//ignore: must_be_immutable
 class Profile extends ConsumerWidget {
   final BuildContext menuScreenContext;
   final Function hideNav;

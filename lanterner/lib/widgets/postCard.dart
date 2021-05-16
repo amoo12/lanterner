@@ -1,7 +1,6 @@
 import 'package:auto_direction/auto_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:lanterner/models/post.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class PostCard extends StatefulWidget {
@@ -67,7 +66,14 @@ class _PostCardState extends State<PostCard> {
                             child: ClipOval(
                               child: Container(
                                 child: widget.post.userPhotoUrl != null
-                                    ? Image.network(widget.post.userPhotoUrl)
+                                    ? Image.network(
+                                        widget.post.userPhotoUrl,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Icon(Icons.person,
+                                                    size: 40,
+                                                    color: Colors.grey[700]),
+                                      )
                                     : Icon(Icons.person,
                                         size: 40, color: Colors.grey),
                               ),

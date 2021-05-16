@@ -15,31 +15,15 @@ class DatabaseService {
 
   // inserts a new user record in Firestore
   Future insertUser(User user) async {
-    return await usersCollection.doc(uid).set({
-      'name': user.name,
-      'email': user.email,
-      'gender': user.gender,
-      'dateofBirth': user.dateOfBirth,
-      'nativeLanguage': {
-        'title': user.nativeLanguage.title,
-        'code': user.nativeLanguage.code,
-        'level': user.nativeLanguage.level ?? '5',
-        'isNative': user.nativeLanguage.isNative,
-      },
-      'targetLanguage': {
-        'title': user.targetLanguage.title,
-        'code': user.targetLanguage.code,
-        'level': user.targetLanguage.level,
-        'isNative': user.targetLanguage.isNative,
-      },
-    });
+    return await usersCollection.doc(uid).set(user.toMap());
   }
 
   // inserts a new post record
   Future createPost(Post post) async {
-    return await postsCollection.add(post.toMap(post));
+    return await postsCollection.add(post.toMap());
   }
 
+//returns user user data (takes a user id)
   Future<User> getUser(String uid) async {
     return await usersCollection
         .doc(uid)
@@ -47,37 +31,17 @@ class DatabaseService {
         .then((doc) => User.fromMap(doc));
   }
 
+//get all users posts
   Future<List<Post>> getPosts() async {
-    // // List<Post> list;
-    // return list = await postsCollection.get().then((value) {
-    //   // Post post = Post();
-    //   for (var i = 0; i < value.docs.length; i++) {
-    //     Post post = Post.fromMap(value.docs[i]);
-    //     list.add(post);
-    //   }
-    //   return list;
-    // for (var item in value.docs) {
-    //   // print(item);
-    //   // Post post = Post.fromMap(item);
-    //   Post post = Post.fromMap(item);
-
-    //   print(post.username);
-    // print(post.photoUrl);
-    // return post;
-    // }
-    // });
-
-    // .get()
-    // .then((doc) => User.fromMap(doc));
+    return await postsCollection
+        .get()
+        .then((value) => value.docs.map((doc) => Post.fromMap(doc)).toList());
   }
 
-  Future updateProfilePicture(String uid, String photoUrl) {
-    usersCollection.doc(uid).update({
+//update profile photo url in user document
+  Future<void> updateProfilePicture(String uid, String photoUrl) {
+    return usersCollection.doc(uid).update({
       'photoUrl': photoUrl,
     });
-  }
-
-  List<Post> postFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.docs.map((doc) => Post.fromMap(doc)).toList();
   }
 }

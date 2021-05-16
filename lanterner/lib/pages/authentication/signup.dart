@@ -688,6 +688,7 @@ class _SignupState extends State<Signup> {
   }
 }
 
+//ignore: must_be_immutable
 class SignupStep2 extends StatefulWidget {
   SignupStep2({
     Key key,

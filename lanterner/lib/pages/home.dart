@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lanterner/models/post.dart';
-import 'package:lanterner/pages/upload.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
+//ignore: must_be_immutable
 class Home extends StatefulWidget {
   final BuildContext menuScreenContext;
   final Function hideNav;
@@ -83,16 +83,10 @@ class _HomeState extends State<Home> {
                 children: [
                   Expanded(
                       child: FutureBuilder(
-                          future: FirebaseFirestore.instance
-                              .collection('posts')
-                              .get(),
+                          future: db.getPosts(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                              final List<DocumentSnapshot> documents =
-                                  snapshot.data.docs;
-                              List<Post> posts = documents
-                                  .map((doc) => Post.fromMap(doc))
-                                  .toList();
+                              List<Post> posts = snapshot.data;
 
                               if (posts.length > 0) {
                                 return ListView.builder(

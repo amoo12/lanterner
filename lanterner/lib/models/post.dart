@@ -40,18 +40,17 @@ class Post {
     );
   }
 
-  Map<String, dynamic> toMap(Post post) {
+  Map<String, dynamic> toMap() {
     return {
-      'postId': post.postId,
-      'photoUrl': post.photoUrl,
-      'audioUrl': post.audioUrl,
-      'ownerId': post.ownerId,
-      'username': post.username,
-      'userPhotoUrl': post.userPhotoUrl,
-      'caption': post.caption,
-      'timestamp': post.timestamp,
-      'ownerNativeLanguage':
-          post.ownerNativeLanguage.toMap(post.ownerNativeLanguage),
+      'postId': postId,
+      'photoUrl': photoUrl,
+      'audioUrl': audioUrl,
+      'ownerId': ownerId,
+      'username': username,
+      'userPhotoUrl': userPhotoUrl,
+      'caption': caption,
+      'timestamp': timestamp,
+      'ownerNativeLanguage': ownerNativeLanguage.toMap(),
     };
   }
 }

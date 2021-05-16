@@ -1,17 +1,13 @@
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:lanterner/controllers/uploadPhoto.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:uuid/uuid.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:image/image.dart' as Im;
+
 
 class NewPostController {
   // PickedFile pickedFile;

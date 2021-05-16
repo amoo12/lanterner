@@ -18,15 +18,18 @@ class ButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-        elevation: 2,
-        padding: EdgeInsets.symmetric(vertical: 15),
-        color: buttonType == 2 ? Colors.white : Theme.of(context).accentColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          // side: buttonType == 2
-          // ? BorderSide(color: Theme.of(context).accentColor, width: 1)
-          //     : BorderSide.none
+    return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(vertical: 15),
+          primary:
+              buttonType == 2 ? Colors.white : Theme.of(context).accentColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            // side: buttonType == 2
+            //   // ? BorderSide(color: Theme.of(context).accentColor, width: 1)
+            //   //     : BorderSide.none
+            // ),
+          ),
         ),
         child: Text(text,
             style: buttonType == 2

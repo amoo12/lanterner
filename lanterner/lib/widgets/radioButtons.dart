@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 // import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
+//ignore: must_be_immutable
 class CustomRadio extends StatefulWidget {
   CustomRadio(this.genderChanged);
   Function genderChanged;

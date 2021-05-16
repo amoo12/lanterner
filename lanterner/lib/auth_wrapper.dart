@@ -9,7 +9,6 @@ class Wrapper extends ConsumerWidget {
   Widget build(BuildContext context, ScopedReader watch) {
     // return either home or authenticate widget
     final _authState = watch(authStateProvider);
-    final _auth = watch(authServicesProvider);
     return _authState.when(
       data: (value) {
         if (value != null) {

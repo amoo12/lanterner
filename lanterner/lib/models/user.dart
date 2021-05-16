@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
@@ -51,6 +53,24 @@ class User {
       targetLanguage: Language.fromMap(data['targetLanguage']),
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'uid': uid,
+      'email': email,
+      'password': password,
+      'gender': gender,
+      'name': name,
+      'photoUrl': photoUrl,
+      'dateOfBirth': dateOfBirth,
+      'nativeLanguage': nativeLanguage.toMap(),
+      'targetLanguage': targetLanguage.toMap(),
+    };
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory User.fromJson(String source) => User.fromMap(json.decode(source));
 }
 
 class Language {
@@ -69,12 +89,12 @@ class Language {
       isNative: data['isNative'],
     );
   }
-  Map<String, dynamic> toMap(Language language) {
+  Map<String, dynamic> toMap() {
     return {
-      'title': language.title,
-      'code': language.code,
-      'level': language.level,
-      'isNative': language.isNative,
+      'title': title,
+      'code': code,
+      'level': level,
+      'isNative': isNative,
     };
   }
 }
