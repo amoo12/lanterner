@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:uuid/uuid.dart';
-
 
 class NewPostController {
   // PickedFile pickedFile;
@@ -61,6 +59,7 @@ class NewPostController {
       username: user.name,
       ownerId: user.uid,
       userPhotoUrl: user.photoUrl,
+      createdAt: DateTime.now().toString(),
       ownerNativeLanguage: user.nativeLanguage,
       timestamp: timestamp,
     ));

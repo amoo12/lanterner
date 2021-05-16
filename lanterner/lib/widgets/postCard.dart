@@ -104,8 +104,8 @@ class _PostCardState extends State<PostCard> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        child: Text('timeago',
-                            style: TextStyle(fontSize: 14, color: Colors.grey)),
+                        child: Text(widget.post.ago(),
+                            style: TextStyle(fontSize: 12, color: Colors.grey)),
                       ),
                     ],
                   ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lanterner/models/user.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class Post {
   String postId;
@@ -9,6 +10,7 @@ class Post {
   String username;
   String userPhotoUrl;
   String caption;
+  String createdAt;
   Language ownerNativeLanguage;
   Timestamp timestamp;
 
@@ -20,6 +22,7 @@ class Post {
     this.ownerId,
     this.username,
     this.userPhotoUrl,
+    this.createdAt,
     this.ownerNativeLanguage,
     this.timestamp,
   });
@@ -33,6 +36,7 @@ class Post {
       username: data['username'],
       userPhotoUrl: data['userPhotoUrl'],
       caption: data['caption'],
+      createdAt: data['createdAt'],
       timestamp: data['timestamp'],
       ownerNativeLanguage: Language.fromMap(
         data['ownerNativeLanguage'],
@@ -49,8 +53,13 @@ class Post {
       'username': username,
       'userPhotoUrl': userPhotoUrl,
       'caption': caption,
+      'createdAt': createdAt,
       'timestamp': timestamp,
       'ownerNativeLanguage': ownerNativeLanguage.toMap(),
     };
+  }
+
+  String ago() {
+    return timeago.format(DateTime.parse(this.createdAt));
   }
 }
