@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/pages/authentication/login.dart';
 import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/authentication/signup.dart';
+import 'package:lanterner/pages/settings.dart';
 import 'package:lanterner/widgets/postCard.dart';
-
+import 'package:lanterner/pages/bottomNavigationBar.dart';
 import 'auth_wrapper.dart';
 
 void main() async {
@@ -97,6 +98,9 @@ class MyApp extends StatelessWidget {
         '/login': (context) => Login(),
         '/newPost': (context) => NewPost(),
         '/imageViewer': (context) => ImageViewer(),
+        '/settings': (context) => Settings(),
+        '/wrapper': (context) => Wrapper(),
+        '/myBottomNavBar': (context) => MyBottomNavBar(),
       },
     );
   }

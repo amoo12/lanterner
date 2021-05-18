@@ -78,8 +78,6 @@ class _SignupState extends State<Signup> {
 
   //shows the date picker
   _selectDate(BuildContext context) async {
-    print(selectedDate.toString());
-    print(DateTime.now().year);
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate:
@@ -965,9 +963,6 @@ class _SignupStep2State extends State<SignupStep2> {
                         context: context,
                         text: 'Next',
                         onPressed: () async {
-                          // print(nativeLanguage);
-                          // print(targetLanguage);
-                          // print(level);
                           if (nativeLanguage == '' ||
                               targetLanguage == '' ||
                               level == '') {
@@ -997,7 +992,6 @@ class _SignupStep2State extends State<SignupStep2> {
                               isNative: false,
                               level: level,
                             );
-                            print(tTitle);
 
                             // widget.nativeLanguage = nativeLanguage;
                             // widget.targetLanguage = targetLanguage;

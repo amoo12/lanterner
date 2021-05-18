@@ -38,6 +38,14 @@ class DatabaseService {
         .then((value) => value.docs.map((doc) => Post.fromMap(doc)).toList());
   }
 
+//get a user's posts
+  Future<List<Post>> getUserPosts(String uid) async {
+    return await postsCollection
+        .where('ownerId', isEqualTo: uid)
+        .get()
+        .then((value) => value.docs.map((doc) => Post.fromMap(doc)).toList());
+  }
+
 //update profile photo url in user document
   Future<void> updateProfilePicture(String uid, String photoUrl) {
     return usersCollection.doc(uid).update({

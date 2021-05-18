@@ -57,11 +57,6 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
       Profile(
         menuScreenContext: widget.menuScreenContext,
         hideStatus: _hideNavBar,
-        onScreenHideButtonPressed: () {
-          setState(() {
-            _hideNavBar = !_hideNavBar;
-          });
-        },
       ),
     ];
   }
@@ -153,7 +148,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
               duration: Duration(milliseconds: 300),
               padding: EdgeInsets.only(bottom: _hideNavBar ? 0 : 56),
               child: FloatingActionButton(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 child: Icon(
                   Icons.add_comment,
                   color: Colors.white,

@@ -38,7 +38,6 @@ class CustomRadioState extends State<CustomRadio> {
                 sampleData.forEach((element) => element.isSelected = false);
                 sampleData[0].isSelected = true;
                 widget.genderChanged(sampleData[0].text);
-                // print(widget.gender);
               }
             });
           },
@@ -56,7 +55,6 @@ class CustomRadioState extends State<CustomRadio> {
                 sampleData.forEach((element) => element.isSelected = false);
                 sampleData[1].isSelected = true;
                 widget.genderChanged(sampleData[1].text);
-                // print(widget.gender);
               }
             });
           },

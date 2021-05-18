@@ -29,7 +29,6 @@ class _LoginState extends State<Login> {
     final form = _formKey.currentState;
     if (form.validate()) {
       form.save();
-      print('saved');
       _auth.signIn(
           email: emailController.text.trim(),
           password: passwordController.text.trim());
@@ -140,8 +139,6 @@ class _LoginState extends State<Login> {
                                 context: context,
                                 text: 'Login',
                                 onPressed: () {
-                                  print(emailController.text);
-                                  print(passwordController.text);
                                   _submit(_auth);
                                 }),
                           ),

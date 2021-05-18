@@ -39,8 +39,6 @@ class User {
 
   factory User.fromMap(DocumentSnapshot doc) {
     Map data = doc.data();
-    print('user id: ${doc.id}');
-    print('user email: ${data['email']}');
     return User(
       uid: doc.id,
       email: data['email'],

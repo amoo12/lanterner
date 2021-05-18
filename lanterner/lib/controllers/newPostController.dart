@@ -40,7 +40,6 @@ class NewPostController {
   // }
 
   handleSubmit(String uid) async {
-    print(uid);
     User user = await db.getUser(uid);
     uploadPhoto.isUploading = true;
     String mediaUrl;
