@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
+
+import '../models/user.dart';
+import '../services/databaseService.dart';
 
 class Search extends StatefulWidget {
   @override
@@ -12,39 +14,61 @@ class Search extends StatefulWidget {
 
 class _SearchState extends State<Search> {
   TextEditingController searchController = TextEditingController();
+  GlobalKey _scaffold = GlobalKey();
   Future<QuerySnapshot> searchResultsFuture;
+  DatabaseService db = DatabaseService();
 
-  handleSearch(String query) {
-    // Future<QuerySnapshot> users = userRef
-    // .where('displayName', isGreaterThanOrEqualTo: query)
-    // .getDocuments();
+  initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // executes after build
+    });
+  }
+
+  String searchText;
+  handleSearch(String searchText) {
     setState(() {
-      // searchResultsFuture = users;
+      this.searchText = searchText;
     });
   }
 
   clearSearch() {
     searchController.clear();
+    setState(() {
+      this.searchText = '';
+    });
   }
 
   AppBar buildSerachField() {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor,
       title: TextFormField(
         controller: searchController,
         decoration: InputDecoration(
           hintText: 'Search for a user',
+          hintStyle: TextStyle(color: Colors.grey[600]),
           filled: true,
-          prefixIcon: Icon(
-            Icons.account_box,
-            size: 28.0,
-          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide:
+                  BorderSide(width: 0, color: Theme.of(context).primaryColor)),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide:
+                  BorderSide(width: 3, color: Theme.of(context).primaryColor),
+              gapPadding: 0),
+          fillColor: Theme.of(context).backgroundColor,
           suffixIcon: IconButton(
-            icon: Icon(Icons.clear),
+            icon: Icon(
+              Icons.clear,
+              color: Colors.grey[600],
+            ),
             onPressed: clearSearch,
           ),
         ),
         onFieldSubmitted: handleSearch,
+        onChanged: handleSearch,
       ),
     );
   }
@@ -65,8 +89,8 @@ class _SearchState extends State<Search> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w600,
+                // fontStyle: FontStyle.italic,
+                // fontWeight: FontWeight.w600,
                 fontSize: 60.0,
               ),
             )
@@ -78,32 +102,32 @@ class _SearchState extends State<Search> {
 
   buildSearchResults() {
     return FutureBuilder(
-        future: searchResultsFuture,
+        future: db.searchUsers(searchText),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return customProgressIdicator(context);
+          if (snapshot.hasData) {
+            List<User> searchResults = snapshot.data;
+
+            return ListView.builder(
+              itemCount: searchResults.length,
+              itemBuilder: (context, index) {
+                return UserResult(searchResults[index]);
+              },
+            );
+          } else {
+            return circleIndicator(context);
           }
-          List<UserResult> searchResults = [];
-          snapshot.data.documents.forEach((doc) {
-            User user;
-            // user= User.fromDocument(doc);
-            UserResult searchResult = UserResult(user);
-            searchResults.add(searchResult);
-          });
-          return ListView(
-            children: searchResults,
-          );
         });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.8),
+        key: _scaffold,
+        backgroundColor: Theme.of(context).primaryColor.withOpacity(1),
         appBar: buildSerachField(),
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
-          child: searchResultsFuture == null
+          child: searchText == null || searchText == ''
               ? buildNoContent()
               : buildSearchResults(),
         ));
@@ -126,15 +150,14 @@ class UserResult extends StatelessWidget {
             child: ListTile(
               leading: CircleAvatar(
                 backgroundColor: Colors.grey,
-                backgroundImage: CachedNetworkImageProvider(user.photoURL),
+                backgroundImage: CachedNetworkImageProvider(user.photoUrl),
               ),
               title: Text(
-                user.displayName,
+                user.name,
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
-              subtitle:
-                  Text(user.displayName, style: TextStyle(color: Colors.white)),
+              subtitle: Text(user.name, style: TextStyle(color: Colors.white)),
             ),
           ),
           Divider(

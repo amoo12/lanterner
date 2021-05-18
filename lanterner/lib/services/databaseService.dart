@@ -15,6 +15,7 @@ class DatabaseService {
 
   // inserts a new user record in Firestore
   Future insertUser(User user) async {
+    user.setSearchParameters();
     return await usersCollection.doc(uid).set(user.toMap());
   }
 
@@ -51,5 +52,12 @@ class DatabaseService {
     return usersCollection.doc(uid).update({
       'photoUrl': photoUrl,
     });
+  }
+
+  Future<List<User>> searchUsers(String searchText) async {
+    return await usersCollection
+        .where('searchOptions', arrayContains: searchText)
+        .get()
+        .then((value) => value.docs.map((doc) => User.fromMap(doc)).toList());
   }
 }

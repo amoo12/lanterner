@@ -93,19 +93,16 @@ class Profile extends ConsumerWidget {
                               children: [
                                 CircleAvatar(
                                   radius: 50,
-                                  child: ClipOval(
-                                    child: user.photoUrl != null
-                                        ? Image.network(
-                                            user.photoUrl,
-                                            errorBuilder: (context, error,
-                                                    stackTrace) =>
-                                                Icon(Icons.person,
-                                                    size: 50,
-                                                    color: Colors.grey[700]),
-                                          )
-                                        : Icon(Icons.person,
-                                            size: 50, color: Colors.grey),
-                                  ),
+                                  backgroundImage: user.photoUrl != null
+                                      ? NetworkImage(
+                                          user.photoUrl,
+                                        )
+                                      : AssetImage(
+                                          'https://via.placeholder.com/150'),
+                                  child: user.photoUrl == null
+                                      ? Icon(Icons.person,
+                                          size: 50, color: Colors.grey)
+                                      : Container(),
                                 ),
                                 Text(
                                   user.name,
@@ -442,7 +439,7 @@ class Profile extends ConsumerWidget {
               ),
             );
           } else {
-            return customProgressIdicator(_scaffold.currentContext);
+            return circleIndicator(context);
           }
         });
   }

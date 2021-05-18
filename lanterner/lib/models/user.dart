@@ -12,6 +12,7 @@ class User {
   String dateOfBirth;
   Language nativeLanguage;
   Language targetLanguage;
+  List searchOptions;
 
   User({
     this.uid,
@@ -23,6 +24,7 @@ class User {
     this.dateOfBirth,
     this.nativeLanguage,
     this.targetLanguage,
+    this.searchOptions,
   });
 
   User.signup({
@@ -47,6 +49,7 @@ class User {
       name: data['name'],
       photoUrl: data['photoUrl'],
       dateOfBirth: data['dateOfBirth'],
+      searchOptions: data['searchOptions'],
       nativeLanguage: Language.fromMap(data['nativeLanguage']),
       targetLanguage: Language.fromMap(data['targetLanguage']),
     );
@@ -61,9 +64,20 @@ class User {
       'name': name,
       'photoUrl': photoUrl,
       'dateOfBirth': dateOfBirth,
+      'searchOptions': searchOptions,
       'nativeLanguage': nativeLanguage.toMap(),
       'targetLanguage': targetLanguage.toMap(),
     };
+  }
+
+  setSearchParameters() {
+    List<String> searchOptions = [];
+    String temp = "";
+    for (int i = 0; i < this.name.length; i++) {
+      temp = temp + this.name[i];
+      searchOptions.add(temp);
+    }
+    this.searchOptions = searchOptions;
   }
 
   String toJson() => json.encode(toMap());

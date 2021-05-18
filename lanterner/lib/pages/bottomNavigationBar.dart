@@ -158,7 +158,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
                     context,
                     settings: RouteSettings(name: '/newPost'),
                     screen: NewPost(),
-                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                    pageTransitionAnimation: PageTransitionAnimation.slideUp,
                     withNavBar: false,
                   );
                 },

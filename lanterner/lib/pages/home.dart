@@ -6,6 +6,8 @@ import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
+import '../widgets/progressIndicator.dart';
+
 //ignore: must_be_immutable
 class Home extends StatefulWidget {
   final BuildContext menuScreenContext;
@@ -103,9 +105,7 @@ class _HomeState extends State<Home> {
                                 ));
                               }
                             } else {
-                              return Container(
-                                  child: Center(
-                                      child: CircularProgressIndicator()));
+                              return circleIndicator(context);
                             }
                           })),
                 ],
