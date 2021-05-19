@@ -67,7 +67,8 @@ class _PostCardState extends State<PostCard> {
                                 ? NetworkImage(
                                     widget.post.userPhotoUrl,
                                   )
-                                : AssetImage('https://via.placeholder.com/150'),
+                                : NetworkImage(
+                                    'https://via.placeholder.com/150'),
                             child: widget.post.userPhotoUrl == null
                                 ? Icon(Icons.person,
                                     size: 40, color: Colors.grey)

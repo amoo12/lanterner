@@ -97,7 +97,7 @@ class Profile extends ConsumerWidget {
                                       ? NetworkImage(
                                           user.photoUrl,
                                         )
-                                      : AssetImage(
+                                      : NetworkImage(
                                           'https://via.placeholder.com/150'),
                                   child: user.photoUrl == null
                                       ? Icon(Icons.person,
