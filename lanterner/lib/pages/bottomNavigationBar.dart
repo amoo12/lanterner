@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lanterner/pages/new_post.dart';
-import 'package:lanterner/pages/profile.dart';
+import 'package:lanterner/pages/myProfile.dart';
 import 'package:lanterner/pages/search.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -54,7 +54,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
       Center(
         child: Text('notifications'),
       ),
-      Profile(
+      MyProfile(
         menuScreenContext: widget.menuScreenContext,
         hideStatus: _hideNavBar,
       ),

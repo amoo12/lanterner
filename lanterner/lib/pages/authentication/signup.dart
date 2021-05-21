@@ -63,11 +63,13 @@ class _SignupState extends State<Signup> {
   step1Submit() {
     final form = _formKey.currentState;
     if (form.validate()) {
-      form.save();
-      _user.email = emailController.text.trim();
-      _user.password = passwordController.text.trim();
-      _user.name = nameController.text.trim();
-      next();
+      if (onSavedEmail(emailController.text.trim())) {
+        form.save();
+        _user.email = emailController.text.trim();
+        _user.password = passwordController.text.trim();
+        _user.name = nameController.text.trim();
+        next();
+      }
     }
   }
 
@@ -94,14 +96,16 @@ class _SignupState extends State<Signup> {
       });
   }
 
-  onSavedEmail(String value) {
+  bool onSavedEmail(String value) {
     if (!EmailValidator.validate(value)) {
       error = "enter a valid email";
       setState(() {});
+      return false;
     } else {
       email = value;
       error = null;
       setState(() {});
+      return true;
     }
   }
 
@@ -231,6 +235,12 @@ class _SignupState extends State<Signup> {
                                               controller: passwordController,
                                               obscureText: true,
                                             ),
+                                            SizedBox(height: 10),
+                                            Text(
+                                              error != null ? '$error' : '',
+                                              style: TextStyle(
+                                                  color: Colors.redAccent[400]),
+                                            )
                                           ],
                                         ),
                                       ),
@@ -650,7 +660,9 @@ class _SignupState extends State<Signup> {
                                             context: context,
                                             text: "Skip",
                                             buttonType: 2,
-                                            onPressed: () async {}),
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                            }),
                                       ),
                                       SizedBox(
                                         height: 20,

@@ -1,6 +1,7 @@
 import 'package:auto_direction/auto_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:lanterner/models/post.dart';
+import 'package:lanterner/pages/profile.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class PostCard extends StatefulWidget {
@@ -61,18 +62,30 @@ class _PostCardState extends State<PostCard> {
                     children: [
                       Row(
                         children: [
-                          CircleAvatar(
-                            radius: 25,
-                            backgroundImage: widget.post.userPhotoUrl != null
-                                ? NetworkImage(
-                                    widget.post.userPhotoUrl,
-                                  )
-                                : NetworkImage(
-                                    'https://via.placeholder.com/150'),
-                            child: widget.post.userPhotoUrl == null
-                                ? Icon(Icons.person,
-                                    size: 40, color: Colors.grey)
-                                : Container(),
+                          GestureDetector(
+                            onTap: () {
+                              pushNewScreenWithRouteSettings(
+                                context,
+                                settings: RouteSettings(name: '/profile'),
+                                screen: Profile(uid: widget.post.ownerId),
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.slideUp,
+                                withNavBar: false,
+                              );
+                            },
+                            child: CircleAvatar(
+                              radius: 25,
+                              backgroundImage: widget.post.userPhotoUrl != null
+                                  ? NetworkImage(
+                                      widget.post.userPhotoUrl,
+                                    )
+                                  : NetworkImage(
+                                      'https://via.placeholder.com/150'),
+                              child: widget.post.userPhotoUrl == null
+                                  ? Icon(Icons.person,
+                                      size: 40, color: Colors.grey)
+                                  : Container(),
+                            ),
                           ),
                         ],
                       ),

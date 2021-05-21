@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/pages/authentication/login.dart';
 import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/authentication/signup.dart';
+import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/pages/settings.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:lanterner/pages/bottomNavigationBar.dart';
@@ -101,6 +102,7 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => Settings(),
         '/wrapper': (context) => Wrapper(),
         '/myBottomNavBar': (context) => MyBottomNavBar(),
+        'profile': (context) => Profile(),
       },
     );
   }
