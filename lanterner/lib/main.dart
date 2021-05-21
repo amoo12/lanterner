@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/pages/authentication/login.dart';
+import 'package:lanterner/pages/myProfile.dart';
 import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/authentication/signup.dart';
 import 'package:lanterner/pages/profile.dart';
@@ -102,7 +103,8 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => Settings(),
         '/wrapper': (context) => Wrapper(),
         '/myBottomNavBar': (context) => MyBottomNavBar(),
-        'profile': (context) => Profile(),
+        '/profile': (context) => Profile(),
+        '/myProfile': (context) => MyProfile(),
       },
     );
   }

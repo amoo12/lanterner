@@ -21,6 +21,17 @@ class DatabaseService {
 
   // inserts a new post record
   Future createPost(Post post) async {
+    // var batch = FirebaseFirestore.instance.batch();
+    // var newPostRef = postsCollection.doc();
+    // //update user postsCount
+    // batch.update(usersCollection.doc(post.ownerId),
+    //     {'postsCount': FieldValue.increment(1)});
+    // // add the post to the posts collection
+    // batch.set(newPostRef, post.toMap());
+    // print('posted');
+    await usersCollection
+        .doc(post.ownerId)
+        .update({'postsCount': FieldValue.increment(1)});
     return await postsCollection.add(post.toMap());
   }
 

@@ -168,7 +168,7 @@ class _NewPostState extends State<NewPost> {
                               context: context,
                               builder: (context) {
                                 return SimpleDialog(
-                                  title: Text("Create Post"),
+                                  title: Text("Add a photo"),
                                   children: <Widget>[
                                     SimpleDialogOption(
                                         child: Text("Photo with Camera"),

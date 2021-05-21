@@ -141,7 +141,9 @@ class _ProfileState extends State<Profile> {
                                                 Column(
                                                   children: [
                                                     Text(
-                                                      '0',
+                                                      user.following
+                                                              .toString() ??
+                                                          '0',
                                                       style: TextStyle(
                                                           color: Colors.white),
                                                     ),
@@ -163,7 +165,9 @@ class _ProfileState extends State<Profile> {
                                                 Column(
                                                   children: [
                                                     Text(
-                                                      '0',
+                                                      user.followers
+                                                              .toString() ??
+                                                          '0',
                                                       style: TextStyle(
                                                           color: Colors.white),
                                                     ),
@@ -184,7 +188,9 @@ class _ProfileState extends State<Profile> {
                                                 Column(
                                                   children: [
                                                     Text(
-                                                      '0',
+                                                      user.postsCount
+                                                              .toString() ??
+                                                          '0',
                                                       style: TextStyle(
                                                           color: Colors.white),
                                                     ),

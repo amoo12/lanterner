@@ -12,6 +12,7 @@ class User {
   String dateOfBirth;
   int followers;
   int following;
+  int postsCount;
   Language nativeLanguage;
   Language targetLanguage;
   List searchOptions;
@@ -26,6 +27,7 @@ class User {
     this.dateOfBirth,
     this.followers,
     this.following,
+    this.postsCount,
     this.nativeLanguage,
     this.targetLanguage,
     this.searchOptions,
@@ -41,6 +43,7 @@ class User {
     this.dateOfBirth,
     this.followers,
     this.following,
+    this.postsCount,
     this.nativeLanguage,
     this.targetLanguage,
   });
@@ -57,6 +60,7 @@ class User {
       dateOfBirth: data['dateOfBirth'],
       followers: data['followers'],
       following: data['following'],
+      postsCount: data['postsCount'],
       searchOptions: data['searchOptions'],
       nativeLanguage: Language.fromMap(data['nativeLanguage']),
       targetLanguage: Language.fromMap(data['targetLanguage']),
@@ -74,6 +78,7 @@ class User {
       'dateOfBirth': dateOfBirth,
       'followers': followers ?? 0,
       'following': following ?? 0,
+      'postsCount': postsCount ?? 0,
       'searchOptions': searchOptions,
       'nativeLanguage': nativeLanguage.toMap(),
       'targetLanguage': targetLanguage.toMap(),

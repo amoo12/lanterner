@@ -125,7 +125,7 @@ class MyProfile extends ConsumerWidget {
                                   Column(
                                     children: [
                                       Text(
-                                        '0',
+                                        user.following.toString() ?? '0',
                                         style: TextStyle(color: Colors.white),
                                       ),
                                       Text(
@@ -145,7 +145,7 @@ class MyProfile extends ConsumerWidget {
                                   Column(
                                     children: [
                                       Text(
-                                        '0',
+                                        user.followers.toString() ?? '0',
                                         style: TextStyle(color: Colors.white),
                                       ),
                                       Text(
@@ -165,7 +165,7 @@ class MyProfile extends ConsumerWidget {
                                   Column(
                                     children: [
                                       Text(
-                                        '0',
+                                        user.postsCount.toString() ?? 0,
                                         style: TextStyle(color: Colors.white),
                                       ),
                                       Text(
@@ -177,8 +177,6 @@ class MyProfile extends ConsumerWidget {
                                 ],
                               ),
                             ),
-
-                         
                           ],
                         ),
                       ),
@@ -285,7 +283,6 @@ class MyProfile extends ConsumerWidget {
                                     ),
                                   ],
                                 ),
-
                                 Container(
                                   height: 60,
                                   width:
