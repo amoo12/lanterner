@@ -60,4 +60,94 @@ class DatabaseService {
         .get()
         .then((value) => value.docs.map((doc) => User.fromMap(doc)).toList());
   }
+
+  Future<void> follow(String uid, User currrentUser) async {
+    var batch = FirebaseFirestore.instance.batch();
+    User followedUser = await getUser(uid);
+
+    //* current user
+    // add the user document to the followingsub-collection
+    batch.set(
+        usersCollection.doc(currrentUser.uid).collection('following').doc(uid),
+        followedUser.toMap());
+    // increase the following count on the stast document within the sub-collection
+    batch.set(
+        usersCollection
+            .doc(currrentUser.uid)
+            .collection('following')
+            .doc('stats'),
+        {'following': FieldValue.increment(1)});
+    // increase the following count on the user document
+    batch.update(usersCollection.doc(currrentUser.uid),
+        {'following': FieldValue.increment(1)});
+
+//* followed user
+// delete the user document from the followingsub-collection
+    batch.set(
+        usersCollection.doc(uid).collection('followers').doc(currrentUser.uid),
+        currrentUser.toMap());
+
+    // decrease the followers count on the stast document within the sub-collection
+    batch.set(usersCollection.doc(uid).collection('followers').doc('stats'),
+        {'followers': FieldValue.increment(1)});
+
+    // increase the followers count on the user document
+    batch.update(
+        usersCollection.doc(uid), {'followers': FieldValue.increment(1)});
+
+    batch.commit();
+  }
+
+  Future unfollow(String uid, User currrentUser) {
+    var batch = FirebaseFirestore.instance.batch();
+    //* current user
+    // delete the user document from the followingsub-collection
+    batch.delete(
+        usersCollection.doc(currrentUser.uid).collection('following').doc(uid));
+// decrease the following count on the stast document within the sub-collection
+    batch.update(
+        usersCollection
+            .doc(currrentUser.uid)
+            .collection('following')
+            .doc('stats'),
+        {'following': FieldValue.increment(-1)});
+    // decrease the following count on the user document
+    batch.update(usersCollection.doc(currrentUser.uid),
+        {'following': FieldValue.increment(-1)});
+
+    //* unfollowed user
+    // delete the user document from the followingsub-collection
+    batch.delete(
+        usersCollection.doc(uid).collection('followers').doc(currrentUser.uid));
+    // decrease the followers count on the stast document within the sub-collection
+    batch.update(usersCollection.doc(uid).collection('followers').doc('stats'),
+        {'followers': FieldValue.increment(-1)});
+// decrease the followers count on the user document
+    batch.update(
+        usersCollection.doc(uid), {'followers': FieldValue.increment(-1)});
+
+    // commit the batch
+    batch.commit();
+  }
+
+  Future<bool> isFollowing(String uid, String currentUserId) async {
+    QuerySnapshot querySnapshot =
+        await usersCollection.doc(uid).collection('followers').limit(1).get();
+    if (querySnapshot.size > 0) {
+      return await usersCollection
+          .doc(uid)
+          .collection('followers')
+          .doc(currentUserId)
+          .get()
+          .then((doc) {
+        if (doc.exists) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+    } else {
+      return false;
+    }
+  }
 }

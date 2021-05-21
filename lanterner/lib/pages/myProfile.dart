@@ -178,53 +178,7 @@ class MyProfile extends ConsumerWidget {
                               ),
                             ),
 
-                            // Container(
-                            //   width: MediaQuery.of(context).size.width * 0.85,
-                            //   height: 90,
-                            //   decoration: BoxDecoration(
-                            //       color: Theme.of(context).cardColor,
-                            //       borderRadius: BorderRadius.circular(8.0)),
-                            //   child: Row(
-                            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            //     children: [
-                            //       Column(
-                            //         mainAxisAlignment: MainAxisAlignment.center,
-                            //         children: [
-                            //           Container(
-                            //             decoration: BoxDecoration(
-                            //                 color: Colors.deepPurple[50],
-                            //                 borderRadius: BorderRadius.circular(50)),
-                            //             child: IconButton(
-                            //                 color: Colors.grey,
-                            //                 icon: Icon(Icons.translate),
-                            //                 onPressed: () {}),
-                            //           ),
-                            //           Text('0'),
-                            //         ],
-                            //       ),
-                            //       Column(
-                            //         mainAxisAlignment: MainAxisAlignment.center,
-                            //         children: [
-                            //           IconButton(
-                            //               color: Colors.grey,
-                            //               icon: Icon(Icons.star_border_rounded),
-                            //               onPressed: () {}),
-                            //           Text('0'),
-                            //         ],
-                            //       ),
-                            //       Column(
-                            //         mainAxisAlignment: MainAxisAlignment.center,
-                            //         children: [
-                            //           IconButton(
-                            //               color: Colors.grey,
-                            //               icon: Icon(Icons.headset),
-                            //               onPressed: () {}),
-                            //           Text('0'),
-                            //         ],
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
+                         
                           ],
                         ),
                       ),
@@ -397,37 +351,6 @@ class MyProfile extends ConsumerWidget {
                                     ),
                                   ),
                                 ),
-
-                                // Row(
-                                //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                //   children: [
-                                //     Container(
-                                //       height: 60,
-                                //       width: MediaQuery.of(context).size.width * 0.9,
-                                //       // padding: EdgeInsets.symmetric(
-                                //       //     horizontal: 10, vertical: 8),
-                                //       decoration: BoxDecoration(
-                                //         //     // color: Colors.deepPurple[50],
-                                //         borderRadius: BorderRadius.circular(8),
-                                //         border:
-                                //             Border.all(color: Colors.grey, width: 0.2),
-                                //       ),
-                                //       child: ListTile(
-                                //         leading: IconButton(
-                                //             color: Colors.grey,
-                                //             icon: Icon(
-                                //               Icons.star_border_rounded,
-                                //               size: 20,
-                                //             ),
-                                //             onPressed: () {}),
-                                //         title: Text(
-                                //           'Favoirites',
-                                //           style: TextStyle(color: Colors.grey),
-                                //         ),
-                                //       ),
-                                //     ),
-                                //   ],
-                                // ),
                               ],
                             ),
                           ),
@@ -444,44 +367,3 @@ class MyProfile extends ConsumerWidget {
         });
   }
 }
-
-// Expanded(
-//                 child: Container(
-//                     padding: EdgeInsets.only(top: 20),
-//                     width: MediaQuery.of(context).size.width * 0.95,
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         Text('Moments'),
-//                         Expanded(
-//                             child: FutureBuilder(
-//                                 future:
-//                                     db.getUserPosts(_authState.data.value.uid),
-//                                 builder: (context, snapshot) {
-//                                   if (snapshot.hasData) {
-//                                     List<Post> posts = snapshot.data;
-
-//                                     if (posts.length > 0) {
-//                                       return ListView.builder(
-//                                           controller: _scrollViewController,
-//                                           itemCount: posts.length,
-//                                           itemBuilder: (BuildContext context,
-//                                               int index) {
-//                                             return PostCard(posts[index]);
-//                                           });
-//                                     } else {
-//                                       return Container(
-//                                           child: Center(
-//                                         child: Text('No posts uploaded yet'),
-//                                       ));
-//                                     }
-//                                   } else {
-//                                     return Container(
-//                                         child: Center(
-//                                             child:
-//                                                 CircularProgressIndicator()));
-//                                   }
-//                                 })),
-//                       ],
-//                     )),
-//               )

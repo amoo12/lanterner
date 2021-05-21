@@ -46,6 +46,8 @@ class _SignupState extends State<Signup> {
   double height = 100;
   double width = 100;
 
+  String imageError = '';
+
   @override
   void initState() {
     uploadPhoto = UploadPhoto();
@@ -550,7 +552,7 @@ class _SignupState extends State<Signup> {
                                           child: uploadPhoto.file == null
                                               ? Container(
                                                   child: Container(
-                                                    height: 185,
+                                                    height: 215,
                                                     margin:
                                                         EdgeInsets.all(15.0),
                                                     child: Column(
@@ -586,6 +588,16 @@ class _SignupState extends State<Signup> {
                                                                             .circular(
                                                                         8.0)),
                                                           ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                        Text(
+                                                          imageError,
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                      .redAccent[
+                                                                  400]),
                                                         ),
                                                       ],
                                                     ),
@@ -673,11 +685,19 @@ class _SignupState extends State<Signup> {
                                             context: context,
                                             text: "Let's Go",
                                             onPressed: () async {
-                                              customProgressIdicator(context);
-                                              await uploadImage(
-                                                  _authState.data.value.uid);
-                                              Navigator.pop(context);
-                                              Navigator.pop(context);
+                                              if (uploadPhoto.file != null) {
+                                                customProgressIdicator(context);
+                                                await uploadImage(
+                                                    _authState.data.value.uid);
+                                                Navigator.pop(context);
+                                                Navigator.pop(context);
+                                              } else {
+                                                setState(() {
+                                                  print('clicked');
+                                                  imageError =
+                                                      'Please select a photo';
+                                                });
+                                              }
                                             }),
                                       ),
                                     ],

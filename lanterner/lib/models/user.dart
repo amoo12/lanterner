@@ -10,6 +10,8 @@ class User {
   String name;
   String photoUrl;
   String dateOfBirth;
+  int followers;
+  int following;
   Language nativeLanguage;
   Language targetLanguage;
   List searchOptions;
@@ -22,6 +24,8 @@ class User {
     this.name,
     this.photoUrl,
     this.dateOfBirth,
+    this.followers,
+    this.following,
     this.nativeLanguage,
     this.targetLanguage,
     this.searchOptions,
@@ -35,6 +39,8 @@ class User {
     this.name,
     this.photoUrl,
     this.dateOfBirth,
+    this.followers,
+    this.following,
     this.nativeLanguage,
     this.targetLanguage,
   });
@@ -49,6 +55,8 @@ class User {
       name: data['name'],
       photoUrl: data['photoUrl'],
       dateOfBirth: data['dateOfBirth'],
+      followers: data['followers'],
+      following: data['following'],
       searchOptions: data['searchOptions'],
       nativeLanguage: Language.fromMap(data['nativeLanguage']),
       targetLanguage: Language.fromMap(data['targetLanguage']),
@@ -64,6 +72,8 @@ class User {
       'name': name,
       'photoUrl': photoUrl,
       'dateOfBirth': dateOfBirth,
+      'followers': followers ?? 0,
+      'following': following ?? 0,
       'searchOptions': searchOptions,
       'nativeLanguage': nativeLanguage.toMap(),
       'targetLanguage': targetLanguage.toMap(),
