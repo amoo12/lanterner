@@ -1,3 +1,4 @@
+import 'package:auto_direction/auto_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/comment.dart';
@@ -85,8 +86,7 @@ class CommentField extends StatefulWidget {
 class _CommentFieldState extends State<CommentField> {
   TextEditingController commentController = TextEditingController();
   DatabaseService db;
-
-  bool isEmpty = true;
+  String text = "";
   comment(String currentUserId) async {
     if (commentController.text.trim().isNotEmpty) {
       User user = await db.getUser(currentUserId);
@@ -99,7 +99,6 @@ class _CommentFieldState extends State<CommentField> {
               createdAt: DateTime.now().toString()));
 
       commentController.clear();
-      isEmpty = true;
     }
   }
 
@@ -127,13 +126,33 @@ class _CommentFieldState extends State<CommentField> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 width: MediaQuery.of(context).size.width * 0.8,
-                child: TextFormFieldWidget(
-                  hintText: 'Comment...',
-                  autofocus: false,
-                  controller: commentController,
-                  bottomBorder: false,
-                  // isMultiline: true,
-                  maxlines: null,
+                child: AutoDirection(
+                  text: text,
+                  child: TextFormField(
+                    cursorColor: Colors.white,
+
+                    // expands: widget.expands,
+                    keyboardType: TextInputType.multiline,
+
+                    maxLines: null,
+
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Comment...',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      labelStyle: TextStyle(color: Colors.white),
+                      focusColor: Colors.white,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                    ),
+                    controller: commentController,
+
+                    onChanged: (value) {
+                      setState(() {
+                        text = value;
+                      });
+                    },
+                  ),
                 ),
               ),
             ),
@@ -142,21 +161,24 @@ class _CommentFieldState extends State<CommentField> {
                 width: 50,
                 margin: EdgeInsets.only(bottom: 5),
                 decoration: BoxDecoration(
-                    color: commentController.text.isNotEmpty
+                    color: commentController.text.trim().isNotEmpty
                         ? Theme.of(context).accentColor
-                        : Theme.of(context).accentColor.withOpacity(0.2),
+                        : Theme.of(context).accentColor.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(50)),
                 child: Center(
                   child: IconButton(
-                      icon: Icon(
-                        Icons.send,
-                        color: commentController.text.isNotEmpty
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.2),
-                      ),
-                      onPressed: () {
-                        comment(_authState.data.value.uid);
-                      }),
+                    icon: Icon(
+                      Icons.send,
+                      color: commentController.text.trim().isNotEmpty
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.5),
+                    ),
+                    onPressed: commentController.text.trim().isNotEmpty
+                        ? () {
+                            comment(_authState.data.value.uid);
+                          }
+                        : null,
+                  ),
                 ))
           ],
         ),
@@ -164,3 +186,12 @@ class _CommentFieldState extends State<CommentField> {
     });
   }
 }
+
+// TextFormFieldWidget(
+//                   hintText: 'Comment...',
+//                   autofocus: false,
+//                   controller: commentController,
+//                   bottomBorder: false,
+//                   // isMultiline: true,
+//                   maxlines: null,
+//                 ),
