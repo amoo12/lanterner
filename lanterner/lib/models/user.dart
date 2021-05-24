@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
@@ -48,7 +46,26 @@ class User {
     this.targetLanguage,
   });
 
-  factory User.fromMap(DocumentSnapshot doc) {
+// TODO: add the user Id insde the user doc do avoid future problems, this could be a diaster
+  factory User.fromMap(Map<dynamic, dynamic> data) {
+    // Map data = doc.data();
+    return User(
+      email: data['email'],
+      password: data['password'],
+      gender: data['gender'],
+      name: data['name'],
+      photoUrl: data['photoUrl'],
+      dateOfBirth: data['dateOfBirth'],
+      followers: data['followers'],
+      following: data['following'],
+      postsCount: data['postsCount'],
+      searchOptions: data['searchOptions'],
+      nativeLanguage: Language.fromMap(data['nativeLanguage']),
+      targetLanguage: Language.fromMap(data['targetLanguage']),
+    );
+  }
+
+  factory User.fromSnapShot(DocumentSnapshot doc) {
     Map data = doc.data();
     return User(
       uid: doc.id,
@@ -94,10 +111,6 @@ class User {
     }
     this.searchOptions = searchOptions;
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory User.fromJson(String source) => User.fromMap(json.decode(source));
 }
 
 class Language {

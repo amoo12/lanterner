@@ -2,6 +2,7 @@ import 'package:auto_direction/auto_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
 import 'package:lanterner/models/post.dart';
+import 'package:lanterner/pages/comments.dart';
 import 'package:lanterner/pages/myProfile.dart';
 import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/providers/auth_provider.dart';
@@ -76,14 +77,18 @@ class _PostCardState extends State<PostCard> {
                                     withNavBar: false,
                                   );
                                 } else {
-                                  pushNewScreenWithRouteSettings(
-                                    context,
-                                    settings: RouteSettings(name: '/profile'),
-                                    screen: Profile(uid: widget.post.ownerId),
-                                    pageTransitionAnimation:
-                                        PageTransitionAnimation.slideUp,
-                                    withNavBar: false,
-                                  );
+                                  // pushNewScreenWithRouteSettings(context, screen: screen, settings: settings)
+                                  if (ModalRoute.of(context).settings.name !=
+                                      '/profile') {
+                                    pushNewScreenWithRouteSettings(
+                                      context,
+                                      settings: RouteSettings(name: '/profile'),
+                                      screen: Profile(uid: widget.post.ownerId),
+                                      pageTransitionAnimation:
+                                          PageTransitionAnimation.slideUp,
+                                      withNavBar: false,
+                                    );
+                                  }
                                 }
                               },
                               child: CircleAvatar(
@@ -214,7 +219,7 @@ class _PostCardState extends State<PostCard> {
                       )
                     : Container(),
 
-                PostCardFooter(),
+                PostCardFooter(postId: widget.post.postId),
               ],
             ),
           ),
@@ -224,6 +229,7 @@ class _PostCardState extends State<PostCard> {
   }
 }
 
+// TODO : convert to a stateless Widget
 class ImageViewer extends StatefulWidget {
   final String photoUrl;
 
@@ -266,7 +272,9 @@ class _ImageViewerState extends State<ImageViewer> {
 }
 
 class PostCardFooter extends StatefulWidget {
-  const PostCardFooter({Key key}) : super(key: key);
+  final postId;
+
+  const PostCardFooter({Key key, this.postId}) : super(key: key);
 
   @override
   _PostCardFooterState createState() => _PostCardFooterState();
@@ -318,7 +326,17 @@ class _PostCardFooterState extends State<PostCardFooter> {
                   color: Colors.grey[400],
                   size: 20,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  if (ModalRoute.of(context).settings.name != '/comments') {
+                    pushNewScreenWithRouteSettings(
+                      context,
+                      settings: RouteSettings(name: '/comments'),
+                      screen: Comments(postId: widget.postId),
+                      pageTransitionAnimation: PageTransitionAnimation.slideUp,
+                      withNavBar: false,
+                    );
+                  }
+                },
               ),
               isSaved
                   ? IconButton(

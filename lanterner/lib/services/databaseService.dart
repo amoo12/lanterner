@@ -1,5 +1,6 @@
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lanterner/models/comment.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
 
@@ -19,6 +20,7 @@ class DatabaseService {
     return await usersCollection.doc(uid).set(user.toMap());
   }
 
+  //TODO: convert to batch write
   // inserts a new post record
   Future createPost(Post post) async {
     // var batch = FirebaseFirestore.instance.batch();
@@ -40,7 +42,7 @@ class DatabaseService {
     return await usersCollection
         .doc(uid)
         .get()
-        .then((doc) => User.fromMap(doc));
+        .then((doc) => User.fromSnapShot(doc));
   }
 
 //get all users posts
@@ -58,6 +60,13 @@ class DatabaseService {
         .then((value) => value.docs.map((doc) => Post.fromMap(doc)).toList());
   }
 
+  Future<Post> getPost(String postId) async {
+    return await postsCollection
+        .doc(postId)
+        .get()
+        .then((doc) => Post.fromMap(doc));
+  }
+
 //update profile photo url in user document
   Future<void> updateProfilePicture(String uid, String photoUrl) {
     return usersCollection.doc(uid).update({
@@ -69,9 +78,11 @@ class DatabaseService {
     return await usersCollection
         .where('searchOptions', arrayContains: searchText)
         .get()
-        .then((value) => value.docs.map((doc) => User.fromMap(doc)).toList());
+        .then((value) =>
+            value.docs.map((doc) => User.fromSnapShot(doc)).toList());
   }
 
+// follow a user
   Future<void> follow(String uid, User currrentUser) async {
     var batch = FirebaseFirestore.instance.batch();
     User followedUser = await getUser(uid);
@@ -109,7 +120,8 @@ class DatabaseService {
     batch.commit();
   }
 
-  Future unfollow(String uid, User currrentUser) {
+// unfollow a user
+  Future unfollow(String uid, User currrentUser) async {
     var batch = FirebaseFirestore.instance.batch();
     //* current user
     // delete the user document from the followingsub-collection
@@ -138,9 +150,10 @@ class DatabaseService {
         usersCollection.doc(uid), {'followers': FieldValue.increment(-1)});
 
     // commit the batch
-    batch.commit();
+    await batch.commit();
   }
 
+// checks wether I already follow a user
   Future<bool> isFollowing(String uid, String currentUserId) async {
     QuerySnapshot querySnapshot =
         await usersCollection.doc(uid).collection('followers').limit(1).get();
@@ -160,5 +173,18 @@ class DatabaseService {
     } else {
       return false;
     }
+  }
+
+  Future<void> comment(String postId, Comment comment) async {
+    print('commented');
+    await postsCollection
+        .doc(postId)
+        .collection('comments')
+        .add(comment.toMap());
+  }
+
+  Future<List<Comment>> getCommetns(String postId) async {
+    return await postsCollection.doc(postId).collection('comments').get().then(
+        (value) => value.docs.map((doc) => Comment.fromMap(doc)).toList());
   }
 }

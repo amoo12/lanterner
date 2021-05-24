@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/pages/authentication/login.dart';
+import 'package:lanterner/pages/comments.dart';
 import 'package:lanterner/pages/myProfile.dart';
 import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/authentication/signup.dart';
@@ -95,6 +96,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: Wrapper(),
+      // TODO: move route to a separate page
       routes: {
         '/signup': (context) => Signup(),
         '/login': (context) => Login(),
@@ -105,6 +107,7 @@ class MyApp extends StatelessWidget {
         '/myBottomNavBar': (context) => MyBottomNavBar(),
         '/profile': (context) => Profile(),
         '/myProfile': (context) => MyProfile(),
+        '/comments': (context) => Comments(),
       },
     );
   }

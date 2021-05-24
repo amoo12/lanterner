@@ -22,6 +22,8 @@ class TextFormFieldWidget extends StatefulWidget {
   final bool autofocus;
   final bool isMultiline;
 
+  final int maxlines;
+
   const TextFormFieldWidget({
     this.hintText,
     this.lableText,
@@ -42,6 +44,7 @@ class TextFormFieldWidget extends StatefulWidget {
     this.autofocus = false,
     this.bottomBorder = true,
     this.isMultiline = false,
+    this.maxlines = 1,
   });
 
   @override
@@ -68,7 +71,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
           expands: widget.expands,
           keyboardType: widget.isMultiline ? TextInputType.multiline : null,
 
-          maxLines: widget.isMultiline ? null : 1,
+          maxLines: widget.isMultiline ? null : widget.maxlines,
           // maxLines: null,
           autofocus: widget.autofocus,
 
