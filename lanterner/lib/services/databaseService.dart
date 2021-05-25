@@ -185,8 +185,13 @@ class DatabaseService {
   }
 
   Future<List<Comment>> getCommetns(String postId) async {
-    return await postsCollection.doc(postId).collection('comments').get().then(
-        (value) => value.docs.map((doc) => Comment.fromMap(doc)).toList());
+    return await postsCollection
+        .doc(postId)
+        .collection('comments')
+        .orderBy('timestamp')
+        .get()
+        .then(
+            (value) => value.docs.map((doc) => Comment.fromMap(doc)).toList());
   }
 
   // Stream<List<Comment>> get commetns {
