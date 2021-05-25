@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/comment.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 final commentProvider =
     StateNotifierProvider.autoDispose<CommentsList, List<Comment>>((ref) {
@@ -14,7 +15,8 @@ class CommentsList extends StateNotifier<List<Comment>> {
   }
 
   //TODO: delete comment
-  // void remove(Comment comment) {
-  //   state = state.where((element) => element.id != comment.id).toList();
-  // }
+  void remove(Comment comment) {
+    // state = state.where((element) => element.cid != comment.cid).toList();
+    state.remove(comment);
+  }
 }

@@ -177,11 +177,20 @@ class DatabaseService {
   }
 
   Future<void> comment(String postId, Comment comment) async {
-    print('commented');
-    await postsCollection
-        .doc(postId)
-        .collection('comments')
-        .add(comment.toMap());
+    //create a new document reference to get doc id
+    DocumentReference ref =
+        postsCollection.doc(postId).collection('comments').doc();
+
+    var batch = FirebaseFirestore.instance.batch();
+
+    // assign new doc id to the comment
+    comment.cid = ref.id;
+    // add the doc to the collection
+    batch.set(postsCollection.doc(postId).collection('comments').doc(ref.id),
+        comment.toMap());
+
+    //commit batch
+    batch.commit();
   }
 
   Future<List<Comment>> getCommetns(String postId) async {
@@ -194,9 +203,13 @@ class DatabaseService {
             (value) => value.docs.map((doc) => Comment.fromMap(doc)).toList());
   }
 
-  // Stream<List<Comment>> get commetns {
-  //   return postsCollection.doc(postId).collection('comments').snapshots().map(
-  //       (snapshot) =>
-  //           snapshot.docs.map((doc) => Comment.fromMap(doc)).toList());
-  // }
+  Future<void> deleteCommetn(String postId, Comment comment) async {
+    var batch = FirebaseFirestore.instance.batch();
+
+    batch.delete(
+        postsCollection.doc(postId).collection('comments').doc(comment.cid));
+
+    //commit batch
+    batch.commit();
+  }
 }

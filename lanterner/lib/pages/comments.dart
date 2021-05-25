@@ -12,6 +12,7 @@ import 'package:lanterner/providers/comments_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class Comments extends StatelessWidget {
@@ -95,10 +96,11 @@ class _CommentsListViewState extends State<CommentsListView> {
                 List<Comment> comments = snapshot.data;
 
                 return Consumer(builder: (context, watch, child) {
+                  watch(commentProvider);
                   comments = watch(commentProvider).length == 0
                       ? comments
                       : [...comments, ...watch(commentProvider)];
-                      
+                  watch(commentProvider).clear();
                   return ConstrainedBox(
                     constraints: BoxConstraints(minHeight: 500),
                     child: Container(
@@ -119,7 +121,6 @@ class _CommentsListViewState extends State<CommentsListView> {
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        print(comments[index].user.uid);
                                         if (comments[index].user.uid ==
                                             _authState.data.value.uid) {
                                           pushNewScreenWithRouteSettings(
@@ -171,46 +172,94 @@ class _CommentsListViewState extends State<CommentsListView> {
                                       ),
                                     ),
                                     Expanded(
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.6,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '${comments[index].user.name}',
-                                              style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w500,
+                                      child: InkWell(
+                                        onLongPress: () async {
+                                          await showMaterialModalBottomSheet(
+                                            expand: false,
+                                            context: context,
+                                            builder: (context) => Container(
+                                              height: 100,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          topLeft:
+                                                              Radius.circular(
+                                                                  8),
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  8))),
+                                              child: ListView(
+                                                children: [
+                                                  ListTile(
+                                                    leading: Icon(Icons.delete),
+                                                    title: Text('hello'),
+                                                    onTap: () async {
+                                                      await widget.db
+                                                          .deleteCommetn(
+                                                              widget.postId,
+                                                              comments[index]);
+                                                      setState(() {
+                                                        // context
+                                                        //     .read(
+                                                        //         commentProvider
+                                                        //             .notifier)
+                                                        //     .remove(comments[
+                                                        //         index]);
+                                                        comments
+                                                            .removeAt(index);
+
+                                                        Navigator.pop(context);
+                                                      });
+                                                    },
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                            AutoDirection(
-                                              text: '${comments[index].text}',
-                                              child: InkWell(
-                                                onTap: () {},
-                                                child: Container(
-                                                  child: Row(
-                                                    children: [
-                                                      Flexible(
-                                                        child: Text(
-                                                          '${comments[index].text}',
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 13,
+                                          );
+                                        },
+                                        child: Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.6,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${comments[index].user.name}',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              AutoDirection(
+                                                text: '${comments[index].text}',
+                                                child: InkWell(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    child: Row(
+                                                      children: [
+                                                        Flexible(
+                                                          child: Text(
+                                                            '${comments[index].text}',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 13,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -261,7 +310,6 @@ class _CommentFieldState extends State<CommentField> {
   DatabaseService db;
   String text = "";
   Comment com = Comment();
-  // final commentProvider = StateProvider((ref) => com);
 
   comment(String currentUserId) async {
     if (commentController.text.trim().isNotEmpty) {
@@ -276,6 +324,7 @@ class _CommentFieldState extends State<CommentField> {
           createdAt: createdAt.toString(),
           timestamp: timestamp);
       await db.comment(widget.postId, com);
+      commentController.clear();
     }
   }
 
@@ -354,7 +403,7 @@ class _CommentFieldState extends State<CommentField> {
                         ? () async {
                             await comment(_authState.data.value.uid);
                             context.read(commentProvider.notifier).add(com);
-
+                            // setState(() {
                             SnackBar registrationBar = SnackBar(
                               duration: Duration(milliseconds: 300),
                               behavior: SnackBarBehavior.floating,
@@ -371,6 +420,7 @@ class _CommentFieldState extends State<CommentField> {
                             );
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(registrationBar);
+                            // });
                           }
                         : null,
                   ),
