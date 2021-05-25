@@ -1,164 +1,48 @@
 import 'package:auto_direction/auto_direction.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/comment.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
+import 'package:lanterner/pages/myProfile.dart';
+import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
-import 'package:lanterner/widgets/customTextField.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class Comments extends StatelessWidget {
   Comments({Key key, this.postId}) : super(key: key);
   final String postId;
 
-  DatabaseService db = DatabaseService();
   TextEditingController commentController = TextEditingController();
+  Comment comment = Comment();
 
   @override
   Widget build(BuildContext context) {
+    DatabaseService db = DatabaseService(postId: postId);
     return FutureBuilder(
         future: db.getPost(postId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             Post post = snapshot.data;
             return Scaffold(
+              backgroundColor: Theme.of(context).primaryColor,
               appBar: AppBar(),
               body: Stack(
                 children: <Widget>[
                   SingleChildScrollView(
                     child: Column(children: [
                       PostCard(post),
-                      FutureBuilder<List<Comment>>(
-                          future: db.getCommetns(postId),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              List<Comment> comments = snapshot.data;
-
-                              return ConstrainedBox(
-                                constraints: BoxConstraints(minHeight: 500),
-                                child: ListView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: comments.length,
-                                  itemBuilder: (context, index) {
-                                    return Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.9,
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 8),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  // if (widget.post.ownerId ==
-                                                  //     _authState.data.value.uid) {
-                                                  //   pushNewScreenWithRouteSettings(
-                                                  //     context,
-                                                  //     settings: RouteSettings(name: '/myProfile'),
-                                                  //     screen: MyProfile(),
-                                                  //     pageTransitionAnimation:
-                                                  //         PageTransitionAnimation.slideUp,
-                                                  //     withNavBar: false,
-                                                  //   );
-                                                  // } else {
-                                                  //   // pushNewScreenWithRouteSettings(context, screen: screen, settings: settings)
-                                                  //   if (ModalRoute.of(context).settings.name !=
-                                                  //       '/profile') {
-                                                  //     pushNewScreenWithRouteSettings(
-                                                  //       context,
-                                                  //       settings: RouteSettings(name: '/profile'),
-                                                  //       screen: Profile(uid: widget.post.ownerId),
-                                                  //       pageTransitionAnimation:
-                                                  //           PageTransitionAnimation.slideUp,
-                                                  //       withNavBar: false,
-                                                  //     );
-                                                  //   }
-                                                  // }
-                                                },
-                                                child: CircleAvatar(
-                                                  radius: 22,
-                                                  backgroundImage: comments[
-                                                                  index]
-                                                              .user
-                                                              .photoUrl !=
-                                                          null
-                                                      ? NetworkImage(
-                                                          comments[index]
-                                                              .user
-                                                              .photoUrl,
-                                                        )
-                                                      : NetworkImage(
-                                                          'https://via.placeholder.com/150'),
-                                                  child: comments[index]
-                                                              .user
-                                                              .photoUrl ==
-                                                          null
-                                                      ? Icon(Icons.person,
-                                                          size: 40,
-                                                          color: Colors.grey)
-                                                      : Container(),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 10),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        '${comments[index].user.name}',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 13,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700),
-                                                      ),
-                                                      Text(
-                                                        '${comments[index].text}',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 13,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          // Divider(
-                                          //   color: Colors.grey[700],
-                                          //   thickness: 0.1,
-                                          //   // height: 1,
-                                          // )
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                            } else if (snapshot.hasError) {
-                              return Text("ERROR: Someting went wrong");
-                            } else {
-                              return circleIndicator(context);
-                            }
-                          }),
+                      CommentsListView(db: db, postId: postId),
                     ]),
                   ),
                   Align(
                       alignment: Alignment.bottomCenter,
                       child: CommentField(
+                        comment: comment,
                         postId: postId,
                       ))
                 ],
@@ -171,9 +55,187 @@ class Comments extends StatelessWidget {
   }
 }
 
+class CommentsListView extends StatefulWidget {
+  const CommentsListView({
+    Key key,
+    @required this.db,
+    @required this.postId,
+  }) : super(key: key);
+
+  final DatabaseService db;
+  final String postId;
+
+  @override
+  _CommentsListViewState createState() => _CommentsListViewState();
+}
+
+class _CommentsListViewState extends State<CommentsListView> {
+  Future<List<Comment>> fetchComments;
+  // Stream<List<Comment>> fetchComments;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchComments = widget.db.getCommetns(widget.postId);
+    // fetchComments = widget.db.commetns;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, watch, child) {
+        final _authState = watch(authStateProvider);
+
+        return FutureBuilder<List<Comment>>(
+            future: fetchComments,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<Comment> comments = snapshot.data;
+
+                return ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: 500),
+                  child: ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: comments.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    print(comments[index].user.uid);
+                                    if (comments[index].user.uid ==
+                                        _authState.data.value.uid) {
+                                      pushNewScreenWithRouteSettings(
+                                        context,
+                                        settings:
+                                            RouteSettings(name: '/myProfile'),
+                                        screen: MyProfile(),
+                                        pageTransitionAnimation:
+                                            PageTransitionAnimation.slideUp,
+                                        withNavBar: false,
+                                      );
+                                    } else {
+                                      // pushNewScreenWithRouteSettings(context, screen: screen, settings: settings)
+                                      if (ModalRoute.of(context)
+                                              .settings
+                                              .name !=
+                                          '/profile') {
+                                        pushNewScreenWithRouteSettings(
+                                          context,
+                                          settings:
+                                              RouteSettings(name: '/profile'),
+                                          screen: Profile(
+                                              uid: comments[index].user.uid),
+                                          pageTransitionAnimation:
+                                              PageTransitionAnimation.slideUp,
+                                          withNavBar: false,
+                                        );
+                                      }
+                                    }
+                                  },
+                                  child: CircleAvatar(
+                                    radius: 22,
+                                    backgroundImage: comments[index]
+                                                .user
+                                                .photoUrl !=
+                                            null
+                                        ? NetworkImage(
+                                            comments[index].user.photoUrl,
+                                          )
+                                        : NetworkImage(
+                                            'https://via.placeholder.com/150'),
+                                    child: comments[index].user.photoUrl == null
+                                        ? Icon(Icons.person,
+                                            size: 40, color: Colors.grey)
+                                        : Container(),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.6,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${comments[index].user.name}',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        AutoDirection(
+                                          text: '${comments[index].text}',
+                                          child: InkWell(
+                                            onTap: () {},
+                                            child: Container(
+                                              child: Row(
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                      '${comments[index].text}',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 13,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(left: 20),
+                                  child: Text(
+                                    '${comments[index].ago()}',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text("ERROR: Someting went wrong");
+              } else {
+                return circleIndicator(context);
+              }
+            });
+      },
+    );
+  }
+}
+
 class CommentField extends StatefulWidget {
   final postId;
-  const CommentField({Key key, @required this.postId}) : super(key: key);
+  Comment comment;
+  CommentField({Key key, @required this.postId, this.comment})
+      : super(key: key);
 
   @override
   _CommentFieldState createState() => _CommentFieldState();
@@ -185,16 +247,19 @@ class _CommentFieldState extends State<CommentField> {
   String text = "";
   comment(String currentUserId) async {
     if (commentController.text.trim().isNotEmpty) {
+      DateTime createdAt = DateTime.now();
+      Timestamp timestamp = Timestamp.fromDate(createdAt);
       User user = await db.getUser(currentUserId);
 
-      db.comment(
-          widget.postId,
-          Comment(
-              text: commentController.text.trim(),
-              user: user,
-              createdAt: DateTime.now().toString()));
+      widget.comment = Comment();
+      widget.comment.text = commentController.text.trim();
+      widget.comment.user = user;
+      widget.comment.createdAt = createdAt.toString();
+      widget.comment.timestamp = timestamp;
+      db.comment(widget.postId, widget.comment);
 
       commentController.clear();
+      FocusScope.of(context).unfocus();
     }
   }
 

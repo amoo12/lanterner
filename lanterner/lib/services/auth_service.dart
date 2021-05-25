@@ -32,6 +32,7 @@ class AuthenticationService {
         email: user.email,
         password: user.password,
       );
+      user.uid = creCredential.user.uid;
       await DatabaseService(uid: creCredential.user.uid)
           .insertUser(user); // inserts the new user record in firestore
 

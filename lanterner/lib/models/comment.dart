@@ -6,11 +6,13 @@ class Comment {
   String text;
   User user;
   String createdAt;
+  Timestamp timestamp;
 
   Comment({
     this.text,
     this.user,
     this.createdAt,
+    this.timestamp,
   });
 
   Map<String, dynamic> toMap() {
@@ -18,6 +20,7 @@ class Comment {
       'text': text,
       'user': user.toMap(),
       'createdAt': createdAt,
+      'timestamp': timestamp,
     };
   }
 
@@ -27,10 +30,11 @@ class Comment {
       text: data['text'],
       user: User.fromMap(data['user']),
       createdAt: data['createdAt'],
+      timestamp: data['timestamp'],
     );
   }
 
   String ago() {
-    return timeago.format(DateTime.parse(this.createdAt));
+    return timeago.format(DateTime.parse(this.createdAt), locale: 'en_short');
   }
 }

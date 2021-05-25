@@ -7,7 +7,8 @@ import 'package:lanterner/models/user.dart';
 // this class talks to cloud firestore and manages queries
 class DatabaseService {
   final String uid;
-  DatabaseService({this.uid});
+  final String postId;
+  DatabaseService({this.uid, this.postId});
 
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');
@@ -187,4 +188,10 @@ class DatabaseService {
     return await postsCollection.doc(postId).collection('comments').get().then(
         (value) => value.docs.map((doc) => Comment.fromMap(doc)).toList());
   }
+
+  // Stream<List<Comment>> get commetns {
+  //   return postsCollection.doc(postId).collection('comments').snapshots().map(
+  //       (snapshot) =>
+  //           snapshot.docs.map((doc) => Comment.fromMap(doc)).toList());
+  // }
 }

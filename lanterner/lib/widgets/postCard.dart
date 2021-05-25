@@ -49,178 +49,198 @@ class _PostCardState extends State<PostCard> {
         width: MediaQuery.of(context).size.width,
         child: Card(
           elevation: 1,
-          child: Container(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              // isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                if (widget.post.ownerId ==
-                                    _authState.data.value.uid) {
-                                  pushNewScreenWithRouteSettings(
-                                    context,
-                                    settings: RouteSettings(name: '/myProfile'),
-                                    screen: MyProfile(),
-                                    pageTransitionAnimation:
-                                        PageTransitionAnimation.slideUp,
-                                    withNavBar: false,
-                                  );
-                                } else {
-                                  // pushNewScreenWithRouteSettings(context, screen: screen, settings: settings)
-                                  if (ModalRoute.of(context).settings.name !=
-                                      '/profile') {
+          child: InkWell(
+            highlightColor: Theme.of(context).backgroundColor,
+            splashColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            onTap: () {
+              if (ModalRoute.of(context).settings.name != '/comments') {
+                pushNewScreenWithRouteSettings(
+                  context,
+                  settings: RouteSettings(name: '/comments'),
+                  screen: Comments(postId: widget.post.postId),
+                  pageTransitionAnimation: PageTransitionAnimation.slideUp,
+                  withNavBar: false,
+                );
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                // isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  if (widget.post.ownerId ==
+                                      _authState.data.value.uid) {
                                     pushNewScreenWithRouteSettings(
                                       context,
-                                      settings: RouteSettings(name: '/profile'),
-                                      screen: Profile(uid: widget.post.ownerId),
+                                      settings:
+                                          RouteSettings(name: '/myProfile'),
+                                      screen: MyProfile(),
                                       pageTransitionAnimation:
                                           PageTransitionAnimation.slideUp,
                                       withNavBar: false,
                                     );
+                                  } else {
+                                    // pushNewScreenWithRouteSettings(context, screen: screen, settings: settings)
+                                    if (ModalRoute.of(context).settings.name !=
+                                        '/profile') {
+                                      pushNewScreenWithRouteSettings(
+                                        context,
+                                        settings:
+                                            RouteSettings(name: '/profile'),
+                                        screen:
+                                            Profile(uid: widget.post.ownerId),
+                                        pageTransitionAnimation:
+                                            PageTransitionAnimation.slideUp,
+                                        withNavBar: false,
+                                      );
+                                    }
                                   }
-                                }
-                              },
-                              child: CircleAvatar(
-                                radius: 25,
-                                backgroundImage:
-                                    widget.post.userPhotoUrl != null
-                                        ? NetworkImage(
-                                            widget.post.userPhotoUrl,
-                                          )
-                                        : NetworkImage(
-                                            'https://via.placeholder.com/150'),
-                                child: widget.post.userPhotoUrl == null
-                                    ? Icon(Icons.person,
-                                        size: 40, color: Colors.grey)
-                                    : Container(),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${widget.post.username}',
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.grey),
-                            ),
-                            Text(
-                              'username',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.grey[600]),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          child: Text(widget.post.ago(),
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.grey)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                // AutoDirection(
-                //
-                //   child: Container(
-                //     width: MediaQuery.of(context).size.width * 0.90,
-                //     child: Text(text),
-                //   ),
-                // ),
-
-                AutoDirection(
-                  onDirectionChange: (isRTL) {
-                    setState(() {
-                      this.isRTL = isRTL;
-                    });
-                  },
-                  text: widget.post.caption != null ? widget.post.caption : '',
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.95,
-                    padding: new EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 10.0),
-                    child: secondHalf.isEmpty
-                        ? new Text(firstHalf)
-                        : new Column(
-                            children: <Widget>[
-                              new Text(
-                                flag
-                                    ? (firstHalf + "...")
-                                    : (firstHalf + secondHalf),
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              new InkWell(
-                                child: new Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: <Widget>[
-                                    new Text(
-                                      flag ? "show more" : "show less",
-                                      style: new TextStyle(
-                                          color: Colors.grey[350],
-                                          fontSize: 14),
-                                    ),
-                                  ],
-                                ),
-                                onTap: () {
-                                  setState(() {
-                                    flag = !flag;
-                                  });
                                 },
+                                child: CircleAvatar(
+                                  radius: 25,
+                                  backgroundImage: widget.post.userPhotoUrl !=
+                                          null
+                                      ? NetworkImage(
+                                          widget.post.userPhotoUrl,
+                                        )
+                                      : NetworkImage(
+                                          'https://via.placeholder.com/150'),
+                                  child: widget.post.userPhotoUrl == null
+                                      ? Icon(Icons.person,
+                                          size: 40, color: Colors.grey)
+                                      : Container(),
+                                ),
                               ),
                             ],
                           ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${widget.post.username}',
+                                style:
+                                    TextStyle(fontSize: 14, color: Colors.grey),
+                              ),
+                              Text(
+                                'username',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            child: Text(widget.post.ago(),
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.grey)),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-                // media
-                widget.post.photoUrl != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: GestureDetector(
-                            onTap: () {
-                              pushNewScreenWithRouteSettings(
-                                context,
-                                settings: RouteSettings(name: '/imageViewer'),
-                                screen:
-                                    ImageViewer(photoUrl: widget.post.photoUrl),
-                                pageTransitionAnimation:
-                                    PageTransitionAnimation.cupertino,
-                                withNavBar: false,
-                              );
-                            },
-                            child: Container(
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                child: Image.network(
-                                  widget.post.photoUrl,
-                                  height: 180,
-                                  // centerSlice: Rect,
-                                  fit: BoxFit.fitWidth,
-                                ))),
-                      )
-                    : Container(),
+                  SizedBox(height: 10),
 
-                PostCardFooter(postId: widget.post.postId),
-              ],
+                  GestureDetector(
+                    onTap: () {
+                      //TODO: Translete
+                    },
+                    child: AutoDirection(
+                      onDirectionChange: (isRTL) {
+                        setState(() {
+                          this.isRTL = isRTL;
+                        });
+                      },
+                      text: widget.post.caption != null
+                          ? widget.post.caption
+                          : '',
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.95,
+                        padding: new EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 10.0),
+                        child: secondHalf.isEmpty
+                            ? new Text(firstHalf)
+                            : new Column(
+                                children: <Widget>[
+                                  new Text(
+                                    flag
+                                        ? (firstHalf + "...")
+                                        : (firstHalf + secondHalf),
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  new InkWell(
+                                    child: new Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: <Widget>[
+                                        new Text(
+                                          flag ? "show more" : "show less",
+                                          style: new TextStyle(
+                                              color: Colors.grey[350],
+                                              fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        flag = !flag;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ),
+                  // media
+                  widget.post.photoUrl != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: GestureDetector(
+                              onTap: () {
+                                pushNewScreenWithRouteSettings(
+                                  context,
+                                  settings: RouteSettings(name: '/imageViewer'),
+                                  screen: ImageViewer(
+                                      photoUrl: widget.post.photoUrl),
+                                  pageTransitionAnimation:
+                                      PageTransitionAnimation.cupertino,
+                                  withNavBar: false,
+                                );
+                              },
+                              child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.5,
+                                  child: Image.network(
+                                    widget.post.photoUrl,
+                                    height: 180,
+                                    // centerSlice: Rect,
+                                    fit: BoxFit.fitWidth,
+                                  ))),
+                        )
+                      : Container(),
+
+                  PostCardFooter(postId: widget.post.postId),
+                ],
+              ),
             ),
           ),
         ),

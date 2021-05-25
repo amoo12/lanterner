@@ -46,10 +46,9 @@ class User {
     this.targetLanguage,
   });
 
-// TODO: add the user Id insde the user doc do avoid future problems, this could be a diaster
   factory User.fromMap(Map<dynamic, dynamic> data) {
-    // Map data = doc.data();
     return User(
+      uid: data['uid'],
       email: data['email'],
       password: data['password'],
       gender: data['gender'],
