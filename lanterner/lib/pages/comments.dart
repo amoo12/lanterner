@@ -38,17 +38,113 @@ class Comments extends StatelessWidget {
                               List<Comment> comments = snapshot.data;
 
                               return ConstrainedBox(
-                                constraints: BoxConstraints(minHeight: 600),
+                                constraints: BoxConstraints(minHeight: 500),
                                 child: ListView.builder(
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemCount: comments.length,
                                   itemBuilder: (context, index) {
                                     return Container(
-                                        color: Colors.black,
-                                        child: Center(
-                                            child: Text(
-                                                '${comments[index].text}')));
+                                      width: MediaQuery.of(context).size.width *
+                                          0.9,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 8),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // if (widget.post.ownerId ==
+                                                  //     _authState.data.value.uid) {
+                                                  //   pushNewScreenWithRouteSettings(
+                                                  //     context,
+                                                  //     settings: RouteSettings(name: '/myProfile'),
+                                                  //     screen: MyProfile(),
+                                                  //     pageTransitionAnimation:
+                                                  //         PageTransitionAnimation.slideUp,
+                                                  //     withNavBar: false,
+                                                  //   );
+                                                  // } else {
+                                                  //   // pushNewScreenWithRouteSettings(context, screen: screen, settings: settings)
+                                                  //   if (ModalRoute.of(context).settings.name !=
+                                                  //       '/profile') {
+                                                  //     pushNewScreenWithRouteSettings(
+                                                  //       context,
+                                                  //       settings: RouteSettings(name: '/profile'),
+                                                  //       screen: Profile(uid: widget.post.ownerId),
+                                                  //       pageTransitionAnimation:
+                                                  //           PageTransitionAnimation.slideUp,
+                                                  //       withNavBar: false,
+                                                  //     );
+                                                  //   }
+                                                  // }
+                                                },
+                                                child: CircleAvatar(
+                                                  radius: 22,
+                                                  backgroundImage: comments[
+                                                                  index]
+                                                              .user
+                                                              .photoUrl !=
+                                                          null
+                                                      ? NetworkImage(
+                                                          comments[index]
+                                                              .user
+                                                              .photoUrl,
+                                                        )
+                                                      : NetworkImage(
+                                                          'https://via.placeholder.com/150'),
+                                                  child: comments[index]
+                                                              .user
+                                                              .photoUrl ==
+                                                          null
+                                                      ? Icon(Icons.person,
+                                                          size: 40,
+                                                          color: Colors.grey)
+                                                      : Container(),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 10),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        '${comments[index].user.name}',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 13,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700),
+                                                      ),
+                                                      Text(
+                                                        '${comments[index].text}',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 13,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          // Divider(
+                                          //   color: Colors.grey[700],
+                                          //   thickness: 0.1,
+                                          //   // height: 1,
+                                          // )
+                                        ],
+                                      ),
+                                    );
                                   },
                                 ),
                               );
@@ -186,12 +282,3 @@ class _CommentFieldState extends State<CommentField> {
     });
   }
 }
-
-// TextFormFieldWidget(
-//                   hintText: 'Comment...',
-//                   autofocus: false,
-//                   controller: commentController,
-//                   bottomBorder: false,
-//                   // isMultiline: true,
-//                   maxlines: null,
-//                 ),
