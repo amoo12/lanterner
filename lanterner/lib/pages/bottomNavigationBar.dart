@@ -154,13 +154,15 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
                   color: Colors.white,
                 ),
                 onPressed: () {
+                  // Navigator.pushNamed(context, '/newPost')
+                  //     .then((value) => setState(() {}));
                   pushNewScreenWithRouteSettings(
                     context,
                     settings: RouteSettings(name: '/newPost'),
                     screen: NewPost(),
                     pageTransitionAnimation: PageTransitionAnimation.slideUp,
                     withNavBar: false,
-                  );
+                  )..then((value) => setState(() {}));
                 },
               ),
             )

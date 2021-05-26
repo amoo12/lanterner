@@ -7,13 +7,17 @@ customProgressIdicator(BuildContext context) {
       builder: (BuildContext context) {
         return Container(
           color: Theme.of(context).primaryColor,
-          child: Container(
-            height: 50,
-            width: 50,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50), color: Colors.white),
-            child: Center(
-              child: CircularProgressIndicator(backgroundColor: Colors.white),
+          child: Center(
+            child: Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50), color: Colors.white),
+              child: Center(
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+              ),
             ),
           ),
         );

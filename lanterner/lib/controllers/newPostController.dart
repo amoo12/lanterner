@@ -49,7 +49,8 @@ class NewPostController {
     }
 
     // TODO change to global (this returns a local date)
-    Timestamp timestamp = Timestamp.now();
+    DateTime createdAt = DateTime.now();
+    Timestamp timestamp = Timestamp.fromDate(createdAt);
 
     await db.createPost(Post(
       postId: postId,
@@ -58,7 +59,7 @@ class NewPostController {
       username: user.name,
       ownerId: user.uid,
       userPhotoUrl: user.photoUrl,
-      createdAt: DateTime.now().toString(),
+      createdAt: createdAt.toString(),
       ownerNativeLanguage: user.nativeLanguage,
       timestamp: timestamp,
     ));

@@ -178,7 +178,10 @@ class _PostCardState extends State<PostCard> {
                         padding: new EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 10.0),
                         child: secondHalf.isEmpty
-                            ? new Text(firstHalf)
+                            ? new Text(
+                                firstHalf,
+                                style: TextStyle(color: Colors.white),
+                              )
                             : new Column(
                                 children: <Widget>[
                                   new Text(
