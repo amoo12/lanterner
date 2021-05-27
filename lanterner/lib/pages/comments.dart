@@ -93,14 +93,13 @@ class _CommentsListViewState extends State<CommentsListView> {
             future: fetchComments,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                List<Comment> comments = snapshot.data;
-
                 return Consumer(builder: (context, watch, child) {
-                  watch(commentProvider);
-                  comments = watch(commentProvider).length == 0
-                      ? comments
-                      : [...comments, ...watch(commentProvider)];
-                  watch(commentProvider).clear();
+                  // a local list to combine comments from the snapshot as well as the provider
+                  // comments coming from the provider are only the ones added during this build of the current build of the widget
+                  // if initState is called the provider is disposed and cleared from comments.
+                  List<Comment> comments = watch(commentProvider).length == 0
+                      ? snapshot.data
+                      : [...snapshot.data, ...watch(commentProvider)];
                   return ConstrainedBox(
                     constraints: BoxConstraints(minHeight: 500),
                     child: Container(
@@ -194,20 +193,23 @@ class _CommentsListViewState extends State<CommentsListView> {
                                                     leading: Icon(Icons.delete),
                                                     title: Text('hello'),
                                                     onTap: () async {
+                                                      //detlte comment from db
                                                       await widget.db
                                                           .deleteCommetn(
                                                               widget.postId,
                                                               comments[index]);
-                                                      setState(() {
-                                                        // context
-                                                        //     .read(
-                                                        //         commentProvider
-                                                        //             .notifier)
-                                                        //     .remove(comments[
-                                                        //         index]);
-                                                        comments
-                                                            .removeAt(index);
 
+                                                      setState(() {
+                                                        // delete comment from the temp provider list
+                                                        context
+                                                            .read(
+                                                                commentProvider
+                                                                    .notifier)
+                                                            .remove(comments[
+                                                                index]);
+                                                        // remove comment from the local list.
+                                                        comments.remove(
+                                                            comments[index]);
                                                         Navigator.pop(context);
                                                       });
                                                     },
@@ -317,13 +319,13 @@ class _CommentFieldState extends State<CommentField> {
       Timestamp timestamp = Timestamp.fromDate(createdAt);
       User user = await db.getUser(currentUserId);
 
-      FocusScope.of(context).unfocus();
       com = Comment(
           user: user,
           text: commentController.text.trim(),
           createdAt: createdAt.toString(),
           timestamp: timestamp);
-      await db.comment(widget.postId, com);
+      db.comment(widget.postId, com);
+      FocusScope.of(context).unfocus();
       commentController.clear();
     }
   }

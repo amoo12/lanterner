@@ -1,5 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// TODO: add the following fields
+// registrationDate: DateTime.now().toUtc(), //registertion date
+// lastLoggedIn: DateTime.now().toUtc(), // lastLogged
+// buildNumber: buildNumber, // no idea
+// introSeen: false, // first time user or not - I think it should be set to fals after the first time.
 class User {
   String uid;
   String email;

@@ -68,6 +68,14 @@ Map<int, Color> color4 = {
   900: Color.fromRGBO(68, 74, 102, 1),
 };
 
+// TODO: update the colors simply like this in a separate file
+// class AppColors {
+//   static const primaryColor = Color(0xffff414d);
+//   static const primaryColorLight = Color(0xfffa897b);
+//   static const accentColor = Color(0xff1aa687);
+//   static const accentColorLight = Color(0xffd9ecf2);
+// }
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
