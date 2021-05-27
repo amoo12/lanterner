@@ -13,6 +13,7 @@ import 'package:lanterner/widgets/postCard.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
+// ignore: must_be_immutable
 class Comments extends StatelessWidget {
   Comments({Key key, this.postId}) : super(key: key);
   final String postId;
@@ -71,14 +72,11 @@ class CommentsListView extends StatefulWidget {
 
 class _CommentsListViewState extends State<CommentsListView> {
   Future<List<Comment>> fetchComments;
-  // Stream<List<Comment>> fetchComments;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchComments = widget.db.getCommetns(widget.post.postId);
-    // fetchComments = widget.db.commetns;
   }
 
   @override
@@ -255,6 +253,7 @@ class _CommentsListViewState extends State<CommentsListView> {
   }
 }
 
+// ignore: must_be_immutable
 class CommentField extends StatefulWidget {
   final postId;
   Comment comment;
@@ -315,12 +314,8 @@ class _CommentFieldState extends State<CommentField> {
                   text: text,
                   child: TextFormField(
                     cursorColor: Colors.white,
-
-                    // expands: widget.expands,
                     keyboardType: TextInputType.multiline,
-
                     maxLines: null,
-
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Comment...',
@@ -331,7 +326,6 @@ class _CommentFieldState extends State<CommentField> {
                       enabledBorder: InputBorder.none,
                     ),
                     controller: commentController,
-
                     onChanged: (value) {
                       setState(() {
                         text = value;
@@ -364,7 +358,8 @@ class _CommentFieldState extends State<CommentField> {
 
                             await comment(_authState.data.value.uid);
                             context.read(commentProvider.notifier).add(com);
-                            // setState(() {
+
+                            // confirmation snackbar
                             SnackBar registrationBar = SnackBar(
                               duration: Duration(milliseconds: 300),
                               behavior: SnackBarBehavior.floating,
@@ -381,7 +376,6 @@ class _CommentFieldState extends State<CommentField> {
                             );
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(registrationBar);
-                            // });
                           }
                         : null,
                   ),

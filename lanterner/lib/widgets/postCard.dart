@@ -1,10 +1,8 @@
 import 'package:auto_direction/auto_direction.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/pages/comments.dart';
-import 'package:lanterner/pages/myProfile.dart';
-import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';

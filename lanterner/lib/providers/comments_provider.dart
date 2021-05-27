@@ -16,7 +16,6 @@ class CommentsList extends StateNotifier<List<Comment>> {
     // try clearing the list here without overriding state and dont forget to remove the clear line in comments.dart
   }
 
-  //TODO: delete comment
   void remove(Comment comment) {
 //  must override the state variable (state = value) otherwise notifyListners is not called and the widget won't rebuild
     state = state.where((element) => element.cid != comment.cid).toList();

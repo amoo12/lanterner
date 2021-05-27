@@ -1,15 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lanterner/pages/authentication/login.dart';
-import 'package:lanterner/pages/comments.dart';
-import 'package:lanterner/pages/myProfile.dart';
-import 'package:lanterner/pages/new_post.dart';
-import 'package:lanterner/pages/authentication/signup.dart';
-import 'package:lanterner/pages/profile.dart';
-import 'package:lanterner/pages/settings.dart';
-import 'package:lanterner/widgets/postCard.dart';
-import 'package:lanterner/pages/bottomNavigationBar.dart';
+import 'package:lanterner/routes/routes.dart';
 import 'auth_wrapper.dart';
 
 void main() async {
@@ -70,10 +62,11 @@ Map<int, Color> color4 = {
 
 // TODO: update the colors simply like this in a separate file
 // class AppColors {
-//   static const primaryColor = Color(0xffff414d);
+//   static const primaryColor = Color(0xff323F6C);
 //   static const primaryColorLight = Color(0xfffa897b);
 //   static const accentColor = Color(0xff1aa687);
 //   static const accentColorLight = Color(0xffd9ecf2);
+//   static const cardColor = Color(0xff445694);
 // }
 
 class MyApp extends StatelessWidget {
@@ -104,19 +97,8 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: Wrapper(),
-      // TODO: move route to a separate page
-      routes: {
-        '/signup': (context) => Signup(),
-        '/login': (context) => Login(),
-        '/newPost': (context) => NewPost(),
-        '/imageViewer': (context) => ImageViewer(),
-        '/settings': (context) => Settings(),
-        '/wrapper': (context) => Wrapper(),
-        '/myBottomNavBar': (context) => MyBottomNavBar(),
-        '/profile': (context) => Profile(),
-        '/myProfile': (context) => MyProfile(),
-        '/comments': (context) => Comments(),
-      },
+      // this is coming from the routes page
+      routes: routes,
     );
   }
 }
