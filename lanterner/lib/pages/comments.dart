@@ -38,7 +38,7 @@ class Comments extends StatelessWidget {
                   SingleChildScrollView(
                     child: Column(children: [
                       PostCard(post),
-                      CommentsListView(db: db, postId: postId),
+                      CommentsListView(db: db, post: post),
                     ]),
                   ),
                   Align(
@@ -61,11 +61,11 @@ class CommentsListView extends StatefulWidget {
   const CommentsListView({
     Key key,
     @required this.db,
-    @required this.postId,
+    @required this.post,
   }) : super(key: key);
 
   final DatabaseService db;
-  final String postId;
+  final Post post;
 
   @override
   _CommentsListViewState createState() => _CommentsListViewState();
@@ -79,7 +79,7 @@ class _CommentsListViewState extends State<CommentsListView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchComments = widget.db.getCommetns(widget.postId);
+    fetchComments = widget.db.getCommetns(widget.post.postId);
     // fetchComments = widget.db.commetns;
   }
 
@@ -115,110 +115,118 @@ class _CommentsListViewState extends State<CommentsListView> {
                                 horizontal: 10, vertical: 8),
                             child: Column(
                               children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        if (comments[index].user.uid ==
-                                            _authState.data.value.uid) {
-                                          pushNewScreenWithRouteSettings(
-                                            context,
-                                            settings: RouteSettings(
-                                                name: '/myProfile'),
-                                            screen: MyProfile(),
-                                            pageTransitionAnimation:
-                                                PageTransitionAnimation.slideUp,
-                                            withNavBar: false,
-                                          );
-                                        } else {
-                                          // pushNewScreenWithRouteSettings(context, screen: screen, settings: settings)
-                                          if (ModalRoute.of(context)
-                                                  .settings
-                                                  .name !=
-                                              '/profile') {
+                                InkWell(
+                                  onLongPress: () async {
+                                    if (_authState.data.value.uid ==
+                                            comments[index].user.uid ||
+                                        _authState.data.value.uid ==
+                                            widget.post.ownerId) {
+                                      await showBarModalBottomSheet(
+                                        barrierColor:
+                                            Colors.black.withOpacity(0.3),
+                                        expand: false,
+                                        context: context,
+                                        builder: (context) => Container(
+                                          height: 100,
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 20),
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(8),
+                                                  topRight:
+                                                      Radius.circular(8))),
+                                          child: ListView(
+                                            children: [
+                                              ListTile(
+                                                leading: Icon(Icons.delete),
+                                                title: Text('hello'),
+                                                onTap: () async {
+                                                  //detlte comment from db
+                                                  await widget.db.deleteCommetn(
+                                                      widget.post.postId,
+                                                      comments[index]);
+
+                                                  setState(() {
+                                                    // delete comment from the temp provider list
+                                                    context
+                                                        .read(commentProvider
+                                                            .notifier)
+                                                        .remove(
+                                                            comments[index]);
+                                                    // remove comment from the local list.
+                                                    comments.remove(
+                                                        comments[index]);
+                                                    Navigator.pop(context);
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          if (comments[index].user.uid ==
+                                              _authState.data.value.uid) {
                                             pushNewScreenWithRouteSettings(
                                               context,
                                               settings: RouteSettings(
-                                                  name: '/profile'),
-                                              screen: Profile(
-                                                  uid:
-                                                      comments[index].user.uid),
+                                                  name: '/myProfile'),
+                                              screen: MyProfile(),
                                               pageTransitionAnimation:
                                                   PageTransitionAnimation
                                                       .slideUp,
                                               withNavBar: false,
                                             );
+                                          } else {
+                                            // pushNewScreenWithRouteSettings(context, screen: screen, settings: settings)
+                                            if (ModalRoute.of(context)
+                                                    .settings
+                                                    .name !=
+                                                '/profile') {
+                                              pushNewScreenWithRouteSettings(
+                                                context,
+                                                settings: RouteSettings(
+                                                    name: '/profile'),
+                                                screen: Profile(
+                                                    uid: comments[index]
+                                                        .user
+                                                        .uid),
+                                                pageTransitionAnimation:
+                                                    PageTransitionAnimation
+                                                        .slideUp,
+                                                withNavBar: false,
+                                              );
+                                            }
                                           }
-                                        }
-                                      },
-                                      child: CircleAvatar(
-                                        radius: 22,
-                                        backgroundImage: comments[index]
-                                                    .user
-                                                    .photoUrl !=
-                                                null
-                                            ? NetworkImage(
-                                                comments[index].user.photoUrl,
-                                              )
-                                            : NetworkImage(
-                                                'https://via.placeholder.com/150'),
-                                        child: comments[index].user.photoUrl ==
-                                                null
-                                            ? Icon(Icons.person,
-                                                size: 40, color: Colors.grey)
-                                            : Container(),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: InkWell(
-                                        onLongPress: () async {
-                                          await showMaterialModalBottomSheet(
-                                            expand: false,
-                                            context: context,
-                                            builder: (context) => Container(
-                                              height: 100,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  8),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  8))),
-                                              child: ListView(
-                                                children: [
-                                                  ListTile(
-                                                    leading: Icon(Icons.delete),
-                                                    title: Text('hello'),
-                                                    onTap: () async {
-                                                      //detlte comment from db
-                                                      await widget.db
-                                                          .deleteCommetn(
-                                                              widget.postId,
-                                                              comments[index]);
-
-                                                      setState(() {
-                                                        // delete comment from the temp provider list
-                                                        context
-                                                            .read(
-                                                                commentProvider
-                                                                    .notifier)
-                                                            .remove(comments[
-                                                                index]);
-                                                        // remove comment from the local list.
-                                                        comments.remove(
-                                                            comments[index]);
-                                                        Navigator.pop(context);
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
                                         },
+                                        child: CircleAvatar(
+                                          radius: 22,
+                                          backgroundImage: comments[index]
+                                                      .user
+                                                      .photoUrl !=
+                                                  null
+                                              ? NetworkImage(
+                                                  comments[index].user.photoUrl,
+                                                )
+                                              : NetworkImage(
+                                                  'https://via.placeholder.com/150'),
+                                          child:
+                                              comments[index].user.photoUrl ==
+                                                      null
+                                                  ? Icon(Icons.person,
+                                                      size: 40,
+                                                      color: Colors.grey)
+                                                  : Container(),
+                                        ),
+                                      ),
+                                      Expanded(
                                         child: Container(
                                           width: MediaQuery.of(context)
                                                   .size
@@ -241,7 +249,7 @@ class _CommentsListViewState extends State<CommentsListView> {
                                               AutoDirection(
                                                 text: '${comments[index].text}',
                                                 child: InkWell(
-                                                  onTap: () {},
+                                                  // onTap: () {},
                                                   child: Container(
                                                     child: Row(
                                                       children: [
@@ -264,18 +272,18 @@ class _CommentsListViewState extends State<CommentsListView> {
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.only(left: 20),
-                                      child: Text(
-                                        '${comments[index].ago()}',
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 10,
+                                      Container(
+                                        padding: EdgeInsets.only(left: 20),
+                                        child: Text(
+                                          '${comments[index].ago()}',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 10,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -325,7 +333,6 @@ class _CommentFieldState extends State<CommentField> {
           createdAt: createdAt.toString(),
           timestamp: timestamp);
       db.comment(widget.postId, com);
-      FocusScope.of(context).unfocus();
       commentController.clear();
     }
   }
@@ -403,6 +410,8 @@ class _CommentFieldState extends State<CommentField> {
                     ),
                     onPressed: commentController.text.trim().isNotEmpty
                         ? () async {
+                            FocusScope.of(context).unfocus();
+
                             await comment(_authState.data.value.uid);
                             context.read(commentProvider.notifier).add(com);
                             // setState(() {
