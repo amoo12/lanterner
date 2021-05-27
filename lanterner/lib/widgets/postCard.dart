@@ -6,6 +6,7 @@ import 'package:lanterner/pages/comments.dart';
 import 'package:lanterner/pages/myProfile.dart';
 import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/providers/auth_provider.dart';
+import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class PostCard extends StatefulWidget {
@@ -79,51 +80,12 @@ class _PostCardState extends State<PostCard> {
                         children: [
                           Row(
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  if (widget.post.ownerId ==
-                                      _authState.data.value.uid) {
-                                    pushNewScreenWithRouteSettings(
-                                      context,
-                                      settings:
-                                          RouteSettings(name: '/myProfile'),
-                                      screen: MyProfile(),
-                                      pageTransitionAnimation:
-                                          PageTransitionAnimation.slideUp,
-                                      withNavBar: false,
-                                    );
-                                  } else {
-                                    // pushNewScreenWithRouteSettings(context, screen: screen, settings: settings)
-                                    if (ModalRoute.of(context).settings.name !=
-                                        '/profile') {
-                                      pushNewScreenWithRouteSettings(
-                                        context,
-                                        settings:
-                                            RouteSettings(name: '/profile'),
-                                        screen:
-                                            Profile(uid: widget.post.ownerId),
-                                        pageTransitionAnimation:
-                                            PageTransitionAnimation.slideUp,
-                                        withNavBar: false,
-                                      );
-                                    }
-                                  }
-                                },
-                                child: CircleAvatar(
-                                  radius: 25,
-                                  backgroundImage: widget.post.userPhotoUrl !=
-                                          null
-                                      ? NetworkImage(
-                                          widget.post.userPhotoUrl,
-                                        )
-                                      : NetworkImage(
-                                          'https://via.placeholder.com/150'),
-                                  child: widget.post.userPhotoUrl == null
-                                      ? Icon(Icons.person,
-                                          size: 40, color: Colors.grey)
-                                      : Container(),
-                                ),
-                              ),
+                              buildCircleAvatar(
+                                  ownerId: widget.post.ownerId,
+                                  currentUserId: _authState.data.value.uid,
+                                  photoUrl: widget.post.userPhotoUrl,
+                                  size: 25,
+                                  context: context),
                             ],
                           ),
                           SizedBox(

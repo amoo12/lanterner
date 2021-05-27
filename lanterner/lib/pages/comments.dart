@@ -5,15 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/comment.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
-import 'package:lanterner/pages/myProfile.dart';
-import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/providers/comments_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
+import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class Comments extends StatelessWidget {
   Comments({Key key, this.postId}) : super(key: key);
@@ -170,62 +168,14 @@ class _CommentsListViewState extends State<CommentsListView> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          if (comments[index].user.uid ==
-                                              _authState.data.value.uid) {
-                                            pushNewScreenWithRouteSettings(
-                                              context,
-                                              settings: RouteSettings(
-                                                  name: '/myProfile'),
-                                              screen: MyProfile(),
-                                              pageTransitionAnimation:
-                                                  PageTransitionAnimation
-                                                      .slideUp,
-                                              withNavBar: false,
-                                            );
-                                          } else {
-                                            // pushNewScreenWithRouteSettings(context, screen: screen, settings: settings)
-                                            if (ModalRoute.of(context)
-                                                    .settings
-                                                    .name !=
-                                                '/profile') {
-                                              pushNewScreenWithRouteSettings(
-                                                context,
-                                                settings: RouteSettings(
-                                                    name: '/profile'),
-                                                screen: Profile(
-                                                    uid: comments[index]
-                                                        .user
-                                                        .uid),
-                                                pageTransitionAnimation:
-                                                    PageTransitionAnimation
-                                                        .slideUp,
-                                                withNavBar: false,
-                                              );
-                                            }
-                                          }
-                                        },
-                                        child: CircleAvatar(
-                                          radius: 22,
-                                          backgroundImage: comments[index]
-                                                      .user
-                                                      .photoUrl !=
-                                                  null
-                                              ? NetworkImage(
-                                                  comments[index].user.photoUrl,
-                                                )
-                                              : NetworkImage(
-                                                  'https://via.placeholder.com/150'),
-                                          child:
-                                              comments[index].user.photoUrl ==
-                                                      null
-                                                  ? Icon(Icons.person,
-                                                      size: 40,
-                                                      color: Colors.grey)
-                                                  : Container(),
-                                        ),
-                                      ),
+                                      buildCircleAvatar(
+                                          currentUserId:
+                                              _authState.data.value.uid,
+                                          ownerId: comments[index].user.uid,
+                                          photoUrl:
+                                              comments[index].user.photoUrl,
+                                          size: 22,
+                                          context: context),
                                       Expanded(
                                         child: Container(
                                           width: MediaQuery.of(context)
