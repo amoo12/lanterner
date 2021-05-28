@@ -70,6 +70,18 @@ class DatabaseService {
         .then((doc) => Post.fromMap(doc));
   }
 
+  Future<void> deletePost(Post post) async {
+    var batch = FirebaseFirestore.instance.batch();
+    // delete post from posts collection
+    batch.delete(postsCollection.doc(post.postId));
+    // update posts count in user profile
+    batch.update(usersCollection.doc(post.ownerId),
+        {'postsCount': FieldValue.increment(-1)});
+
+    //commit batch
+    batch.commit();
+  }
+
 //update profile photo url in user document
   Future<void> updateProfilePicture(String uid, String photoUrl) {
     return usersCollection.doc(uid).update({

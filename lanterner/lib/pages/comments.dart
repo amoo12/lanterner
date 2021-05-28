@@ -135,7 +135,7 @@ class _CommentsListViewState extends State<CommentsListView> {
                                             children: [
                                               ListTile(
                                                 leading: Icon(Icons.delete),
-                                                title: Text('hello'),
+                                                title: Text('Delete'),
                                                 onTap: () async {
                                                   //detlte comment from db
                                                   await widget.db.deleteCommetn(

@@ -4,12 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/pages/comments.dart';
 import 'package:lanterner/providers/auth_provider.dart';
+import 'package:lanterner/providers/posts_provider.dart';
+import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
-  const PostCard(this.post, {Key key}) : super(key: key);
+  final listKey;
+  const PostCard(this.post, {Key key, this.listKey}) : super(key: key);
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -41,9 +45,10 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     splitCaption(widget.post.caption);
-
+    print(ModalRoute.of(context).settings.name);
     return Consumer(builder: (context, watch, child) {
       final _authState = watch(authStateProvider);
+
       return Container(
         width: MediaQuery.of(context).size.width,
         child: Card(
@@ -135,28 +140,28 @@ class _PostCardState extends State<PostCard> {
                           : '',
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.95,
-                        padding: new EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 10.0),
                         child: secondHalf.isEmpty
-                            ? new Text(
+                            ? Text(
                                 firstHalf,
                                 style: TextStyle(color: Colors.white),
                               )
-                            : new Column(
+                            : Column(
                                 children: <Widget>[
-                                  new Text(
+                                  Text(
                                     flag
                                         ? (firstHalf + "...")
                                         : (firstHalf + secondHalf),
                                     style: TextStyle(color: Colors.white),
                                   ),
-                                  new InkWell(
-                                    child: new Row(
+                                  InkWell(
+                                    child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: <Widget>[
-                                        new Text(
+                                        Text(
                                           flag ? "show more" : "show less",
-                                          style: new TextStyle(
+                                          style: TextStyle(
                                               color: Colors.grey[350],
                                               fontSize: 14),
                                         ),
@@ -201,7 +206,11 @@ class _PostCardState extends State<PostCard> {
                         )
                       : Container(),
 
-                  PostCardFooter(postId: widget.post.postId),
+                  PostCardFooter(
+                    post: widget.post,
+                    currentUserID: _authState.data.value.uid,
+                    parentContext: context,
+                  ),
                 ],
               ),
             ),
@@ -255,9 +264,13 @@ class _ImageViewerState extends State<ImageViewer> {
 }
 
 class PostCardFooter extends StatefulWidget {
-  final postId;
+  final Post post;
+  final String currentUserID;
+  final BuildContext parentContext;
 
-  const PostCardFooter({Key key, this.postId}) : super(key: key);
+  const PostCardFooter(
+      {Key key, this.post, this.currentUserID, this.parentContext})
+      : super(key: key);
 
   @override
   _PostCardFooterState createState() => _PostCardFooterState();
@@ -267,6 +280,8 @@ class _PostCardFooterState extends State<PostCardFooter> {
   bool isLiked = false;
 
   var isSaved = false;
+
+  final DatabaseService db = DatabaseService();
 
   void like() {
     setState(() {
@@ -314,7 +329,7 @@ class _PostCardFooterState extends State<PostCardFooter> {
                     pushNewScreenWithRouteSettings(
                       context,
                       settings: RouteSettings(name: '/comments'),
-                      screen: Comments(postId: widget.postId),
+                      screen: Comments(postId: widget.post.postId),
                       pageTransitionAnimation: PageTransitionAnimation.slideUp,
                       withNavBar: false,
                     );
@@ -347,7 +362,52 @@ class _PostCardFooterState extends State<PostCardFooter> {
                 color: Colors.grey[400],
                 size: 20,
               ),
-              onPressed: () {},
+              onPressed: () async {
+                if (widget.currentUserID == widget.post.ownerId) {
+                  showBarModalBottomSheet(
+                    useRootNavigator: true,
+                    barrierColor: Colors.black.withOpacity(0.3),
+                    expand: false,
+                    context: context,
+                    builder: (context) => Container(
+                      height: 100,
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8))),
+                      child: ListView(
+                        children: [
+                          ListTile(
+                            leading: Icon(Icons.delete),
+                            title: Text('Delete'),
+                            onTap: () async {
+                              if (ModalRoute.of(widget.parentContext)
+                                      .settings
+                                      .name ==
+                                  '/comments') {
+                                //detlte post from db
+                                await db.deletePost(widget.post);
+
+                                Navigator.pop(context);
+                                Navigator.pop(context, widget.post);
+                              } else {
+                                //detlte post from db
+                                await db.deletePost(widget.post);
+
+                                // delete the post from provider to trigger rebuild
+                                context.read(postProvider).remove(widget.post);
+
+                                Navigator.pop(context);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
           ),
         ],

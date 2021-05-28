@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/post.dart';
+import 'package:lanterner/providers/posts_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -29,6 +31,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   ScrollController _scrollViewController;
+  final _myList = GlobalKey<State<StatefulWidget>>();
   bool isScrollingDown = false;
   double appbarHieght = 56.0;
   DatabaseService db = DatabaseService();
@@ -87,16 +90,29 @@ class _HomeState extends State<Home> {
                           future: db.getPosts(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                              List<Post> posts = snapshot.data;
+                              if (snapshot.data.length > 0) {
+                                return Consumer(
+                                    builder: (context, watch, child) {
+                                  watch(postProvider).posts = snapshot.data;
+                                  List<Post> posts =
+                                      watch(postProvider).posts.length == 0
+                                          ? snapshot.data
+                                          : [
+                                              ...snapshot.data,
+                                              ...watch(postProvider).posts
+                                            ];
 
-                              if (posts.length > 0) {
-                                return ListView.builder(
-                                    controller: _scrollViewController,
-                                    itemCount: posts.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return PostCard(posts[index]);
-                                    });
+                                  return ListView.builder(
+                                      key: _myList,
+                                      controller: _scrollViewController,
+                                      itemCount: posts.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return PostCard(posts[index],
+                                            listKey: _myList,
+                                            key: ValueKey(posts[index].postId));
+                                      });
+                                });
                               } else {
                                 return Container(
                                     child: Center(
@@ -113,134 +129,6 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-
-      // SafeArea(
-      //   child: Column(
-      //     children: [
-      //       buildMyAppBar(),
-      //       Expanded(
-      //         child: SingleChildScrollView(
-      //           controller: _scrollViewController,
-      //           child: Column(
-      //             mainAxisAlignment: MainAxisAlignment.center,
-      //             crossAxisAlignment: CrossAxisAlignment.center,
-      //             children: <Widget>[
-      //               Center(
-      //                 child: ElevatedButton(
-      //                   onPressed: () {
-      //                     pushNewScreenWithRouteSettings(
-      //                       context,
-      //                       settings: RouteSettings(name: '/home'),
-      //                       screen: MainScreen2(),
-      //                       pageTransitionAnimation:
-      //                           PageTransitionAnimation.scaleRotate,
-      //                     );
-      //                   },
-      //                   child: Text(
-      //                     "Go to Second Screen ->",
-      //                     style: TextStyle(color: Colors.white),
-      //                   ),
-      //                 ),
-      //               ),
-      //               Center(
-      //                 child: ElevatedButton(
-      //                   onPressed: () {
-      //                     showModalBottomSheet(
-      //                       context: context,
-      //                       backgroundColor: Colors.white,
-      //                       useRootNavigator: true,
-      //                       builder: (context) => Center(
-      //                         child: ElevatedButton(
-      //                           onPressed: () {
-      //                             Navigator.pop(context);
-      //                           },
-      //                           child: Text(
-      //                             "Exit",
-      //                             style: TextStyle(color: Colors.white),
-      //                           ),
-      //                         ),
-      //                       ),
-      //                     );
-      //                   },
-      //                   child: Text(
-      //                     "Push bottom sheet on TOP of Nav Bar",
-      //                     style: TextStyle(color: Colors.white),
-      //                   ),
-      //                 ),
-      //               ),
-      //               Center(
-      //                 child: ElevatedButton(
-      //                   onPressed: () {
-      //                     showModalBottomSheet(
-      //                       context: context,
-      //                       backgroundColor: Colors.white,
-      //                       useRootNavigator: false,
-      //                       builder: (context) => Center(
-      //                         child: ElevatedButton(
-      //                           onPressed: () {
-      //                             Navigator.pop(context);
-      //                           },
-      //                           child: Text(
-      //                             "Exit",
-      //                             style: TextStyle(color: Colors.white),
-      //                           ),
-      //                         ),
-      //                       ),
-      //                     );
-      //                   },
-      //                   child: Text(
-      //                     "Push bottom sheet BEHIND the Nav Bar",
-      //                     style: TextStyle(color: Colors.white),
-      //                   ),
-      //                 ),
-      //               ),
-      //               Center(
-      //                 child: ElevatedButton(
-      //                   onPressed: () {
-      //                     // pushDynamicScreen(context,
-      //                     //     screen: SampleModalScreen(), withNavBar: true);
-      //                   },
-      //                   child: Text(
-      //                     "Push Dynamic/Modal Screen",
-      //                     style: TextStyle(color: Colors.white),
-      //                   ),
-      //                 ),
-      //               ),
-      //               Center(
-      //                 child: ElevatedButton(
-      //                   onPressed: () {
-      //                     this.widget.onScreenHideButtonPressed();
-      //                   },
-      //                   child: Text(
-      //                     this.widget.hideStatus
-      //                         ? "Unhide Navigation Bar"
-      //                         : "Hide Navigation Bar",
-      //                     style: TextStyle(color: Colors.white),
-      //                   ),
-      //                 ),
-      //               ),
-      //               Center(
-      //                 child: ElevatedButton(
-      //                   onPressed: () {
-      //                     Navigator.of(this.widget.menuScreenContext).pop();
-      //                   },
-      //                   child: Text(
-      //                     "<- Main Menu",
-      //                     style: TextStyle(color: Colors.white),
-      //                   ),
-      //                 ),
-      //               ),
-      //               SizedBox(
-      //                 height: 60.0,
-      //               ),
-      //               PostCard(),
-      //             ],
-      //           ),
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
     );
     // );
   }
@@ -324,3 +212,131 @@ class MainScreen3 extends StatelessWidget {
     );
   }
 }
+
+// SafeArea(
+//   child: Column(
+//     children: [
+//       buildMyAppBar(),
+//       Expanded(
+//         child: SingleChildScrollView(
+//           controller: _scrollViewController,
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             crossAxisAlignment: CrossAxisAlignment.center,
+//             children: <Widget>[
+//               Center(
+//                 child: ElevatedButton(
+//                   onPressed: () {
+//                     pushNewScreenWithRouteSettings(
+//                       context,
+//                       settings: RouteSettings(name: '/home'),
+//                       screen: MainScreen2(),
+//                       pageTransitionAnimation:
+//                           PageTransitionAnimation.scaleRotate,
+//                     );
+//                   },
+//                   child: Text(
+//                     "Go to Second Screen ->",
+//                     style: TextStyle(color: Colors.white),
+//                   ),
+//                 ),
+//               ),
+//               Center(
+//                 child: ElevatedButton(
+//                   onPressed: () {
+//                     showModalBottomSheet(
+//                       context: context,
+//                       backgroundColor: Colors.white,
+//                       useRootNavigator: true,
+//                       builder: (context) => Center(
+//                         child: ElevatedButton(
+//                           onPressed: () {
+//                             Navigator.pop(context);
+//                           },
+//                           child: Text(
+//                             "Exit",
+//                             style: TextStyle(color: Colors.white),
+//                           ),
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                   child: Text(
+//                     "Push bottom sheet on TOP of Nav Bar",
+//                     style: TextStyle(color: Colors.white),
+//                   ),
+//                 ),
+//               ),
+//               Center(
+//                 child: ElevatedButton(
+//                   onPressed: () {
+//                     showModalBottomSheet(
+//                       context: context,
+//                       backgroundColor: Colors.white,
+//                       useRootNavigator: false,
+//                       builder: (context) => Center(
+//                         child: ElevatedButton(
+//                           onPressed: () {
+//                             Navigator.pop(context);
+//                           },
+//                           child: Text(
+//                             "Exit",
+//                             style: TextStyle(color: Colors.white),
+//                           ),
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                   child: Text(
+//                     "Push bottom sheet BEHIND the Nav Bar",
+//                     style: TextStyle(color: Colors.white),
+//                   ),
+//                 ),
+//               ),
+//               Center(
+//                 child: ElevatedButton(
+//                   onPressed: () {
+//                     // pushDynamicScreen(context,
+//                     //     screen: SampleModalScreen(), withNavBar: true);
+//                   },
+//                   child: Text(
+//                     "Push Dynamic/Modal Screen",
+//                     style: TextStyle(color: Colors.white),
+//                   ),
+//                 ),
+//               ),
+//               Center(
+//                 child: ElevatedButton(
+//                   onPressed: () {
+//                     this.widget.onScreenHideButtonPressed();
+//                   },
+//                   child: Text(
+//                     this.widget.hideStatus
+//                         ? "Unhide Navigation Bar"
+//                         : "Hide Navigation Bar",
+//                     style: TextStyle(color: Colors.white),
+//                   ),
+//                 ),
+//               ),
+//               Center(
+//                 child: ElevatedButton(
+//                   onPressed: () {
+//                     Navigator.of(this.widget.menuScreenContext).pop();
+//                   },
+//                   child: Text(
+//                     "<- Main Menu",
+//                     style: TextStyle(color: Colors.white),
+//                   ),
+//                 ),
+//               ),
+//               SizedBox(
+//                 height: 60.0,
+//               ),
+//               PostCard(),
+//             ],
+//           ),
+//         ),
+//       ),
+//     ],
+//   ),
+// ),
