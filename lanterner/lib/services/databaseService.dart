@@ -116,7 +116,7 @@ class DatabaseService {
 // delete the user document from the followingsub-collection
     batch.set(
         usersCollection.doc(uid).collection('followers').doc(currrentUser.uid),
-        {'user': currrentUser.toMap(), 'isFollowing': true});
+        currrentUser.toMap());
 
     // increase the followers count on the user document
     batch.update(
