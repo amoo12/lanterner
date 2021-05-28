@@ -7,6 +7,7 @@ import '../models/user.dart';
 import '../services/databaseService.dart';
 import 'dart:math' as math;
 import '../widgets/progressIndicator.dart';
+import 'followers.dart';
 
 //ignore: must_be_immutable
 class MyProfile extends ConsumerWidget {
@@ -122,17 +123,28 @@ class MyProfile extends ConsumerWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Column(
-                                    children: [
-                                      Text(
-                                        user.following.toString() ?? '0',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      Text(
-                                        'Following',
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    ],
+                                  GestureDetector(
+                                    onTap: () {
+                                      pushNewScreenWithRouteSettings(context,
+                                          screen: FollowersList(
+                                            currentUserId: user.uid,
+                                          ),
+                                          settings:
+                                              RouteSettings(name: '/following'),
+                                          withNavBar: false);
+                                    },
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          user.following.toString() ?? '0',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        Text(
+                                          'Following',
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   Container(
                                     height: 30,
@@ -142,17 +154,28 @@ class MyProfile extends ConsumerWidget {
                                       thickness: 0.5,
                                     ),
                                   ),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        user.followers.toString() ?? '0',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      Text(
-                                        'Followers',
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    ],
+                                  GestureDetector(
+                                    onTap: () {
+                                      pushNewScreenWithRouteSettings(context,
+                                          screen: FollowersList(
+                                            currentUserId: user.uid,
+                                          ),
+                                          settings:
+                                              RouteSettings(name: '/followers'),
+                                          withNavBar: false);
+                                    },
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          user.followers.toString() ?? '0',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        Text(
+                                          'Followers',
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   Container(
                                     height: 30,

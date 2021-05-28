@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/widgets/postCard.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import '../models/user.dart';
 import '../services/databaseService.dart';
 import '../widgets/progressIndicator.dart';
+import 'followers.dart';
 
 //ignore: must_be_immutable
 class Profile extends StatefulWidget {
@@ -138,21 +140,35 @@ class _ProfileState extends State<Profile> {
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceEvenly,
                                               children: [
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      user.following
-                                                              .toString() ??
-                                                          '0',
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ),
-                                                    Text(
-                                                      'Following',
-                                                      style: TextStyle(
-                                                          color: Colors.grey),
-                                                    ),
-                                                  ],
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    pushNewScreenWithRouteSettings(
+                                                        context,
+                                                        screen: FollowersList(
+                                                          currentUserId:
+                                                              user.uid,
+                                                        ),
+                                                        settings: RouteSettings(
+                                                            name: '/following'),
+                                                        withNavBar: false);
+                                                  },
+                                                  child: Column(
+                                                    children: [
+                                                      Text(
+                                                        user.following
+                                                                .toString() ??
+                                                            '0',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                      Text(
+                                                        'Following',
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                                 Container(
                                                   height: 30,
@@ -162,21 +178,35 @@ class _ProfileState extends State<Profile> {
                                                     thickness: 0.5,
                                                   ),
                                                 ),
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      user.followers
-                                                              .toString() ??
-                                                          '0',
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ),
-                                                    Text(
-                                                      'Followers',
-                                                      style: TextStyle(
-                                                          color: Colors.grey),
-                                                    ),
-                                                  ],
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    pushNewScreenWithRouteSettings(
+                                                        context,
+                                                        screen: FollowersList(
+                                                          currentUserId:
+                                                              user.uid,
+                                                        ),
+                                                        settings: RouteSettings(
+                                                            name: '/followers'),
+                                                        withNavBar: false);
+                                                  },
+                                                  child: Column(
+                                                    children: [
+                                                      Text(
+                                                        user.followers
+                                                                .toString() ??
+                                                            '0',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                      Text(
+                                                        'Followers',
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                                 Container(
                                                   height: 30,

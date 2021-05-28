@@ -4,11 +4,11 @@ import 'package:lanterner/pages/profile.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 GestureDetector buildCircleAvatar(
-    {String ownerId,
-    photoUrl,
-    currentUserId,
-    double size,
-    BuildContext context}) {
+    {@required String ownerId,
+    @required photoUrl,
+    @required currentUserId,
+    @required double size,
+    @required BuildContext context}) {
   return GestureDetector(
     onTap: () {
       if (ownerId == currentUserId) {

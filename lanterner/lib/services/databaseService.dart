@@ -143,12 +143,12 @@ class DatabaseService {
     batch.delete(
         usersCollection.doc(currrentUser.uid).collection('following').doc(uid));
 // decrease the following count on the stast document within the sub-collection
-    batch.update(
-        usersCollection
-            .doc(currrentUser.uid)
-            .collection('following')
-            .doc('stats'),
-        {'following': FieldValue.increment(-1)});
+    // batch.update(
+    //     usersCollection
+    //         .doc(currrentUser.uid)
+    //         .collection('following')
+    //         .doc('stats'),
+    //     {'following': FieldValue.increment(-1)});
     // decrease the following count on the user document
     batch.update(usersCollection.doc(currrentUser.uid),
         {'following': FieldValue.increment(-1)});
@@ -158,8 +158,8 @@ class DatabaseService {
     batch.delete(
         usersCollection.doc(uid).collection('followers').doc(currrentUser.uid));
     // decrease the followers count on the stast document within the sub-collection
-    batch.update(usersCollection.doc(uid).collection('followers').doc('stats'),
-        {'followers': FieldValue.increment(-1)});
+    // batch.update(usersCollection.doc(uid).collection('followers').doc('stats'),
+    //     {'followers': FieldValue.increment(-1)});
 // decrease the followers count on the user document
     batch.update(
         usersCollection.doc(uid), {'followers': FieldValue.increment(-1)});
@@ -188,6 +188,16 @@ class DatabaseService {
     } else {
       return false;
     }
+  }
+
+  Future<List<User>> getFollowers(String uid) async {
+    return await usersCollection.doc(uid).collection('followers').get().then(
+        (value) => value.docs.map((doc) => User.fromSnapShot(doc)).toList());
+  }
+
+  Future<List<User>> getFollowing(String uid) async {
+    return await usersCollection.doc(uid).collection('following').get().then(
+        (value) => value.docs.map((doc) => User.fromSnapShot(doc)).toList());
   }
 
   Future<void> comment(String postId, Comment comment) async {

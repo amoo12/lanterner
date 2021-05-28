@@ -45,7 +45,7 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     splitCaption(widget.post.caption);
-    print(ModalRoute.of(context).settings.name);
+    
     return Consumer(builder: (context, watch, child) {
       final _authState = watch(authStateProvider);
 
