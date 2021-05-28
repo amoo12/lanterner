@@ -125,13 +125,15 @@ class MyProfile extends ConsumerWidget {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      pushNewScreenWithRouteSettings(context,
-                                          screen: FollowersList(
-                                            currentUserId: user.uid,
-                                          ),
-                                          settings:
-                                              RouteSettings(name: '/following'),
-                                          withNavBar: false);
+                                      if (user.following > 0) {
+                                        pushNewScreenWithRouteSettings(context,
+                                            screen: FollowersList(
+                                              uid: user.uid,
+                                            ),
+                                            settings: RouteSettings(
+                                                name: '/following'),
+                                            withNavBar: false);
+                                      }
                                     },
                                     child: Column(
                                       children: [
@@ -156,13 +158,15 @@ class MyProfile extends ConsumerWidget {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      pushNewScreenWithRouteSettings(context,
-                                          screen: FollowersList(
-                                            currentUserId: user.uid,
-                                          ),
-                                          settings:
-                                              RouteSettings(name: '/followers'),
-                                          withNavBar: false);
+                                      if (user.followers > 0) {
+                                        pushNewScreenWithRouteSettings(context,
+                                            screen: FollowersList(
+                                              uid: user.uid,
+                                            ),
+                                            settings: RouteSettings(
+                                                name: '/followers'),
+                                            withNavBar: false);
+                                      }
                                     },
                                     child: Column(
                                       children: [
@@ -185,17 +189,30 @@ class MyProfile extends ConsumerWidget {
                                       thickness: 0.5,
                                     ),
                                   ),
-                                  Column(
-                                    children: [
-                                      Text(
-                                        user.postsCount.toString() ?? 0,
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      Text(
-                                        'Posts',
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    ],
+                                  GestureDetector(
+                                    onTap: () {
+                                      if (user.postsCount > 0) {
+                                        // pushNewScreenWithRouteSettings(context,
+                                        // screen: FollowersList(
+                                        // currentUserId: user.uid,
+                                        // ),
+                                        // settings: RouteSettings(
+                                        //     name: '/followers'),
+                                        // withNavBar: false);
+                                      }
+                                    },
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          user.postsCount.toString() ?? 0,
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        Text(
+                                          'Posts',
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),

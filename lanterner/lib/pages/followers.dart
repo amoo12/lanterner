@@ -1,15 +1,51 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lanterner/models/user.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
 
-class FollowersList extends StatelessWidget {
-  final String currentUserId;
-  bool followingPage;
-  FollowersList({Key key, this.currentUserId}) : super(key: key);
+class FollowersList extends StatefulWidget {
+  final String uid;
 
-  final DatabaseService db = DatabaseService();
+  FollowersList({Key key, this.uid}) : super(key: key);
+
+  @override
+  _FollowersListState createState() => _FollowersListState();
+}
+
+class _FollowersListState extends State<FollowersList> {
+  DatabaseService db = DatabaseService();
+
+  Future<List<User>> fetchUsers;
+
+  bool isFollowersPage;
+  fetData() async {
+    await Future.delayed(Duration.zero, () {
+      setState(() {
+        isFollowersPage =
+            ModalRoute.of(context).settings.name == '/followers' ? true : false;
+      });
+
+      fetchUsers = isFollowersPage
+          // ? db.getFollowers(widget.uid)
+          ? FirebaseFirestore.instance
+              .collection('users')
+              .doc(widget.uid)
+              .collection('followers')
+              .get()
+              .then((value) =>
+                  value.docs.map((doc) => User.fromSnapShot(doc)).toList())
+          : db.getFollowing(widget.uid);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,9 +55,7 @@ class FollowersList extends StatelessWidget {
               : 'Following'),
         ),
         body: FutureBuilder(
-            future: ModalRoute.of(context).settings.name == '/followers'
-                ? db.getFollowers(currentUserId)
-                : db.getFollowing(currentUserId),
+            future: fetchUsers,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 List<User> users = snapshot.data;
@@ -33,7 +67,7 @@ class FollowersList extends StatelessWidget {
                       leading: buildCircleAvatar(
                         context: context,
                         ownerId: users[index].uid,
-                        currentUserId: currentUserId,
+                        currentUserId: widget.uid,
                         photoUrl: users[index].photoUrl,
                         size: 22,
                       ),
@@ -41,7 +75,83 @@ class FollowersList extends StatelessWidget {
                         '${users[index].name}',
                         style: TextStyle(color: Colors.white),
                       ),
-                      // trailing: Text('button'),
+                      trailing: Container(
+                        width: 100,
+                        child: FutureBuilder(
+                            future:
+                                db.isFollowing(users[index].uid, widget.uid),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                // ignore: unused_local_variable
+                                bool isFollowing = snapshot.data;
+
+                                return Container(
+                                    child: snapshot.data
+                                        ? ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              // minimumSize: Size(30, 35),
+                                              primary:
+                                                  Theme.of(context).accentColor,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                // side: buttonType == 2
+                                                //   // ? BorderSide(color: Theme.of(context).accentColor, width: 1)
+                                                //   //     : BorderSide.none
+                                                // ),
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              User user =
+                                                  await db.getUser(widget.uid);
+                                              print('user fetched');
+                                              await db.unfollow(
+                                                  users[index].uid, user);
+                                              setState(() {
+                                                isFollowing = false;
+                                              });
+                                            },
+                                            child: Text(
+                                              'Following',
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                          )
+                                        : ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              minimumSize: Size(30, 35),
+                                              primary: Theme.of(context)
+                                                  .scaffoldBackgroundColor,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  side: BorderSide(
+                                                      color: Theme.of(context)
+                                                          .accentColor,
+                                                      width: 1)
+                                                  //   //     : BorderSide.none
+                                                  // ),
+                                                  ),
+                                            ),
+                                            onPressed: () async {
+                                              User user =
+                                                  await db.getUser(widget.uid);
+                                              print('user fetched');
+                                              await db.follow(
+                                                  users[index].uid, user);
+                                              setState(() {
+                                                isFollowing = true;
+                                              });
+                                            },
+                                            child: Text(
+                                              'Follow',
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                          ));
+                              } else {
+                                return Container();
+                              }
+                            }),
+                      ),
                     );
                   },
                 );
@@ -51,72 +161,3 @@ class FollowersList extends StatelessWidget {
             }));
   }
 }
-
-// class Users {
-//   final String name;
-//   final String avatar;
-//   Users({this.name, this.avatar});
-// }
-
-// class FilterPage extends StatelessWidget {
-//   FilterPage({Key key}) : super(key: key);
-//   List<Users> userList = [
-//     Users(name: "Jon", avatar: ""),
-//     Users(name: "Ethel ", avatar: ""),
-//     Users(name: "Elyse ", avatar: ""),
-//     Users(name: "Nail  ", avatar: ""),
-//     Users(name: "Valarie ", avatar: ""),
-//     Users(name: "Lindsey ", avatar: ""),
-//     Users(name: "Emelyan ", avatar: ""),
-//     Users(name: "Carolina ", avatar: ""),
-//     Users(name: "Catherine ", avatar: ""),
-//     Users(name: "Stepanida  ", avatar: ""),
-//   ];
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("Filter List Widget Example "),
-//       ),
-//       body: SafeArea(
-//         child: FilterListWidget<Users>(
-//           hideSelectedTextCount: true,
-//           listData: userList,
-//           hideHeaderText: true,
-//           // onApplyButtonClick: (list) {
-//           //   if (list != null) {
-//           //     print("Selected items count: ${list.length}");
-//           //   }
-//           // },
-//           choiceChipLabel: (item) {
-//             /// Used to print text on chip
-//             return item.name;
-//           },
-//           // label: (item) {
-//           /// Used to print text on chip
-//           // return item.name;
-//           // },
-//           validateSelectedItem: (list, val) {
-//             ///  identify if item is selected or not
-//             return list.contains(val);
-//           },
-//           onItemSearch: (list, text) {
-//             /// When text change in search text field then return list containing that text value
-//             ///
-//             ///Check if list has value which matchs to text
-//             if (list.any((element) =>
-//                 element.name.toLowerCase().contains(text.toLowerCase()))) {
-//               /// return list which contains matches
-//               return list
-//                   .where((element) =>
-//                       element.name.toLowerCase().contains(text.toLowerCase()))
-//                   .toList();
-//             } else {
-//               return [];
-//             }
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }

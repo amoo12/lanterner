@@ -107,13 +107,7 @@ class DatabaseService {
     batch.set(
         usersCollection.doc(currrentUser.uid).collection('following').doc(uid),
         followedUser.toMap());
-    // increase the following count on the stast document within the sub-collection
-    batch.set(
-        usersCollection
-            .doc(currrentUser.uid)
-            .collection('following')
-            .doc('stats'),
-        {'following': FieldValue.increment(1)});
+
     // increase the following count on the user document
     batch.update(usersCollection.doc(currrentUser.uid),
         {'following': FieldValue.increment(1)});
@@ -122,11 +116,7 @@ class DatabaseService {
 // delete the user document from the followingsub-collection
     batch.set(
         usersCollection.doc(uid).collection('followers').doc(currrentUser.uid),
-        currrentUser.toMap());
-
-    // decrease the followers count on the stast document within the sub-collection
-    batch.set(usersCollection.doc(uid).collection('followers').doc('stats'),
-        {'followers': FieldValue.increment(1)});
+        {'user': currrentUser.toMap(), 'isFollowing': true});
 
     // increase the followers count on the user document
     batch.update(
@@ -142,12 +132,7 @@ class DatabaseService {
     // delete the user document from the followingsub-collection
     batch.delete(
         usersCollection.doc(currrentUser.uid).collection('following').doc(uid));
-// decrease the following count on the stast document within the sub-collection
-    // batch.update(
-    //     usersCollection
-    //         .doc(currrentUser.uid)
-    //         .collection('following')
-    //         .doc('stats'),
+
     //     {'following': FieldValue.increment(-1)});
     // decrease the following count on the user document
     batch.update(usersCollection.doc(currrentUser.uid),
@@ -157,9 +142,7 @@ class DatabaseService {
     // delete the user document from the followingsub-collection
     batch.delete(
         usersCollection.doc(uid).collection('followers').doc(currrentUser.uid));
-    // decrease the followers count on the stast document within the sub-collection
-    // batch.update(usersCollection.doc(uid).collection('followers').doc('stats'),
-    //     {'followers': FieldValue.increment(-1)});
+
 // decrease the followers count on the user document
     batch.update(
         usersCollection.doc(uid), {'followers': FieldValue.increment(-1)});
@@ -173,6 +156,8 @@ class DatabaseService {
     QuerySnapshot querySnapshot =
         await usersCollection.doc(uid).collection('followers').limit(1).get();
     if (querySnapshot.size > 0) {
+      // if there's at least one uesr check if I follow them
+
       return await usersCollection
           .doc(uid)
           .collection('followers')
