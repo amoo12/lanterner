@@ -46,6 +46,15 @@ class DatabaseService {
         .then((doc) => User.fromSnapShot(doc));
   }
 
+  // update user bio
+  Future<void> updateBio(String uid, String bio) async {
+    var batch = FirebaseFirestore.instance.batch();
+
+    batch.update(usersCollection.doc(uid), {'bio': bio});
+
+    batch.commit();
+  }
+
 //get all users posts
   Future<List<Post>> getPosts() async {
     return await postsCollection

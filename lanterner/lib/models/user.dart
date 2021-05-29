@@ -13,6 +13,7 @@ class User {
   String name;
   String photoUrl;
   String dateOfBirth;
+  String bio;
   int followers;
   int following;
   int postsCount;
@@ -34,6 +35,7 @@ class User {
     this.nativeLanguage,
     this.targetLanguage,
     this.searchOptions,
+    this.bio,
   });
 
   User.signup({
@@ -49,6 +51,8 @@ class User {
     this.postsCount,
     this.nativeLanguage,
     this.targetLanguage,
+    this.searchOptions,
+    this.bio,
   });
 
   factory User.fromMap(Map<dynamic, dynamic> data) {
@@ -60,6 +64,7 @@ class User {
       name: data['name'],
       photoUrl: data['photoUrl'],
       dateOfBirth: data['dateOfBirth'],
+      bio: data['bio'],
       followers: data['followers'],
       following: data['following'],
       postsCount: data['postsCount'],
@@ -79,6 +84,7 @@ class User {
       name: data['name'],
       photoUrl: data['photoUrl'],
       dateOfBirth: data['dateOfBirth'],
+      bio: data['bio'],
       followers: data['followers'],
       following: data['following'],
       postsCount: data['postsCount'],
@@ -97,6 +103,7 @@ class User {
       'name': name,
       'photoUrl': photoUrl,
       'dateOfBirth': dateOfBirth,
+      'bio': bio,
       'followers': followers ?? 0,
       'following': following ?? 0,
       'postsCount': postsCount ?? 0,

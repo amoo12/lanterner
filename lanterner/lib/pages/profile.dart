@@ -582,26 +582,28 @@ class _ProfileState extends State<Profile> {
                                                               CrossAxisAlignment
                                                                   .start,
                                                           children: [
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .only(
-                                                                      left:
-                                                                          12.0),
-                                                              child:
-                                                                  Text('About'),
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .only(
-                                                                      left:
-                                                                          12.0),
-                                                              child: Text(
-                                                                  'About me, I am a the perfect language partner'
-                                                                  // user.about
-                                                                  ),
-                                                            ),
+                                                            user.bio != null
+                                                                ? Container(
+                                                                    padding: EdgeInsets
+                                                                        .fromLTRB(
+                                                                            10,
+                                                                            15,
+                                                                            10,
+                                                                            65),
+                                                                    child: Text(
+                                                                        user
+                                                                            .bio,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color:
+                                                                              Colors.grey[50],
+                                                                          fontSize:
+                                                                              14,
+                                                                          height:
+                                                                              1.5,
+                                                                        )),
+                                                                  )
+                                                                : Container(),
                                                           ],
                                                         ),
                                                       ),

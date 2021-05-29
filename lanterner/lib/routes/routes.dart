@@ -6,6 +6,7 @@ import 'package:lanterner/pages/bottomNavigationBar.dart';
 import 'package:lanterner/pages/comments.dart';
 import 'package:lanterner/pages/followers.dart';
 import 'package:lanterner/pages/myProfile.dart';
+import 'package:lanterner/pages/EditBio.dart';
 import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/pages/settings.dart';
@@ -23,4 +24,5 @@ Map<String, Widget Function(BuildContext)> routes = {
   '/myProfile': (context) => MyProfile(),
   '/comments': (context) => Comments(),
   '/followers': (context) => FollowersList(),
+  '/editBio': (context) => EditBio(),
 };
