@@ -86,9 +86,9 @@ class _PostCardState extends State<PostCard> {
                             child: Row(
                               children: [
                                 buildCircleAvatar(
-                                    ownerId: widget.post.ownerId,
+                                    ownerId: widget.post.user.uid,
                                     currentUserId: _authState.data.value.uid,
-                                    photoUrl: widget.post.userPhotoUrl,
+                                    photoUrl: widget.post.user.photoUrl,
                                     size: 22,
                                     context: context),
                               ],
@@ -104,7 +104,7 @@ class _PostCardState extends State<PostCard> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '${widget.post.username}',
+                                  '${widget.post.user.name}',
                                   style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.grey[400],
@@ -122,7 +122,7 @@ class _PostCardState extends State<PostCard> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       languageIndictor(
-                                          widget.post.ownerNativeLanguage),
+                                          widget.post.user.nativeLanguage),
                                       Transform.rotate(
                                         angle: 180 * math.pi / 180,
                                         child: Icon(
@@ -132,11 +132,10 @@ class _PostCardState extends State<PostCard> {
                                         ),
                                       ),
                                       languageIndictor(
-                                          widget.post.ownerNativeLanguage),
+                                          widget.post.user.targetLanguage),
                                     ],
                                   ),
                                 )
-                              
                               ],
                             ),
                           ),
@@ -394,7 +393,7 @@ class _PostCardFooterState extends State<PostCardFooter> {
                 size: 20,
               ),
               onPressed: () async {
-                if (widget.currentUserID == widget.post.ownerId) {
+                if (widget.currentUserID == widget.post.user.uid) {
                   showBarModalBottomSheet(
                     useRootNavigator: true,
                     barrierColor: Colors.black.withOpacity(0.3),

@@ -146,7 +146,6 @@ class UserResult extends StatelessWidget {
       child: Column(
         children: <Widget>[
           GestureDetector(
-            onTap: () => print('tapped'),
             child: ListTile(
               leading: CircleAvatar(
                 backgroundColor: Colors.grey,

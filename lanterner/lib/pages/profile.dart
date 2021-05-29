@@ -333,8 +333,7 @@ class _ProfileState extends State<Profile> {
                                                                           .data
                                                                           .value
                                                                           .uid);
-                                                              print(
-                                                                  'user fetched');
+
                                                               await db.unfollow(
                                                                   widget.uid,
                                                                   user);
@@ -395,8 +394,6 @@ class _ProfileState extends State<Profile> {
                                                                           .data
                                                                           .value
                                                                           .uid);
-                                                              print(
-                                                                  'user fetched');
                                                               await db.follow(
                                                                   widget.uid,
                                                                   user);
@@ -683,6 +680,9 @@ class _ProfileState extends State<Profile> {
                       return circleIndicator(context);
                     }
                   });
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("ERROR: Someting went wrong");
             } else {
               return circleIndicator(context);
             }

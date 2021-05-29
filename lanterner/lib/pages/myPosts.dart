@@ -21,13 +21,22 @@ class MyPosts extends StatelessWidget {
             if (snapshot.hasData) {
               List<Post> posts = [];
               posts = snapshot.data;
-              print(posts.length);
-              return ListView.builder(
-                itemCount: posts.length,
-                itemBuilder: (context, index) {
-                  return PostCard(posts[index]);
-                },
-              );
+              if (posts.length > 0) {
+                return ListView.builder(
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    return PostCard(posts[index]);
+                  },
+                );
+              } else {
+                return Container(
+                    child: Center(
+                  child: Text('No posts uploaded yet'),
+                ));
+              }
+            } else if (snapshot.hasError) {
+              print(snapshot.error);
+              return Text("ERROR: Someting went wrong");
             } else {
               return circleIndicator(context);
             }

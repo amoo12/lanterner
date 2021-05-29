@@ -104,7 +104,6 @@ class _FollowersListState extends State<FollowersList> {
                                             onPressed: () async {
                                               User user =
                                                   await db.getUser(widget.uid);
-                                              print('user fetched');
                                               await db.unfollow(
                                                   users[index].uid, user);
                                               setState(() {
@@ -135,7 +134,6 @@ class _FollowersListState extends State<FollowersList> {
                                             onPressed: () async {
                                               User user =
                                                   await db.getUser(widget.uid);
-                                              print('user fetched');
                                               await db.follow(
                                                   users[index].uid, user);
                                               setState(() {

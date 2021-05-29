@@ -420,6 +420,9 @@ class MyProfile extends ConsumerWidget {
                 ),
               ),
             );
+          } else if (snapshot.hasError) {
+            print(snapshot.error);
+            return Text("ERROR: Someting went wrong");
           } else {
             return circleIndicator(context);
           }

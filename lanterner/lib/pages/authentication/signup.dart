@@ -693,7 +693,6 @@ class _SignupState extends State<Signup> {
                                                 Navigator.pop(context);
                                               } else {
                                                 setState(() {
-                                                  print('clicked');
                                                   imageError =
                                                       'Please select a photo';
                                                 });

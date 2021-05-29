@@ -49,6 +49,9 @@ class Comments extends StatelessWidget {
                 ],
               ),
             );
+          } else if (snapshot.hasError) {
+            print(snapshot.error);
+            return Text("ERROR: Someting went wrong");
           } else {
             return circleIndicator(context);
           }
@@ -116,7 +119,7 @@ class _CommentsListViewState extends State<CommentsListView> {
                                     if (_authState.data.value.uid ==
                                             comments[index].user.uid ||
                                         _authState.data.value.uid ==
-                                            widget.post.ownerId) {
+                                            widget.post.user.uid) {
                                       await showBarModalBottomSheet(
                                         barrierColor:
                                             Colors.black.withOpacity(0.3),

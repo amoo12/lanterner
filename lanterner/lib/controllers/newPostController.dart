@@ -56,11 +56,12 @@ class NewPostController {
       postId: postId,
       photoUrl: mediaUrl,
       caption: captionController.text,
-      username: user.name,
-      ownerId: user.uid,
-      userPhotoUrl: user.photoUrl,
+      user: user,
+      // username: user.name,
+      // ownerId: user.uid,
+      // userPhotoUrl: user.photoUrl,
       createdAt: createdAt.toString(),
-      ownerNativeLanguage: user.nativeLanguage,
+      // ownerNativeLanguage: user.nativeLanguage,
       timestamp: timestamp,
     ));
 

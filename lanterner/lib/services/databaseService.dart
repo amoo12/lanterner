@@ -33,7 +33,7 @@ class DatabaseService {
     // batch.set(newPostRef, post.toMap());
     // print('posted');
     await usersCollection
-        .doc(post.ownerId)
+        .doc(post.user.uid)
         .update({'postsCount': FieldValue.increment(1)});
     return await postsCollection.add(post.toMap());
   }
@@ -57,7 +57,7 @@ class DatabaseService {
 //get a user's posts
   Future<List<Post>> getUserPosts(String uid) async {
     return await postsCollection
-        .where('ownerId', isEqualTo: uid)
+        .where('user.uid', isEqualTo: uid)
         .orderBy('timestamp')
         .get()
         .then((value) => value.docs.map((doc) => Post.fromMap(doc)).toList());
@@ -75,7 +75,7 @@ class DatabaseService {
     // delete post from posts collection
     batch.delete(postsCollection.doc(post.postId));
     // update posts count in user profile
-    batch.update(usersCollection.doc(post.ownerId),
+    batch.update(usersCollection.doc(post.user.uid),
         {'postsCount': FieldValue.increment(-1)});
 
     //commit batch
