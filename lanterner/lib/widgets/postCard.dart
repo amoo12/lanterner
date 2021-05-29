@@ -7,8 +7,10 @@ import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/providers/posts_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
+import 'package:lanterner/widgets/languageIndicator.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'dart:math' as math;
 
 class PostCard extends StatefulWidget {
   final Post post;
@@ -80,33 +82,63 @@ class _PostCardState extends State<PostCard> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              buildCircleAvatar(
-                                  ownerId: widget.post.ownerId,
-                                  currentUserId: _authState.data.value.uid,
-                                  photoUrl: widget.post.userPhotoUrl,
-                                  size: 25,
-                                  context: context),
-                            ],
+                          Container(
+                            child: Row(
+                              children: [
+                                buildCircleAvatar(
+                                    ownerId: widget.post.ownerId,
+                                    currentUserId: _authState.data.value.uid,
+                                    photoUrl: widget.post.userPhotoUrl,
+                                    size: 22,
+                                    context: context),
+                              ],
+                            ),
                           ),
                           SizedBox(
                             width: 10,
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${widget.post.username}',
-                                style:
-                                    TextStyle(fontSize: 14, color: Colors.grey),
-                              ),
-                              Text(
-                                'username',
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.grey[600]),
-                              ),
-                            ],
+                          Container(
+                            height: 44,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '${widget.post.username}',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey[400],
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                // Text(
+                                //   '@username',
+                                //   style: TextStyle(
+                                //       fontSize: 12, color: Colors.grey[600]),
+                                // ),
+                                Container(
+                                  width: 60,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      languageIndictor(
+                                          widget.post.ownerNativeLanguage),
+                                      Transform.rotate(
+                                        angle: 180 * math.pi / 180,
+                                        child: Icon(
+                                          Icons.arrow_back_ios,
+                                          color: Colors.grey,
+                                          size: 10,
+                                        ),
+                                      ),
+                                      languageIndictor(
+                                          widget.post.ownerNativeLanguage),
+                                    ],
+                                  ),
+                                )
+                              
+                              ],
+                            ),
                           ),
                         ],
                       ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/pages/myPosts.dart';
 import 'package:lanterner/pages/settings.dart';
 import 'package:lanterner/providers/auth_provider.dart';
+import 'package:lanterner/widgets/languageIndicator.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import '../models/user.dart';
 import '../services/databaseService.dart';
@@ -111,10 +112,30 @@ class MyProfile extends ConsumerWidget {
                                   // 'name',
                                   style: TextStyle(color: Colors.white),
                                 ),
-                                Text(
-                                  '@' + 'kare_12',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
+                                // Text(
+                                //   '@' + 'kare_12',
+                                //   style: TextStyle(color: Colors.grey),
+                                // ),
+                                SizedBox(height: 10),
+                                Container(
+                                  width: 60,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      languageIndictor(user.nativeLanguage),
+                                      Transform.rotate(
+                                        angle: 180 * math.pi / 180,
+                                        child: Icon(
+                                          Icons.arrow_back_ios,
+                                          color: Colors.grey,
+                                          size: 10,
+                                        ),
+                                      ),
+                                      languageIndictor(user.targetLanguage),
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
                             Container(

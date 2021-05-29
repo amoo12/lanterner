@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/pages/myPosts.dart';
 import 'package:lanterner/providers/auth_provider.dart';
+import 'package:lanterner/widgets/languageIndicator.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import '../models/user.dart';
 import '../services/databaseService.dart';
 import '../widgets/progressIndicator.dart';
 import 'followers.dart';
+import 'dart:math' as math;
 
 //ignore: must_be_immutable
 class Profile extends StatefulWidget {
@@ -113,10 +115,11 @@ class _ProfileState extends State<Profile> {
                                                 ),
                                                 SizedBox(width: 10),
                                                 Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       user.name,
-                                                      // 'name',
                                                       style: TextStyle(
                                                           color: Colors.white),
                                                     ),
@@ -126,6 +129,33 @@ class _ProfileState extends State<Profile> {
                                                           color: Colors.grey,
                                                           fontSize: 12),
                                                     ),
+                                                    SizedBox(height: 10),
+                                                    Container(
+                                                      width: 60,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          languageIndictor(user
+                                                              .nativeLanguage),
+                                                          Transform.rotate(
+                                                            angle: 180 *
+                                                                math.pi /
+                                                                180,
+                                                            child: Icon(
+                                                              Icons
+                                                                  .arrow_back_ios,
+                                                              color:
+                                                                  Colors.grey,
+                                                              size: 10,
+                                                            ),
+                                                          ),
+                                                          languageIndictor(user
+                                                              .targetLanguage),
+                                                        ],
+                                                      ),
+                                                    )
                                                   ],
                                                 ),
                                               ],
