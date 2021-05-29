@@ -98,7 +98,7 @@ class _HomeState extends State<Home> {
                                       watch(postProvider).posts.length == 0
                                           ? snapshot.data
                                           : [
-                                              ...snapshot.data,
+                                              // ...snapshot.data,
                                               ...watch(postProvider).posts
                                             ];
 
@@ -109,7 +109,6 @@ class _HomeState extends State<Home> {
                                       itemBuilder:
                                           (BuildContext context, int index) {
                                         return PostCard(posts[index],
-                                            listKey: _myList,
                                             key: ValueKey(posts[index].postId));
                                       });
                                 });

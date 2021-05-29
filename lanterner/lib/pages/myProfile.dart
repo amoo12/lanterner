@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lanterner/pages/myPosts.dart';
 import 'package:lanterner/pages/settings.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -192,13 +193,13 @@ class MyProfile extends ConsumerWidget {
                                   GestureDetector(
                                     onTap: () {
                                       if (user.postsCount > 0) {
-                                        // pushNewScreenWithRouteSettings(context,
-                                        // screen: FollowersList(
-                                        // currentUserId: user.uid,
-                                        // ),
-                                        // settings: RouteSettings(
-                                        //     name: '/followers'),
-                                        // withNavBar: false);
+                                        pushNewScreenWithRouteSettings(context,
+                                            screen: MyPosts(
+                                              uid: user.uid,
+                                            ),
+                                            settings:
+                                                RouteSettings(name: '/myPosts'),
+                                            withNavBar: false);
                                       }
                                     },
                                     child: Column(

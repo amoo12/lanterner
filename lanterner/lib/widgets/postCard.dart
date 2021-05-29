@@ -12,8 +12,7 @@ import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
-  final listKey;
-  const PostCard(this.post, {Key key, this.listKey}) : super(key: key);
+  const PostCard(this.post, {Key key}) : super(key: key);
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -45,7 +44,7 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     splitCaption(widget.post.caption);
-    
+
     return Consumer(builder: (context, watch, child) {
       final _authState = watch(authStateProvider);
 
