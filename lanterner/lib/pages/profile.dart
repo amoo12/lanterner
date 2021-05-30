@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/pages/myPosts.dart';
 import 'package:lanterner/providers/auth_provider.dart';
+import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/languageIndicator.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -25,8 +26,6 @@ class _ProfileState extends State<Profile> {
   bool hideStatus;
   DatabaseService db = DatabaseService();
   GlobalKey _scaffold = GlobalKey();
-
-  // ScrollController _scrollViewController = ScrollController();
 
   bool isFollowing;
   @override
@@ -97,22 +96,29 @@ class _ProfileState extends State<Profile> {
                                             child: Row(
                                               // crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                CircleAvatar(
-                                                  radius: 40,
-                                                  backgroundImage: user
-                                                              .photoUrl !=
-                                                          null
-                                                      ? NetworkImage(
-                                                          user.photoUrl,
-                                                        )
-                                                      : NetworkImage(
-                                                          'https://via.placeholder.com/150'),
-                                                  child: user.photoUrl == null
-                                                      ? Icon(Icons.person,
-                                                          size: 50,
-                                                          color: Colors.grey)
-                                                      : Container(),
-                                                ),
+                                                buildCircleAvatar(
+                                                    size: 40,
+                                                    ownerId: user.uid,
+                                                    context: context,
+                                                    photoUrl: user.photoUrl,
+                                                    currentUserId: _authState
+                                                        .data.value.uid),
+                                                // CircleAvatar(
+                                                //   radius: 40,
+                                                //   backgroundImage: user
+                                                //               .photoUrl !=
+                                                //           null
+                                                //       ? NetworkImage(
+                                                //           user.photoUrl,
+                                                //         )
+                                                //       : NetworkImage(
+                                                //           'https://via.placeholder.com/150'),
+                                                //   child: user.photoUrl == null
+                                                //       ? Icon(Icons.person,
+                                                //           size: 50,
+                                                //           color: Colors.grey)
+                                                //       : Container(),
+                                                // ),
                                                 SizedBox(width: 10),
                                                 Column(
                                                   crossAxisAlignment:
@@ -122,12 +128,6 @@ class _ProfileState extends State<Profile> {
                                                       user.name,
                                                       style: TextStyle(
                                                           color: Colors.white),
-                                                    ),
-                                                    Text(
-                                                      '@' + 'kare_12',
-                                                      style: TextStyle(
-                                                          color: Colors.grey,
-                                                          fontSize: 12),
                                                     ),
                                                     SizedBox(height: 10),
                                                     Container(
@@ -637,15 +637,9 @@ class _ProfileState extends State<Profile> {
                                                                         List<Post>
                                                                             posts =
                                                                             snapshot.data;
-
                                                                         if (posts.length >
                                                                             0) {
                                                                           return ListView.builder(
-                                                                              // physics: NeverScrollableScrollPhysics(),
-                                                                              // primary:
-                                                                              // false,
-                                                                              // shrinkWrap:
-                                                                              //     true,
                                                                               itemCount: posts.length,
                                                                               itemBuilder: (BuildContext context, int index) {
                                                                                 return PostCard(posts[index]);

@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/myProfile.dart';
 import 'package:lanterner/pages/search.dart';
+import 'package:lanterner/routes/routes.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
@@ -71,6 +72,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
         activeColorPrimary: Colors.white,
         inactiveColorPrimary: Colors.grey,
         inactiveColorSecondary: Colors.white,
+
         // textStyle: TextStyle(color: Colors.red, fontSize: 20),
       ),
       PersistentBottomNavBarItem(
@@ -81,10 +83,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
         inactiveColorPrimary: Colors.grey,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
           initialRoute: '/',
-          routes: {
-            '/first': (context) => MainScreen2(),
-            '/second': (context) => MainScreen3(),
-          },
+          routes: routes,
         ),
       ),
       PersistentBottomNavBarItem(
@@ -94,10 +93,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
         inactiveColorPrimary: Colors.grey,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
           initialRoute: '/',
-          routes: {
-            '/first': (context) => MainScreen2(),
-            '/second': (context) => MainScreen3(),
-          },
+          routes: routes,
         ),
       ),
       PersistentBottomNavBarItem(
@@ -107,10 +103,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
         inactiveColorPrimary: Colors.grey,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
           initialRoute: '/',
-          routes: {
-            '/first': (context) => MainScreen2(),
-            '/second': (context) => MainScreen3(),
-          },
+          routes: routes,
         ),
       ),
       PersistentBottomNavBarItem(
@@ -120,10 +113,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
         inactiveColorPrimary: Colors.grey,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
           initialRoute: '/',
-          routes: {
-            '/first': (context) => MainScreen2(),
-            '/second': (context) => MainScreen3(),
-          },
+          routes: routes,
         ),
       ),
     ];

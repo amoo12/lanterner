@@ -37,9 +37,9 @@ GestureDetector buildCircleAvatar(
           ? NetworkImage(
               photoUrl,
             )
-          : NetworkImage('https://via.placeholder.com/150'),
+          : AssetImage('assets/images/avatar_bg.jpg'),
       child: photoUrl == null
-          ? Icon(Icons.person, size: 40, color: Colors.grey)
+          ? Icon(Icons.person, size: 40, color: Colors.grey[200])
           : Container(),
     ),
   );

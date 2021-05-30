@@ -4,6 +4,7 @@ import 'package:lanterner/pages/myPosts.dart';
 import 'package:lanterner/pages/EditBio.dart';
 import 'package:lanterner/pages/settings.dart';
 import 'package:lanterner/providers/auth_provider.dart';
+import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/languageIndicator.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import '../models/user.dart';
@@ -97,19 +98,26 @@ class MyProfile extends ConsumerWidget {
                             children: [
                               Column(
                                 children: [
-                                  CircleAvatar(
-                                    radius: 50,
-                                    backgroundImage: user.photoUrl != null
-                                        ? NetworkImage(
-                                            user.photoUrl,
-                                          )
-                                        : NetworkImage(
-                                            'https://via.placeholder.com/150'),
-                                    child: user.photoUrl == null
-                                        ? Icon(Icons.person,
-                                            size: 50, color: Colors.grey)
-                                        : Container(),
-                                  ),
+                                  buildCircleAvatar(
+                                      size: 50,
+                                      ownerId: user.uid,
+                                      context: context,
+                                      photoUrl: user.photoUrl,
+                                      currentUserId: _authState.data.value.uid),
+                                  // CircleAvatar(
+                                  //   radius: 50,
+                                  //   backgroundImage: user.photoUrl != null
+                                  //       ? NetworkImage(
+                                  //           user.photoUrl,
+                                  //         )
+                                  //       : NetworkImage(
+                                  //           'https://via.placeholder.com/150'),
+                                  //   child: user.photoUrl == null
+                                  //       ? Icon(Icons.person,
+                                  //           size: 50, color: Colors.grey)
+                                  //       : Container(),
+                                  // ),
+
                                   Text(
                                     user.name,
                                     style: TextStyle(color: Colors.white),
@@ -452,29 +460,31 @@ class MyProfile extends ConsumerWidget {
                                                 withNavBar: false);
                                           },
                                         )
-                                      : GestureDetector(
-                                          onTap: () {
-                                            pushNewScreenWithRouteSettings(
-                                                context,
-                                                screen: EditBio(
-                                                    uid: user.uid,
-                                                    bio: user.bio),
-                                                settings: RouteSettings(
-                                                    name: '/editBio'),
-                                                pageTransitionAnimation:
-                                                    PageTransitionAnimation
-                                                        .slideUp,
-                                                withNavBar: false);
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.fromLTRB(
-                                                10, 20, 10, 65),
-                                            child: Text(user.bio,
-                                                style: TextStyle(
-                                                  color: Colors.grey[50],
-                                                  fontSize: 14,
-                                                  height: 1.5,
-                                                )),
+                                      : Flexible(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              pushNewScreenWithRouteSettings(
+                                                  context,
+                                                  screen: EditBio(
+                                                      uid: user.uid,
+                                                      bio: user.bio),
+                                                  settings: RouteSettings(
+                                                      name: '/editBio'),
+                                                  pageTransitionAnimation:
+                                                      PageTransitionAnimation
+                                                          .slideUp,
+                                                  withNavBar: false);
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  10, 20, 10, 65),
+                                              child: Text(user.bio,
+                                                  style: TextStyle(
+                                                    color: Colors.grey[50],
+                                                    fontSize: 14,
+                                                    height: 1.5,
+                                                  )),
+                                            ),
                                           ),
                                         ),
                                 ],
