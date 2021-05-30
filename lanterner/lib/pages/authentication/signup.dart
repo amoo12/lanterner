@@ -11,7 +11,6 @@ import 'package:lanterner/widgets/customTextField.dart';
 import 'package:lanterner/widgets/languagesList.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
 import 'package:lanterner/widgets/radioButtons.dart';
-// import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:smart_select/smart_select.dart';
 
 import 'dart:math' as math;
@@ -66,11 +65,15 @@ class _SignupState extends State<Signup> {
     final form = _formKey.currentState;
     if (form.validate()) {
       if (onSavedEmail(emailController.text.trim())) {
-        form.save();
-        _user.email = emailController.text.trim();
-        _user.password = passwordController.text.trim();
-        _user.name = nameController.text.trim();
-        next();
+        if (passwordController.text.trim().length < 6) {
+          error = 'passsword must be at least 6 characters';
+        } else {
+          form.save();
+          _user.email = emailController.text.trim();
+          _user.password = passwordController.text.trim();
+          _user.name = nameController.text.trim();
+          next();
+        }
       }
     }
   }
@@ -179,7 +182,7 @@ class _SignupState extends State<Signup> {
                     child: Form(
                       key: _formKey,
                       child: PageView(
-                        // physics: NeverScrollableScrollPhysics(),
+                        physics: NeverScrollableScrollPhysics(),
                         controller: pageController,
                         children: [
                           Container(
@@ -241,7 +244,9 @@ class _SignupState extends State<Signup> {
                                             Text(
                                               error != null ? '$error' : '',
                                               style: TextStyle(
-                                                  color: Colors.redAccent[400]),
+                                                color: Colors.redAccent[400],
+                                                fontSize: 14,
+                                              ),
                                             )
                                           ],
                                         ),
@@ -261,28 +266,6 @@ class _SignupState extends State<Signup> {
                                             text: 'Create an Acount',
                                             onPressed: () {
                                               step1Submit();
-                                              // if (fullName == '' ||
-                                              //     email == '' ||
-                                              //     password == '') {
-                                              //   error = 'please fill all fields';
-                                              //   SnackBar registrationBar =
-                                              //       SnackBar(
-                                              //     duration:
-                                              //         Duration(milliseconds: 300),
-                                              //     behavior:
-                                              //         SnackBarBehavior.floating,
-                                              //     margin: EdgeInsets.only(
-                                              //         bottom: _size.height * 0.15,
-                                              //         left: _size.width * 0.09,
-                                              //         right: _size.width * 0.09),
-                                              //     content: Text(
-                                              //       'please fill all fields',
-                                              //     ),
-                                              //   );
-                                              //   ScaffoldMessenger.of(context)
-                                              //       .showSnackBar(
-                                              //           registrationBar);
-                                              // } else {}
                                             }),
                                       ),
                                       SizedBox(
