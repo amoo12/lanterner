@@ -25,6 +25,12 @@ class _EditBioState extends State<EditBio> {
   }
 
   @override
+  void dispose() {
+    bioController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,

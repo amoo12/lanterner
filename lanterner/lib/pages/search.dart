@@ -25,6 +25,11 @@ class _SearchState extends State<Search> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   String searchText;
   handleSearch(String searchText) {
     setState(() {

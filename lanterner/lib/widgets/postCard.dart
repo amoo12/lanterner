@@ -33,6 +33,11 @@ class _PostCardState extends State<PostCard> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   splitCaption(String text) {
     if (text.length > 100) {
       firstHalf = text.substring(0, 100);

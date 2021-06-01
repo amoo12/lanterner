@@ -49,6 +49,11 @@ class _FollowersListState extends State<FollowersList> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 // import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 //ignore: must_be_immutable
 class CustomRadio extends StatefulWidget {
@@ -19,6 +20,11 @@ class CustomRadioState extends State<CustomRadio> {
     super.initState();
     sampleData.add(RadioModel(false, 'Male', 'Male'));
     sampleData.add(RadioModel(false, 'Female', 'Female'));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

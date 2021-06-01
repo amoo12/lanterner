@@ -83,6 +83,11 @@ class _CommentsListViewState extends State<CommentsListView> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, watch, child) {
@@ -293,6 +298,11 @@ class _CommentFieldState extends State<CommentField> {
   void initState() {
     db = DatabaseService();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
