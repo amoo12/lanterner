@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +34,9 @@ class _HomeState extends State<Home> {
   ScrollController _scrollViewController;
   final _myList = GlobalKey<State<StatefulWidget>>();
   bool isScrollingDown = false;
-  double appbarHieght = 56.0;
+  double appbarHieght = 80.0;
+  double listbottomPadding = 50.0;
+  double textSize = 14;
   DatabaseService db = DatabaseService();
 
   @override
@@ -49,6 +52,8 @@ class _HomeState extends State<Home> {
           setState(() {
             widget.hideNav();
             appbarHieght = 0;
+            textSize = 0;
+            listbottomPadding = 0;
           });
         }
       }
@@ -60,9 +65,20 @@ class _HomeState extends State<Home> {
 
           setState(() {
             widget.showNav();
-            appbarHieght = 56.0;
+            appbarHieght = 80.0;
+            textSize = 14;
+            listbottomPadding = 0;
           });
         }
+      }
+
+      if (_scrollViewController.position.atEdge) {
+        setState(() {
+          // widget.showNav();
+          // appbarHieght = 80.0;
+          // textSize = 14;
+          listbottomPadding = 50;
+        });
       }
     });
   }
@@ -76,56 +92,71 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            buildMyAppBar(),
-            Expanded(
-              child: Column(
-                children: [
-                  Expanded(
-                      child: FutureBuilder(
-                          future: db.getPosts(),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.data.length > 0) {
-                                return Consumer(
-                                    builder: (context, watch, child) {
-                                  watch(postProvider).posts = snapshot.data;
-                                  List<Post> posts =
-                                      watch(postProvider).posts.length == 0
-                                          ? snapshot.data
-                                          : [
-                                              // ...snapshot.data,
-                                              ...watch(postProvider).posts
-                                            ];
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Flexible(flex: -1, child: buildMyAppBar()),
+              Expanded(
+                // flex: 7,
+                child: Column(
+                  children: [
+                    Expanded(
+                        child: TabBarView(
+                      // physics: NeverScrollableScrollPhysics(),
+                      children: [
+                        FutureBuilder(
+                            future: db.getPosts(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                if (snapshot.data.length > 0) {
+                                  return Consumer(
+                                      builder: (context, watch, child) {
+                                    watch(postProvider).posts = snapshot.data;
+                                    List<Post> posts =
+                                        watch(postProvider).posts.length == 0
+                                            ? snapshot.data
+                                            : [
+                                                // ...snapshot.data,
+                                                ...watch(postProvider).posts
+                                              ];
 
-                                  return ListView.builder(
-                                      key: _myList,
-                                      controller: _scrollViewController,
-                                      itemCount: posts.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return PostCard(posts[index],
-                                            key: ValueKey(posts[index].postId));
-                                      });
-                                });
+                                    return Container(
+                                      padding: EdgeInsets.only(
+                                          bottom: listbottomPadding),
+                                      child: ListView.builder(
+                                          key: _myList,
+                                          controller: _scrollViewController,
+                                          itemCount: posts.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return PostCard(posts[index],
+                                                key: ValueKey(
+                                                    posts[index].postId));
+                                          }),
+                                    );
+                                  });
+                                } else {
+                                  return Container(
+                                      child: Center(
+                                    child: Text('No posts uploaded yet'),
+                                  ));
+                                }
                               } else {
-                                return Container(
-                                    child: Center(
-                                  child: Text('No posts uploaded yet'),
-                                ));
+                                return circleIndicator(context);
                               }
-                            } else {
-                              return circleIndicator(context);
-                            }
-                          })),
-                ],
-              ),
-            )
-          ],
+                            }),
+                        Container(child: Center(child: Text('Following')))
+                      ],
+                    )),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -136,7 +167,7 @@ class _HomeState extends State<Home> {
   AnimatedContainer buildMyAppBar() {
     return AnimatedContainer(
       height: appbarHieght,
-      duration: Duration(milliseconds: 200),
+      duration: Duration(milliseconds: 300),
       child: AppBar(
         title: Center(
           child: Text('Lanterner',
@@ -144,6 +175,25 @@ class _HomeState extends State<Home> {
                   .textTheme
                   .headline2
                   .copyWith(fontFamily: 'FORTE')),
+        ),
+        bottom: TabBar(
+          isScrollable: true, // brings the tabs to the center
+          dragStartBehavior: DragStartBehavior.down,
+          indicatorSize: TabBarIndicatorSize.label,
+          tabs: [
+            Tab(
+              child: Text(
+                'All',
+                style: TextStyle(fontSize: textSize),
+              ),
+            ),
+            Tab(
+              child: Text(
+                'Following',
+                style: TextStyle(fontSize: textSize),
+              ),
+            ),
+          ],
         ),
       ),
     );
