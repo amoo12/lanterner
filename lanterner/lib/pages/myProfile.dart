@@ -98,7 +98,7 @@ class MyProfile extends ConsumerWidget {
                             children: [
                               Column(
                                 children: [
-                                  buildCircleAvatar(
+                                  ProfileImage(
                                       size: 50,
                                       ownerId: user.uid,
                                       context: context,

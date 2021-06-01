@@ -74,7 +74,7 @@ class _FollowersListState extends State<FollowersList> {
                   itemCount: users.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      leading: buildCircleAvatar(
+                      leading: ProfileImage(
                         context: context,
                         ownerId: users[index].uid,
                         currentUserId: widget.uid,

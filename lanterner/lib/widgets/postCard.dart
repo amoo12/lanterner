@@ -90,7 +90,7 @@ class _PostCardState extends State<PostCard> {
                           Container(
                             child: Row(
                               children: [
-                                buildCircleAvatar(
+                                ProfileImage(
                                     ownerId: widget.post.user.uid,
                                     currentUserId: _authState.data.value.uid,
                                     photoUrl: widget.post.user.photoUrl,

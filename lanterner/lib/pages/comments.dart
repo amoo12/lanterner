@@ -174,7 +174,7 @@ class _CommentsListViewState extends State<CommentsListView> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      buildCircleAvatar(
+                                      ProfileImage(
                                           currentUserId:
                                               _authState.data.value.uid,
                                           ownerId: comments[index].user.uid,

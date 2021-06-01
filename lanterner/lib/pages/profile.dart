@@ -96,7 +96,7 @@ class _ProfileState extends State<Profile> {
                                             child: Row(
                                               // crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                buildCircleAvatar(
+                                                ProfileImage(
                                                     size: 40,
                                                     ownerId: user.uid,
                                                     context: context,
