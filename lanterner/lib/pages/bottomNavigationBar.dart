@@ -72,27 +72,31 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
         activeColorPrimary: Colors.white,
         inactiveColorPrimary: Colors.grey,
         inactiveColorSecondary: Colors.white,
+        routeAndNavigatorSettings: RouteAndNavigatorSettings(
+          initialRoute: '/home',
+          routes: routes,
+        ),
 
         // textStyle: TextStyle(color: Colors.red, fontSize: 20),
       ),
       PersistentBottomNavBarItem(
         icon: Icon(MdiIcons.chat),
         inactiveIcon: Icon(MdiIcons.chatOutline),
-        title: ("Messages"),
+        title: ("chats"),
         activeColorPrimary: Colors.white,
         inactiveColorPrimary: Colors.grey,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
-          initialRoute: '/',
+          initialRoute: '/chats',
           routes: routes,
         ),
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.search),
-        title: ("explore"),
+        title: ("Search"),
         activeColorPrimary: Colors.white,
         inactiveColorPrimary: Colors.grey,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
-          initialRoute: '/',
+          initialRoute: '/search',
           routes: routes,
         ),
       ),
@@ -102,17 +106,17 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
         activeColorPrimary: Colors.white,
         inactiveColorPrimary: Colors.grey,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
-          initialRoute: '/',
+          initialRoute: '/notifications',
           routes: routes,
         ),
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.person_pin),
-        title: ("Profile"),
+        title: ("My Profile"),
         activeColorPrimary: Colors.white,
         inactiveColorPrimary: Colors.grey,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
-          initialRoute: '/',
+          initialRoute: '/myProfile',
           routes: routes,
         ),
       ),

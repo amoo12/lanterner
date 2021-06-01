@@ -12,13 +12,17 @@ GestureDetector buildCircleAvatar(
   return GestureDetector(
     onTap: () {
       if (ownerId == currentUserId) {
-        pushNewScreenWithRouteSettings(
-          context,
-          settings: RouteSettings(name: '/myProfile'),
-          screen: MyProfile(),
-          pageTransitionAnimation: PageTransitionAnimation.slideUp,
-          withNavBar: false,
-        );
+        if (ModalRoute.of(context).settings.name == '/myProfile') {
+          // upload photo
+        } else {
+          pushNewScreenWithRouteSettings(
+            context,
+            settings: RouteSettings(name: '/myProfile'),
+            screen: MyProfile(),
+            pageTransitionAnimation: PageTransitionAnimation.slideUp,
+            withNavBar: false,
+          );
+        }
       } else {
         if (ModalRoute.of(context).settings.name != '/profile') {
           pushNewScreenWithRouteSettings(
