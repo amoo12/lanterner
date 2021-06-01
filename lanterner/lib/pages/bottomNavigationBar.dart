@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lanterner/pages/chatsList.dart';
 import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/myProfile.dart';
 import 'package:lanterner/pages/search.dart';
@@ -46,9 +47,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
           });
         },
       ),
-      Center(
-        child: Text('chats'),
-      ),
+      ChatsList(),
       Center(
         child: Search(),
       ),
