@@ -162,26 +162,30 @@ class DatabaseService {
 
 // checks wether I already follow a user
   Future<bool> isFollowing(String uid, String currentUserId) async {
-    QuerySnapshot querySnapshot =
-        await usersCollection.doc(uid).collection('followers').limit(1).get();
-    if (querySnapshot.size > 0) {
-      // if there's at least one uesr check if I follow them
-
-      return await usersCollection
-          .doc(uid)
-          .collection('followers')
-          .doc(currentUserId)
-          .get()
-          .then((doc) {
-        if (doc.exists) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-    } else {
-      return false;
-    }
+    // QuerySnapshot querySnapshot = await usersCollection
+    //     .doc(currentUserId)
+    //     .collection('following')
+    //     .limit(1)
+    //     .get();
+    // if (querySnapshot.size > 0) {
+    // if there's at least one uesr check if I follow them
+    print(currentUserId);
+    print(uid);
+    return await usersCollection
+        .doc(currentUserId)
+        .collection('following')
+        .doc(uid)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+    // } else {
+    //   return false;
+    // }
   }
 
   Future<List<User>> getFollowers(String uid) async {
