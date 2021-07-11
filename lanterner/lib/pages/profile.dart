@@ -431,7 +431,11 @@ class _ProfileState extends State<Profile> {
                                                                     .accentColor,
                                                                 width: 1)),
                                                   ),
-                                                  onPressed: () {},
+                                                  onPressed: () {
+                                                    Navigator.pushNamed(
+                                                        context, '/chatRoom',
+                                                        arguments: user.uid);
+                                                  },
                                                   child: Row(
                                                     children: [
                                                       Text('Message'),

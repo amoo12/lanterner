@@ -1,6 +1,7 @@
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lanterner/models/comment.dart';
+import 'package:lanterner/models/message.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
 
@@ -14,6 +15,8 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('users');
   final CollectionReference postsCollection =
       FirebaseFirestore.instance.collection('posts');
+  final CollectionReference messagesCollection =
+      FirebaseFirestore.instance.collection('messages');
 
   // inserts a new user record in Firestore
   Future insertUser(User user) async {
@@ -234,4 +237,34 @@ class DatabaseService {
     //commit batch
     batch.commit();
   }
+
+  Future<void> sendMessage(Message message) {
+    var batch = FirebaseFirestore.instance.batch();
+    batch.set(
+        usersCollection
+            .doc(message.senderId)
+            .collection('chats')
+            .doc(message.peerId),
+        {"lastMessage": message.toMap()});
+
+    batch.set(
+        usersCollection
+            .doc(message.peerId)
+            .collection('chats')
+            .doc(message.senderId),
+        {"lastMessage": message.toMap()});
+
+    batch.set(
+        messagesCollection
+            .doc(message.getChatroomId())
+            .collection('messages')
+            .doc(),
+        message.toMap());
+
+    batch.commit();
+  }
 }
+
+
+
+
