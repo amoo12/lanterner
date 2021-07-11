@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/message.dart';
 import 'package:lanterner/providers/auth_provider.dart';
+import 'package:lanterner/providers/chats_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:intl/intl.dart';
 
@@ -41,7 +42,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final int _limitIncrement = 20;
   DatabaseService db;
   String text = "";
-
+  MessagesState chatState;
   _scrollListener() {
     if (listScrollController.offset >=
             listScrollController.position.maxScrollExtent &&
@@ -66,7 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (textEditingController.text.trim().isNotEmpty) {
       Message message = Message(
         content: textEditingController.text.trim(),
-        timeStamp: DateTime.now().millisecondsSinceEpoch.toString(),
+        timeStamp: DateTime.now().toUtc().toString(),
         senderId: uid,
         peerId: widget.peerId,
         type: type,
@@ -100,6 +101,11 @@ class _ChatScreenState extends State<ChatScreen> {
     textEditingController = TextEditingController();
     listScrollController.addListener(_scrollListener);
     db = DatabaseService();
+    context.read(authStateProvider).data.value.uid;
+    context.read(chatsProvider.notifier).getMessages(
+        context.read(authStateProvider).data.value.uid, widget.peerId);
+    context.read(chatsProvider.notifier).getchatDetailAsync(
+        context.read(authStateProvider).data.value.uid, widget.peerId);
   }
 
   @override
@@ -107,98 +113,17 @@ class _ChatScreenState extends State<ChatScreen> {
     return Consumer(
       builder: (context, watch, child) {
         final _authState = watch(authStateProvider);
+        List<Message> messages = watch(chatsProvider).messages ?? [];
 
         // builder: (context, ) {
         return Stack(
           children: [
             ListView.builder(
-              itemCount: 3,
+              // reverse: true,
+              itemCount: messages.length,
               itemBuilder: (context, index) {
-                return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    mainAxisAlignment:
-                        // message.uid == user.uid
-                        // ?
-                        // MainAxisAlignment.end,
-                        // :
-                        MainAxisAlignment.start,
-                    children: <Widget>[
-                      // addAvatar(message.uid),
-                      // SizedBox(
-                      //   width: 5,
-                      // ),
-                      Flexible(
-                        child: Container(
-                          // width: 80,
-                          constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.7,
-                              minWidth: 30),
-                          // width: 300,
-                          margin: EdgeInsets.symmetric(vertical: 8),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 25.0, vertical: 15.0),
-                          // width: MediaQuery.of(context).size.width * 0.75,
-                          decoration:
-                              // message.uid == user.uid
-                              //     ?
-                              // BoxDecoration(
-
-                              // color: Color(0xff56B7D7),
-                              // gradient: LinearGradient(
-                              //     begin: Alignment.centerRight,
-                              //     end: Alignment.centerLeft,
-                              //     colors: <Color>[
-                              //       Color(0xFF76D3FF),
-                              //       Color(0xFF5C79FF)
-                              //     ]),
-                              // borderRadius: BorderRadius.only(
-                              //     bottomLeft: Radius.circular(50),
-                              //     topLeft: Radius.circular(50),
-                              //     topRight: Radius.circular(50)),
-                              // ),
-                              // :
-                              BoxDecoration(
-                            color: Color(0xFF353A50),
-                            borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(50),
-                                bottomRight: Radius.circular(50),
-                                topRight: Radius.circular(50)),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: <Widget>[
-                              Flexible(
-                                child: Text(
-                                  'm',
-                                  style: TextStyle(
-                                    color:
-                                        //  message.uid == user.uid
-                                        //     ?
-                                        Colors.white,
-                                    // : Colors.grey[700],
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                              // SizedBox(height: 8.0),
-                              Text(
-                                'time',
-                                style: TextStyle(
-                                  color: Colors.grey[50],
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                return chatMessage(
+                    context, messages[index], _authState.data.value.uid);
               },
             ),
             Align(
@@ -276,6 +201,84 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         );
       },
+    );
+  }
+
+  Container chatMessage(BuildContext context, Message message, String uid) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        mainAxisAlignment: message.senderId == uid
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
+        children: <Widget>[
+          // addAvatar(message.uid),
+          // SizedBox(
+          //   width: 5,
+          // ),
+          Flexible(
+            child: Container(
+              // width: 80,
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+                  minWidth: 30),
+              // width: 300,
+              margin: EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
+              // width: MediaQuery.of(context).size.width * 0.75,
+              decoration: message.senderId == uid
+                  ? BoxDecoration(
+                      color: Color(0xff56B7D7),
+                      gradient: LinearGradient(
+                          begin: Alignment.centerRight,
+                          end: Alignment.centerLeft,
+                          colors: <Color>[
+                            Color(0xFF76D3FF),
+                            Color(0xFF5C79FF)
+                          ]),
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(50),
+                          topLeft: Radius.circular(50),
+                          topRight: Radius.circular(50)),
+                    )
+                  : BoxDecoration(
+                      color: Color(0xFF353A50),
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(50),
+                          bottomRight: Radius.circular(50),
+                          topRight: Radius.circular(50)),
+                    ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Flexible(
+                    child: Text(
+                      message.content,
+                      style: TextStyle(
+                        color: message.senderId == uid
+                            ? Colors.white
+                            : Colors.grey[700],
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  // SizedBox(height: 8.0),
+                  Text(
+                    'time',
+                    style: TextStyle(
+                      color: Colors.grey[50],
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

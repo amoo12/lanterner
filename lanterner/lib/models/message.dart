@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 class Message {
   String messageId;
@@ -44,6 +43,7 @@ class Message {
     String user2 = this.peerId.substring(0, 5);
     List<String> list = [user1, user2];
     list.sort();
+
 
     // cprint(_channelName); //2RhfE-5kyFB
     return '${list[0]}-${list[1]}';

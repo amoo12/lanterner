@@ -4,6 +4,7 @@ import 'package:lanterner/models/comment.dart';
 import 'package:lanterner/models/message.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
+import 'dart:async';
 
 // this class talks to cloud firestore and manages queries
 class DatabaseService {
@@ -263,8 +264,14 @@ class DatabaseService {
 
     batch.commit();
   }
+
+  String getChatroomId(String senderId, String peerId) {
+    String user1 = senderId.substring(0, 5);
+    String user2 = peerId.substring(0, 5);
+    List<String> list = [user1, user2];
+    list.sort();
+
+    // cprint(_channelName); //2RhfE-5kyFB
+    return '${list[0]}-${list[1]}';
+  }
 }
-
-
-
-

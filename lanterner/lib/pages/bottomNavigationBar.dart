@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:lanterner/pages/chatsList.dart';
+import 'package:lanterner/pages/chats/chatsList.dart';
 import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/myProfile.dart';
 import 'package:lanterner/pages/search.dart';
