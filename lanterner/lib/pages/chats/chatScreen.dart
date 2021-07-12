@@ -4,32 +4,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/message.dart';
 import 'package:lanterner/models/user.dart';
 import 'package:lanterner/providers/auth_provider.dart';
-import 'package:lanterner/providers/chats_provider.dart';
+import 'package:lanterner/providers/messages_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:intl/intl.dart';
 
 class ChatRoom extends StatelessWidget {
-  const ChatRoom({Key key}) : super(key: key);
+ final User peer;
+  const ChatRoom({Key key, this.peer}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final User user = ModalRoute.of(context).settings.arguments;
-
+    // TODO: if the user is recived from the chatList page it only contains name,uid & photoUrl
+    final User user = ModalRoute.of(context).settings.arguments?? peer;
+    print(user.toString());
     return Scaffold(
       backgroundColor: Color(0xff181E30),
       appBar: AppBar(
         title: Text('${user.name}'),
       ),
-      body: ChatScreen(peerId: user.uid),
+      body: ChatScreen(peer: user),
     );
   }
 }
 
 class ChatScreen extends StatefulWidget {
-  final String peerId;
+  final User peer;
   const ChatScreen({
     Key key,
-    this.peerId,
+    this.peer,
   }) : super(key: key);
 
   @override
@@ -70,10 +72,10 @@ class _ChatScreenState extends State<ChatScreen> {
     listScrollController.addListener(_scrollListener);
 
     context.read(authStateProvider).data.value.uid;
-    context.read(chatsProvider.notifier).getMessages(
-        context.read(authStateProvider).data.value.uid, widget.peerId);
-    context.read(chatsProvider.notifier).getchatDetailAsync(
-        context.read(authStateProvider).data.value.uid, widget.peerId);
+    context.read(messagesProvider.notifier).getMessages(
+        context.read(authStateProvider).data.value.uid, widget.peer.uid);
+    context.read(messagesProvider.notifier).getchatDetailAsync(
+        context.read(authStateProvider).data.value.uid, widget.peer.uid);
   }
 
   @override
@@ -88,7 +90,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Consumer(
       builder: (context, watch, child) {
         final _authState = watch(authStateProvider);
-        List<Message> messages = watch(chatsProvider).messageList ?? [];
+        List<Message> messages = watch(messagesProvider).messageList ?? [];
 
         // builder: (context, ) {
         return Stack(
@@ -111,7 +113,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 ChatTextField(
-                    uid: _authState.data.value.uid, peerId: widget.peerId),
+                    uid: _authState.data.value.uid, peer: widget.peer),
               ],
             ),
           ],
@@ -232,9 +234,9 @@ String getChatTime(String date) {
 }
 
 class ChatTextField extends StatefulWidget {
-  final peerId;
+  final User peer;
   final uid;
-  ChatTextField({Key key, this.peerId, this.uid}) : super(key: key);
+  ChatTextField({Key key, this.peer, this.uid}) : super(key: key);
 
   @override
   _ChatTextFieldState createState() => _ChatTextFieldState();
@@ -250,13 +252,13 @@ class _ChatTextFieldState extends State<ChatTextField> {
         content: textEditingController.text.trim(),
         timeStamp: DateTime.now().toUtc().toString(),
         senderId: uid,
-        peerId: widget.peerId,
+        peerId: widget.peer.uid,
         type: type,
       );
       textEditingController.clear();
 
       print('MEssage:: ');
-      db.sendMessage(message);
+      db.sendMessage(message, widget.peer);
     }
   }
 

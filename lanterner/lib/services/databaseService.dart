@@ -239,21 +239,31 @@ class DatabaseService {
     batch.commit();
   }
 
-  Future<void> sendMessage(Message message) {
+  Future<void> sendMessage(Message message, User peer) async {
+    User sender = await getUser(message.senderId);
+
     var batch = FirebaseFirestore.instance.batch();
     batch.set(
         usersCollection
             .doc(message.senderId)
             .collection('chats')
             .doc(message.peerId),
-        {"lastMessage": message.toMap()});
+        {
+          'username': peer.name,
+          'photoUrl': peer.photoUrl,
+          'lastMessage': message.toMap()
+        });
 
     batch.set(
         usersCollection
             .doc(message.peerId)
             .collection('chats')
             .doc(message.senderId),
-        {"lastMessage": message.toMap()});
+        {
+          'username': sender.name,
+          'photoUrl': sender.photoUrl,
+          "lastMessage": message.toMap()
+        });
 
     batch.set(
         messagesCollection
@@ -265,6 +275,7 @@ class DatabaseService {
     batch.commit();
   }
 
+  //! TODO: duplicate function also exists in messagesProvider
   String getChatroomId(String senderId, String peerId) {
     String user1 = senderId.substring(0, 5);
     String user2 = peerId.substring(0, 5);

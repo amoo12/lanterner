@@ -1,57 +1,59 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lanterner/models/message.dart';
+import 'package:lanterner/models/chat.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 final chatsProvider =
-    ChangeNotifierProvider<MessagesState>((ref) => MessagesState());
+    ChangeNotifierProvider<ChatsListState>((ref) => ChatsListState());
 
-class MessagesState extends ChangeNotifier {
-  List<Message> messages;
+class ChatsListState extends ChangeNotifier {
+  List<Chat> chats;
 
-  MessagesState([List<Message> initialMessageList]) : super();
+  ChatsListState([List<Chat> initialchats]) : super();
 
-  StreamSubscription<QuerySnapshot> _messageSubscription;
+  StreamSubscription<QuerySnapshot> _chatsSubscription;
 
-  final CollectionReference messagesCollection =
-      FirebaseFirestore.instance.collection('messages');
+  // final CollectionReference messagesCollection =
+  //     FirebaseFirestore.instance.collection('messages');
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('users');
 
-  void remove([Message message]) {
-    messages.remove(message);
+  // void remove([Message message]) {
+  //   chats.remove(message);
 
-    //*  must call notifyListeners to trigger rebuild
-    notifyListeners();
-  }
+  //   //*  must call notifyListeners to trigger rebuild
+  //   notifyListeners();
+  // }
 
-  List<Message> get messageList {
-    if (messages == null) {
+  List<Chat> get chatsList {
+    if (chats == null) {
       return null;
     } else {
-      print('messages list length is: ' + messages.length.toString());
-      this.messages.sort((x, y) => DateTime.parse(x.timeStamp)
+      print('messages list length is: ' + chats.length.toString());
+      this.chats.sort((x, y) => DateTime.parse(x.lastMessage.timeStamp)
           .toLocal()
-          .compareTo(DateTime.parse(y.timeStamp).toLocal()));
-      this.messages.reversed;
-      this.messages = this.messages.reversed.toList();
-      return List.from(this.messages);
+          .compareTo(DateTime.parse(y.lastMessage.timeStamp).toLocal()));
+      this.chats.reversed;
+      this.chats = this.chats.reversed.toList();
+      return List.from(this.chats);
     }
   }
 
-  getMessages(String senderId, String peerId) {
+  getChats(String uid) {
     // List<Message> messages;
-    messages = null;
+    chats = null;
 
-    _messageSubscription = messagesCollection
-        .doc(getChatroomId(senderId, peerId))
-        .collection('messages')
+    _chatsSubscription = usersCollection
+        .doc(uid)
+        .collection('chats')
         .snapshots()
         .listen((QuerySnapshot snapshot) {
       if (snapshot.docChanges.isEmpty) {
         return;
       }
       if (snapshot.docChanges.first.type == DocumentChangeType.added) {
-        print('getMessages is working');
+        print('getChats is working');
         _onMessageAdded(snapshot.docChanges.first.doc);
       } else if (snapshot.docChanges.first.type == DocumentChangeType.removed) {
         // _onNotificationRemoved(snapshot.docChanges.first.doc);
@@ -63,89 +65,84 @@ class MessagesState extends ChangeNotifier {
   }
 
   void _onMessageAdded(DocumentSnapshot snapshot) {
-    if (messages == null) {
-      messages = [];
+    if (chats == null) {
+      chats = [];
     }
     if (snapshot.data() != null) {
       var map = snapshot.data();
       if (map != null) {
-        var model = Message.fromMap(map);
-        model.messageId = snapshot.id;
-        if (messages.length > 0 &&
-            messages.any((x) => x.messageId == model.messageId)) {
+        var model = Chat.fromMap(map);
+        model.peerId = snapshot.id;
+        if (chats.length > 0 && chats.any((x) => x.peerId == model.peerId)) {
           return;
         }
-        messages.add(model);
+        chats.add(model);
       }
     } else {
-      messages = null;
+      chats = null;
     }
     notifyListeners();
   }
 
   void _onMessageChanged(DocumentSnapshot snapshot) {
-    if (messages == null) {
-      messages = [];
+    if (chats == null) {
+      chats = [];
     }
     if (snapshot.data() != null) {
       var map = snapshot.data();
+
       if (map != null) {
-        var model = Message.fromMap(map);
-        model.messageId = snapshot.id;
-        if (messages.length > 0 &&
-            messages.any((x) => x.messageId == model.messageId)) {
+        var model = Chat.fromMap(map);
+        print('model Message : ${model.lastMessage.content}');
+        model.peerId = snapshot.id;
+        if (chats.length > 0 && chats.any((x) => x.peerId == model.peerId)) {
+          int index =
+              chats.indexWhere((element) => element.peerId == model.peerId);
+          chats[index] = model;
+          //   print('skipped');
+          notifyListeners();
           return;
         }
-        messages.add(model);
+        chats.add(model);
       }
     } else {
-      messages = null;
+      chats = null;
     }
     notifyListeners();
   }
 
   void onChatScreenClosed() {
-    if (_messageSubscription != null) {
-      _messageSubscription.cancel();
+    if (_chatsSubscription != null) {
+      _chatsSubscription.cancel();
     }
   }
 
-  void getchatDetailAsync(String senderId, String peerId) async {
+  void getChatListAsync(String uid) async {
     try {
-      if (messages == null) {
-        messages = [];
+      if (chats == null) {
+        chats = [];
       }
-      messagesCollection
-          .doc(getChatroomId(senderId, peerId))
-          .collection('messages')
+      usersCollection
+          .doc(uid)
+          .collection('chats')
           .get()
           .then((QuerySnapshot querySnapshot) {
         if (querySnapshot != null && querySnapshot.docs.isNotEmpty) {
           for (var i = 0; i < querySnapshot.docs.length; i++) {
-            final model = Message.fromMap(querySnapshot.docs[i].data());
-            model.messageId = querySnapshot.docs[i].id;
-            messages.add(model);
+            final model = Chat.fromMap(querySnapshot.docs[i].data());
+            model.peerId = querySnapshot.docs[i].id;
+            chats.add(model);
           }
           // _userlist.addAll(_userFilterlist);
           // _userFilterlist.sort((x, y) => y.followers.compareTo(x.followers));
           notifyListeners();
         } else {
-          messages = null;
+          chats = null;
         }
       });
     } catch (error) {
       print(error);
       // cprint(error);
     }
-  }
-
-  String getChatroomId(String senderId, String peerId) {
-    String user1 = senderId.substring(0, 5);
-    String user2 = peerId.substring(0, 5);
-    List<String> list = [user1, user2];
-    list.sort();
-
-    // cprint(_channelName); //2RhfE-5kyFB
-    return '${list[0]}-${list[1]}';
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lanterner/controllers/uploadPhoto.dart';
 import 'package:lanterner/pages/myProfile.dart';
@@ -69,8 +70,10 @@ GestureDetector buildCircleAvatar(
     child: CircleAvatar(
       radius: size,
       backgroundImage: photoUrl != null
-          ? NetworkImage(
-              photoUrl,
+          ? CachedNetworkImage(
+              imageUrl: photoUrl,
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Icon(Icons.error),
             )
           : AssetImage('assets/images/avatar_bg.jpg'),
       child: photoUrl == null

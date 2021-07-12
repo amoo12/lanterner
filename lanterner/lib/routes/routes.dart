@@ -3,7 +3,7 @@ import 'package:lanterner/auth_wrapper.dart';
 import 'package:lanterner/pages/authentication/login.dart';
 import 'package:lanterner/pages/authentication/signup.dart';
 import 'package:lanterner/pages/bottomNavigationBar.dart';
-import 'package:lanterner/pages/chats/chat.dart';
+import 'package:lanterner/pages/chats/chatScreen.dart';
 import 'package:lanterner/pages/comments.dart';
 import 'package:lanterner/pages/followers.dart';
 import 'package:lanterner/pages/myProfile.dart';
