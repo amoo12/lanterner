@@ -434,7 +434,7 @@ class _ProfileState extends State<Profile> {
                                                   onPressed: () {
                                                     Navigator.pushNamed(
                                                         context, '/chatRoom',
-                                                        arguments: user.uid);
+                                                        arguments: user);
                                                   },
                                                   child: Row(
                                                     children: [

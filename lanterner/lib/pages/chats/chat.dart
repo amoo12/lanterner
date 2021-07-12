@@ -2,6 +2,7 @@ import 'package:auto_direction/auto_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/message.dart';
+import 'package:lanterner/models/user.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/providers/chats_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
@@ -12,14 +13,14 @@ class ChatRoom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final peerId = ModalRoute.of(context).settings.arguments;
+    final User user = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       backgroundColor: Color(0xff181E30),
       appBar: AppBar(
-        title: Text('username'),
+        title: Text('${user.name}'),
       ),
-      body: ChatScreen(peerId: peerId),
+      body: ChatScreen(peerId: user.uid),
     );
   }
 }
@@ -37,11 +38,10 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   ScrollController listScrollController;
-  TextEditingController textEditingController;
+
   int _limit = 20;
   final int _limitIncrement = 20;
-  DatabaseService db;
-  String text = "";
+
   MessagesState chatState;
   _scrollListener() {
     if (listScrollController.offset >=
@@ -63,44 +63,12 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void submitMessage({String uid, String type}) {
-    if (textEditingController.text.trim().isNotEmpty) {
-      Message message = Message(
-        content: textEditingController.text.trim(),
-        timeStamp: DateTime.now().toUtc().toString(),
-        senderId: uid,
-        peerId: widget.peerId,
-        type: type,
-      );
-      textEditingController.clear();
-
-      print('MEssage:: ');
-      db.sendMessage(message);
-    }
-
-    // goes to the newely added message
-    // try {
-    //     if (state.messageList != null &&
-    //         state.messageList.length > 1 &&
-    //         _controller.offset > 0) {
-    //       _controller.animateTo(
-    //         0.0,
-    //         curve: Curves.easeOut,
-    //         duration: const Duration(milliseconds: 300),
-    //       );
-    //     }
-    //   } catch (e) {
-    //     print("[Error] $e");
-    //   }
-  }
-
   @override
   void initState() {
     super.initState();
     listScrollController = ScrollController();
-    textEditingController = TextEditingController();
     listScrollController.addListener(_scrollListener);
-    db = DatabaseService();
+
     context.read(authStateProvider).data.value.uid;
     context.read(chatsProvider.notifier).getMessages(
         context.read(authStateProvider).data.value.uid, widget.peerId);
@@ -109,95 +77,43 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
+  void dispose() {
+    listScrollController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, watch, child) {
         final _authState = watch(authStateProvider);
-        List<Message> messages = watch(chatsProvider).messages ?? [];
+        List<Message> messages = watch(chatsProvider).messageList ?? [];
 
         // builder: (context, ) {
         return Stack(
           children: [
-            ListView.builder(
-              // reverse: true,
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                return chatMessage(
-                    context, messages[index], _authState.data.value.uid);
-              },
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                color: Theme.of(context).cardColor,
-                constraints: BoxConstraints(minHeight: 60, maxHeight: 110),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        child: AutoDirection(
-                          text: text,
-                          child: TextFormField(
-                            cursorColor: Colors.white,
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
-                            style: TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              hintText: 'Type a message',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              labelStyle: TextStyle(color: Colors.white),
-                              focusColor: Colors.white,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                            ),
-                            controller: textEditingController,
-                            onChanged: (value) {
-                              setState(() {
-                                text = value;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
+            Column(
+              children: [
+                Flexible(
+                  child: Container(
+                    // margin: EdgeInsets.only(bottom: 60),
+                    child: ListView.builder(
+                      controller: listScrollController,
+                      reverse: true,
+                      physics: BouncingScrollPhysics(),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        return chatMessage(context, messages[index],
+                            _authState.data.value.uid);
+                      },
                     ),
-                    Container(
-                        height: 50,
-                        width: 50,
-                        margin: EdgeInsets.only(bottom: 5),
-                        decoration: BoxDecoration(
-                            color: textEditingController.text.trim().isNotEmpty
-                                ? Theme.of(context).accentColor
-                                : Theme.of(context)
-                                    .accentColor
-                                    .withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(50)),
-                        child: Center(
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.send,
-                              color:
-                                  textEditingController.text.trim().isNotEmpty
-                                      ? Colors.white
-                                      : Colors.white.withOpacity(0.5),
-                            ),
-                            onPressed:
-                                textEditingController.text.trim().isNotEmpty
-                                    ? () => submitMessage(
-                                        uid: _authState.data.value.uid,
-                                        type: 'text')
-                                    : null,
-                          ),
-                        ))
-                  ],
+                  ),
                 ),
-              ),
-            )
+                ChatTextField(
+                    uid: _authState.data.value.uid, peerId: widget.peerId),
+              ],
+            ),
           ],
         );
       },
@@ -229,13 +145,13 @@ class _ChatScreenState extends State<ChatScreen> {
               decoration: message.senderId == uid
                   ? BoxDecoration(
                       color: Color(0xff56B7D7),
-                      gradient: LinearGradient(
-                          begin: Alignment.centerRight,
-                          end: Alignment.centerLeft,
-                          colors: <Color>[
-                            Color(0xFF76D3FF),
-                            Color(0xFF5C79FF)
-                          ]),
+                      // gradient: LinearGradient(
+                      //     begin: Alignment.centerRight,
+                      //     end: Alignment.centerLeft,
+                      //     colors: <Color>[
+                      //       Color(0xFF76D3FF),
+                      //       Color(0xFF5C79FF)
+                      //     ]),
                       borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(50),
                           topLeft: Radius.circular(50),
@@ -256,9 +172,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: Text(
                       message.content,
                       style: TextStyle(
-                        color: message.senderId == uid
-                            ? Colors.white
-                            : Colors.grey[700],
+                        color:
+                            // message.senderId == uid
+                            //     ?
+                            Colors.white,
+                        // : Colors.grey[700],
                         fontSize: 14.0,
                         fontWeight: FontWeight.w400,
                       ),
@@ -266,11 +184,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   // SizedBox(height: 8.0),
                   Text(
-                    'time',
+                    getChatTime(message.timeStamp),
                     style: TextStyle(
-                      color: Colors.grey[50],
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w600,
+                      color: message.senderId == uid
+                          ? Colors.grey[300]
+                          : Colors.grey[500],
+                      fontSize: 10.0,
+                      // fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -298,7 +218,7 @@ String getChatTime(String date) {
   var dur = DateTime.now().toLocal().difference(dt);
   if (dur.inDays > 0) {
     msg = '${dur.inDays} d';
-    return dur.inDays == 1 ? '1d' : DateFormat("dd MMM").format(dt);
+    return dur.inDays == 1 ? '1d' : DateFormat("dd MMM hh:mm").format(dt);
   } else if (dur.inHours > 0) {
     msg = '${dur.inHours} h';
   } else if (dur.inMinutes > 0) {
@@ -309,4 +229,114 @@ String getChatTime(String date) {
     msg = 'now';
   }
   return msg;
+}
+
+class ChatTextField extends StatefulWidget {
+  final peerId;
+  final uid;
+  ChatTextField({Key key, this.peerId, this.uid}) : super(key: key);
+
+  @override
+  _ChatTextFieldState createState() => _ChatTextFieldState();
+}
+
+class _ChatTextFieldState extends State<ChatTextField> {
+  TextEditingController textEditingController;
+  String text = "";
+  DatabaseService db;
+  void submitMessage({String uid, String type}) {
+    if (textEditingController.text.trim().isNotEmpty) {
+      Message message = Message(
+        content: textEditingController.text.trim(),
+        timeStamp: DateTime.now().toUtc().toString(),
+        senderId: uid,
+        peerId: widget.peerId,
+        type: type,
+      );
+      textEditingController.clear();
+
+      print('MEssage:: ');
+      db.sendMessage(message);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    textEditingController = TextEditingController();
+    db = DatabaseService();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    textEditingController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      color: Theme.of(context).cardColor,
+      constraints: BoxConstraints(minHeight: 60, maxHeight: 110),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: AutoDirection(
+                text: text,
+                child: TextFormField(
+                  cursorColor: Colors.white,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Type a message',
+                    hintStyle: TextStyle(color: Colors.grey),
+                    labelStyle: TextStyle(color: Colors.white),
+                    focusColor: Colors.white,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                  ),
+                  controller: textEditingController,
+                  onChanged: (value) {
+                    setState(() {
+                      text = value;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
+          Container(
+              height: 50,
+              width: 50,
+              margin: EdgeInsets.only(bottom: 5),
+              decoration: BoxDecoration(
+                  color: textEditingController.text.trim().isNotEmpty
+                      ? Theme.of(context).accentColor
+                      : Theme.of(context).accentColor.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(50)),
+              child: Center(
+                child: IconButton(
+                  icon: Icon(
+                    Icons.send,
+                    color: textEditingController.text.trim().isNotEmpty
+                        ? Colors.white
+                        : Colors.white.withOpacity(0.5),
+                  ),
+                  onPressed: textEditingController.text.trim().isNotEmpty
+                      ? () => submitMessage(uid: widget.uid, type: 'text')
+                      : null,
+                ),
+              ))
+        ],
+      ),
+    );
+  }
 }
