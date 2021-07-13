@@ -97,8 +97,17 @@ class DatabaseService {
 
 //update profile photo url in user document
   Future<void> updateProfilePicture(String uid, String photoUrl) {
-    return usersCollection.doc(uid).update({
+    var batch = FirebaseFirestore.instance.batch();
+    batch.update(usersCollection.doc(uid), {
       'photoUrl': photoUrl,
+    });
+
+    postsCollection.where('user.uid', isEqualTo: uid).get().then((snapshot) {
+      snapshot.docs.forEach((element) {
+        DocumentReference doc = postsCollection.doc(element.id);
+        batch.update(doc, {'user.photoUrl': photoUrl});
+      });
+      batch.commit();
     });
   }
 
@@ -272,7 +281,7 @@ class DatabaseService {
             .doc(),
         message.toMap());
 
-    batch.commit();
+    batch.commit().then((value) => print('message sent'));
   }
 
   //! TODO: duplicate function also exists in messagesProvider

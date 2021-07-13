@@ -5,13 +5,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as Im;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class UploadPhoto {
   PickedFile pickedFile;
   File file;
   ImagePicker _picker = ImagePicker();
   bool isUploading = false;
-
+  String photoId = Uuid().v4();
   handleTakePhoto(BuildContext context) async {
     Navigator.pop(context);
     PickedFile pickedFile = await _picker.getImage(
@@ -47,10 +48,11 @@ class UploadPhoto {
         .ref()
         .child('playground')
         .child('/some-image.jpg');
-    UploadTask uploadTask = ref.child("post_$id.jpg").putFile(imageFile);
+    UploadTask uploadTask = ref.child("post_$photoId.jpg").putFile(imageFile);
     TaskSnapshot storageSnap =
         await uploadTask.whenComplete(() => uploadTask.snapshot);
     String downloadUrl = await storageSnap.ref.getDownloadURL();
+    photoId = Uuid().v4();
     return downloadUrl;
   }
 }

@@ -70,10 +70,8 @@ GestureDetector buildCircleAvatar(
     child: CircleAvatar(
       radius: size,
       backgroundImage: photoUrl != null
-          ? CachedNetworkImage(
-              imageUrl: photoUrl,
-              placeholder: (context, url) => CircularProgressIndicator(),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+          ? CachedNetworkImageProvider(
+              photoUrl,
             )
           : AssetImage('assets/images/avatar_bg.jpg'),
       child: photoUrl == null

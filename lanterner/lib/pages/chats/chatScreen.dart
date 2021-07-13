@@ -1,36 +1,46 @@
 import 'package:auto_direction/auto_direction.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+
+import 'package:lanterner/controllers/uploadPhoto.dart';
 import 'package:lanterner/models/message.dart';
 import 'package:lanterner/models/user.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/providers/messages_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
-import 'package:intl/intl.dart';
+import 'package:lanterner/widgets/postCard.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class ChatRoom extends StatelessWidget {
- final User peer;
-  const ChatRoom({Key key, this.peer}) : super(key: key);
+  final User peer;
+  ChatRoom({Key key, this.peer}) : super(key: key);
+
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    // TODO: if the user is recived from the chatList page it only contains name,uid & photoUrl
-    final User user = ModalRoute.of(context).settings.arguments?? peer;
+    //! TODO: if the user is recived from the chatList page it only contains name,uid & photoUrl
+    final User user = ModalRoute.of(context).settings.arguments ?? peer;
     print(user.toString());
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Color(0xff181E30),
       appBar: AppBar(
         title: Text('${user.name}'),
       ),
-      body: ChatScreen(peer: user),
+      body: ChatScreen(peer: user, scaffoldKey: _scaffoldKey),
     );
   }
 }
 
 class ChatScreen extends StatefulWidget {
+  GlobalKey<ScaffoldState> scaffoldKey;
   final User peer;
-  const ChatScreen({
+  ChatScreen({
     Key key,
+    this.scaffoldKey,
     this.peer,
   }) : super(key: key);
 
@@ -113,7 +123,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 ChatTextField(
-                    uid: _authState.data.value.uid, peer: widget.peer),
+                    uid: _authState.data.value.uid,
+                    peer: widget.peer,
+                    scaffoldKey: widget.scaffoldKey),
               ],
             ),
           ],
@@ -124,84 +136,133 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Container chatMessage(BuildContext context, Message message, String uid) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        mainAxisAlignment: message.senderId == uid
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        children: <Widget>[
-          // addAvatar(message.uid),
-          // SizedBox(
-          //   width: 5,
-          // ),
-          Flexible(
-            child: Container(
-              // width: 80,
-              constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.7,
-                  minWidth: 30),
-              // width: 300,
-              margin: EdgeInsets.symmetric(vertical: 8),
-              padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
-              // width: MediaQuery.of(context).size.width * 0.75,
-              decoration: message.senderId == uid
-                  ? BoxDecoration(
-                      color: Color(0xff56B7D7),
-                      // gradient: LinearGradient(
-                      //     begin: Alignment.centerRight,
-                      //     end: Alignment.centerLeft,
-                      //     colors: <Color>[
-                      //       Color(0xFF76D3FF),
-                      //       Color(0xFF5C79FF)
-                      //     ]),
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(50),
-                          topLeft: Radius.circular(50),
-                          topRight: Radius.circular(50)),
-                    )
-                  : BoxDecoration(
-                      color: Color(0xFF353A50),
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(50),
-                          bottomRight: Radius.circular(50),
-                          topRight: Radius.circular(50)),
-                    ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Flexible(
-                    child: Text(
-                      message.content,
-                      style: TextStyle(
-                        color:
-                            // message.senderId == uid
-                            //     ?
-                            Colors.white,
-                        // : Colors.grey[700],
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.w400,
+        margin: EdgeInsets.symmetric(horizontal: 8),
+        child: Row(
+          mainAxisAlignment: message.senderId == uid
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
+          children: <Widget>[
+            // addAvatar(message.uid),
+            // SizedBox(
+            //   width: 5,
+            // ),
+            message.type == 'text'
+                ? Flexible(
+                    child: Container(
+                      // width: 80,
+                      constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.7,
+                          minWidth: 30),
+                      // width: 300,
+                      margin: EdgeInsets.symmetric(vertical: 4),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 25.0, vertical: 15.0),
+                      // width: MediaQuery.of(context).size.width * 0.75,
+                      decoration: message.senderId == uid
+                          ? BoxDecoration(
+                              color: Color(0xff56B7D7),
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(50),
+                                  topLeft: Radius.circular(50),
+                                  topRight: Radius.circular(50)),
+                            )
+                          : BoxDecoration(
+                              color: Color(0xFF353A50),
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(50),
+                                  bottomRight: Radius.circular(50),
+                                  topRight: Radius.circular(50)),
+                            ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Flexible(
+                            child: Text(
+                              message.content,
+                              style: TextStyle(
+                                color:
+                                    // message.senderId == uid
+                                    //     ?
+                                    Colors.white,
+                                // : Colors.grey[700],
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                          // SizedBox(height: 8.0),
+                          Text(
+                            getChatTime(message.timeStamp),
+                            style: TextStyle(
+                              color: Colors.grey[300],
+                              fontSize: 10.0,
+                              // fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  // SizedBox(height: 8.0),
-                  Text(
-                    getChatTime(message.timeStamp),
-                    style: TextStyle(
-                      color: message.senderId == uid
-                          ? Colors.grey[300]
-                          : Colors.grey[500],
-                      fontSize: 10.0,
-                      // fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+                  )
+                : message.type == 'image'
+                    ? Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: message.senderId == uid
+                              ? Color(0xff56B7D7)
+                              : Color(0xFF353A50),
+                        ),
+                        padding: EdgeInsets.all(3),
+                        margin: EdgeInsets.symmetric(vertical: 4),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12.0),
+                              child: GestureDetector(
+                                  onTap: () {
+                                    pushNewScreenWithRouteSettings(
+                                      context,
+                                      settings:
+                                          RouteSettings(name: '/imageViewer'),
+                                      screen: ImageViewer(
+                                          photoUrl: message.content),
+                                      pageTransitionAnimation:
+                                          PageTransitionAnimation.cupertino,
+                                      withNavBar: false,
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 200,
+                                    child: CachedNetworkImage(
+                                      fit: BoxFit.fitWidth,
+                                      imageUrl: message.content,
+                                      placeholder: (context, url) =>
+                                          CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(Icons.error),
+                                    ),
+                                  )),
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 1, 22, 0),
+                              child: Text(
+                                getChatTime(message.timeStamp),
+                                style: TextStyle(
+                                  color: Colors.grey[300],
+                                  fontSize: 10.0,
+                                  // fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : message.type == 'audio'
+                        ? Container()
+                        : Container()
+          ],
+        ));
   }
 }
 
@@ -234,9 +295,11 @@ String getChatTime(String date) {
 }
 
 class ChatTextField extends StatefulWidget {
+  GlobalKey<ScaffoldState> scaffoldKey;
   final User peer;
   final uid;
-  ChatTextField({Key key, this.peer, this.uid}) : super(key: key);
+  ChatTextField({Key key, this.peer, this.uid, this.scaffoldKey})
+      : super(key: key);
 
   @override
   _ChatTextFieldState createState() => _ChatTextFieldState();
@@ -246,20 +309,30 @@ class _ChatTextFieldState extends State<ChatTextField> {
   TextEditingController textEditingController;
   String text = "";
   DatabaseService db;
-  void submitMessage({String uid, String type}) {
-    if (textEditingController.text.trim().isNotEmpty) {
-      Message message = Message(
-        content: textEditingController.text.trim(),
-        timeStamp: DateTime.now().toUtc().toString(),
-        senderId: uid,
-        peerId: widget.peer.uid,
-        type: type,
-      );
-      textEditingController.clear();
 
-      print('MEssage:: ');
-      db.sendMessage(message, widget.peer);
+  UploadPhoto uploadPhoto;
+
+  uploadImage(String uid) async {
+    String photoUrl;
+    await uploadPhoto.compressImage(uid);
+    photoUrl = await uploadPhoto.uploadImage(uploadPhoto.file, uid);
+    print('we have the link' + photoUrl);
+    submitMessage(uid: widget.uid, type: 'image', url: photoUrl);
+  }
+
+  void submitMessage({String uid, String type, String url}) {
+    Message message = Message(
+      content: type == 'text' ? textEditingController.text.trim() : url,
+      timeStamp: DateTime.now().toUtc().toString(),
+      senderId: uid,
+      peerId: widget.peer.uid,
+      type: type,
+    );
+    if (type == 'text') {
+      textEditingController.clear();
     }
+    print('uploadPhoto with this url' + message.content);
+    db.sendMessage(message, widget.peer);
   }
 
   @override
@@ -267,6 +340,7 @@ class _ChatTextFieldState extends State<ChatTextField> {
     super.initState();
     textEditingController = TextEditingController();
     db = DatabaseService();
+    uploadPhoto = UploadPhoto();
   }
 
   @override
@@ -286,10 +360,55 @@ class _ChatTextFieldState extends State<ChatTextField> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          IconButton(
+            icon: Icon(
+              Icons.camera_alt_rounded,
+              color: Colors.grey[350],
+            ),
+            onPressed: () {
+              showDialog(
+                context: widget.scaffoldKey.currentContext,
+                builder: (context) {
+                  return SimpleDialog(
+                    title: Text("Upload image"),
+                    children: <Widget>[
+                      SimpleDialogOption(
+                          child: Text("Photo with Camera"),
+                          onPressed: () async {
+                            await uploadPhoto.handleTakePhoto(context);
+                            uploadImage(widget.uid);
+                            // setState(() {});
+                          }),
+                      SimpleDialogOption(
+                          child: Text("Image from Gallery"),
+                          onPressed: () async {
+                            await uploadPhoto.handleChooseFromGallery(context);
+                            print('photo savae1');
+                            if (uploadPhoto.file != null) {
+                              print('photo savae2');
+                              bool confirm = await Navigator.push(
+                                  widget.scaffoldKey.currentContext,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ConfirmImageSelection(
+                                              uploadPhoto: uploadPhoto)));
+                              if (confirm) {
+                                uploadImage(widget.uid);
+                              }
+                            }
+                          }),
+                      SimpleDialogOption(
+                        child: Text("Cancel"),
+                        onPressed: () => Navigator.pop(context),
+                      )
+                    ],
+                  );
+                },
+              );
+            },
+          ),
           Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              width: MediaQuery.of(context).size.width * 0.8,
               child: AutoDirection(
                 text: text,
                 child: TextFormField(
@@ -315,28 +434,120 @@ class _ChatTextFieldState extends State<ChatTextField> {
               ),
             ),
           ),
+          textEditingController.text.trim().isNotEmpty
+              ? Container(
+                  height: 50,
+                  width: 50,
+                  margin: EdgeInsets.only(bottom: 5),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).accentColor,
+                      borderRadius: BorderRadius.circular(50)),
+                  child: Center(
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.send,
+                        color: textEditingController.text.trim().isNotEmpty
+                            ? Colors.white
+                            : Colors.white.withOpacity(0.5),
+                      ),
+                      onPressed: textEditingController.text.trim().isNotEmpty
+                          ? () => submitMessage(uid: widget.uid, type: 'text')
+                          : null,
+                    ),
+                  ))
+              : Container(
+                  height: 50,
+                  width: 50,
+                  margin: EdgeInsets.only(bottom: 5),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).accentColor,
+                      borderRadius: BorderRadius.circular(50)),
+                  child: Center(
+                    child: IconButton(
+                        icon: Icon(Icons.mic, color: Colors.white),
+                        onPressed: () {
+                          // TODO: record audio
+                        }),
+                  )),
+        ],
+      ),
+    );
+  }
+}
+
+class ConfirmImageSelection extends StatefulWidget {
+  final String photoUrl;
+  UploadPhoto uploadPhoto;
+
+  ConfirmImageSelection({Key key, this.photoUrl, this.uploadPhoto})
+      : super(key: key);
+
+  @override
+  _ConfirmImageSelectionState createState() => _ConfirmImageSelectionState();
+}
+
+class _ConfirmImageSelectionState extends State<ConfirmImageSelection> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+      ),
+      body: Stack(
+        children: [
           Container(
-              height: 50,
-              width: 50,
-              margin: EdgeInsets.only(bottom: 5),
-              decoration: BoxDecoration(
-                  color: textEditingController.text.trim().isNotEmpty
-                      ? Theme.of(context).accentColor
-                      : Theme.of(context).accentColor.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(50)),
-              child: Center(
-                child: IconButton(
-                  icon: Icon(
-                    Icons.send,
-                    color: textEditingController.text.trim().isNotEmpty
-                        ? Colors.white
-                        : Colors.white.withOpacity(0.5),
+            child: Center(
+              child: GestureDetector(
+                // onVerticalDragEnd: (drag) {
+                //   Navigator.pop(context);
+                // },
+                child: InteractiveViewer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: FileImage(widget.uploadPhoto.file),
+                      ),
+                    ),
                   ),
-                  onPressed: textEditingController.text.trim().isNotEmpty
-                      ? () => submitMessage(uid: widget.uid, type: 'text')
-                      : null,
+                  maxScale: 4,
+                  minScale: .1,
+                  panEnabled: true,
+                  constrained: true,
+                  scaleEnabled: true,
                 ),
-              ))
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              color: Colors.black,
+              width: MediaQuery.of(context).size.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    child:
+                        Text('Cancel', style: TextStyle(color: Colors.white)),
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context, true);
+                      },
+                      child:
+                          Text('send', style: TextStyle(color: Colors.white))),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
