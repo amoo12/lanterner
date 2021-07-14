@@ -4,9 +4,6 @@ import 'package:lanterner/models/message.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:logger/logger.dart';
-
-var logger = Logger();
 final messagesProvider =
     ChangeNotifierProvider<MessagesState>((ref) => MessagesState());
 
@@ -27,6 +24,16 @@ class MessagesState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void add([Message message]) {
+    if (messages == null) {
+      messages = [];
+    }
+    messages.add(message);
+
+    //*  must call notifyListeners to trigger rebuild
+    notifyListeners();
+  }
+
   List<Message> get messageList {
     if (messages == null) {
       return null;
@@ -36,7 +43,6 @@ class MessagesState extends ChangeNotifier {
           .compareTo(DateTime.parse(y.timeStamp).toLocal()));
       this.messages.reversed;
       this.messages = this.messages.reversed.toList();
-      logger.d('messages length is: ' + messages.length.toString());
       return List.from(this.messages);
     }
   }
@@ -96,6 +102,10 @@ class MessagesState extends ChangeNotifier {
         model.messageId = snapshot.id;
         if (messages.length > 0 &&
             messages.any((x) => x.messageId == model.messageId)) {
+          int index = messages
+              .indexWhere((element) => element.messageId == model.messageId);
+          messages[index] = model;
+          notifyListeners();
           return;
         }
         messages.add(model);
@@ -109,7 +119,6 @@ class MessagesState extends ChangeNotifier {
   void onChatScreenClosed() {
     if (_messageSubscription != null) {
       _messageSubscription.cancel();
-      logger.d('cancelled');
     }
   }
 

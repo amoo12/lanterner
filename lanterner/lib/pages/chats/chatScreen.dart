@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-
 import 'package:lanterner/controllers/uploadPhoto.dart';
 import 'package:lanterner/models/message.dart';
 import 'package:lanterner/models/user.dart';
@@ -11,7 +10,9 @@ import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/providers/messages_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/postCard.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:uuid/uuid.dart';
 
 class ChatRoom extends StatelessWidget {
   final User peer;
@@ -108,7 +109,6 @@ class _ChatScreenState extends State<ChatScreen> {
           final _authState = watch(authStateProvider);
           List<Message> messages = watch(messagesProvider).messageList ?? [];
 
-          // builder: (context, ) {
           return Stack(
             children: [
               Align(
@@ -141,147 +141,192 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Container chatMessage(BuildContext context, Message message, String uid) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
-      child: Column(
-        crossAxisAlignment: message.senderId == uid
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
-        // mainAxisAlignment: message.senderId == uid
-        //     ? MainAxisAlignment.end
-        //     : MainAxisAlignment.start,
-        children: [
-          message.type == 'text'
-              ? Container(
-                  // width: 80,
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.85,
-                    // minWidth: 30
-                  ),
-                  // width: 300,
-                  margin: EdgeInsets.symmetric(vertical: 4),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
-                  // width: MediaQuery.of(context).size.width * 0.75,
-                  decoration: message.senderId == uid
-                      ? BoxDecoration(
-                          color: Color(0xff56B7D7),
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(50),
-                              topLeft: Radius.circular(50),
-                              topRight: Radius.circular(50)),
-                        )
-                      : BoxDecoration(
-                          color: Color(0xFF353A50),
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(50),
-                              bottomRight: Radius.circular(50),
-                              topRight: Radius.circular(50)),
-                        ),
-                  child: Column(
-                    children: [
-                      Text(
-                        message.content,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : message.type == 'image'
+  Widget chatMessage(BuildContext context, Message message, String uid) {
+    return GestureDetector(
+        onLongPress: () async {
+          if (message.senderId == uid) {
+            await showBarModalBottomSheet(
+              barrierColor: Colors.black.withOpacity(0.3),
+              expand: false,
+              context: context,
+              builder: (context) => Container(
+                height: 100,
+                padding: EdgeInsets.symmetric(vertical: 20),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(8),
+                        topRight: Radius.circular(8))),
+                child: ListView(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.delete),
+                      title: Text('Delete'),
+                      onTap: () async {
+                        //detlte comment from db
+                        // await .db.deleteCommetn(
+                        //     widget.post.postId,
+                        //     comments[index]);
+
+                        setState(() {
+                          // delete comment from the temp provider list
+                          // context
+                          //     .read(commentProvider
+                          //         .notifier)
+                          //     .remove(
+                          //         comments[index]);
+                          // remove comment from the local list.
+                          // comments.remove(
+                          //     comments[index]);
+                          // Navigator.pop(context);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: message.senderId == uid
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
+            // mainAxisAlignment: message.senderId == uid
+            //     ? MainAxisAlignment.end
+            //     : MainAxisAlignment.start,
+            children: [
+              message.type == 'text'
                   ? Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: message.senderId == uid
-                            ? Color(0xff56B7D7)
-                            : Color(0xFF353A50),
+                      // width: 80,
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.85,
+                        // minWidth: 30
                       ),
-                      padding: EdgeInsets.all(3),
+                      // width: 300,
                       margin: EdgeInsets.symmetric(vertical: 4),
-                      child: Stack(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 25.0, vertical: 15.0),
+                      // width: MediaQuery.of(context).size.width * 0.75,
+                      decoration: message.senderId == uid
+                          ? BoxDecoration(
+                              color: Color(0xff56B7D7),
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(50),
+                                  topLeft: Radius.circular(50),
+                                  topRight: Radius.circular(50)),
+                            )
+                          : BoxDecoration(
+                              color: Color(0xFF353A50),
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(50),
+                                  bottomRight: Radius.circular(50),
+                                  topRight: Radius.circular(50)),
+                            ),
+                      child: Column(
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(9.0),
-                            child: GestureDetector(
-                                onTap: () {
-                                  pushNewScreenWithRouteSettings(
-                                    context,
-                                    settings:
-                                        RouteSettings(name: '/imageViewer'),
-                                    screen:
-                                        ImageViewer(photoUrl: message.content),
-                                    pageTransitionAnimation:
-                                        PageTransitionAnimation.cupertino,
-                                    withNavBar: false,
-                                  );
-                                },
-                                child: Container(
-                                  // width: 200,
-                                  constraints: BoxConstraints(
-                                      maxHeight: 300, maxWidth: 300),
-                                  child: ShaderMask(
-                                    shaderCallback: (rect) {
-                                      return LinearGradient(
-                                        begin: Alignment.center,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Colors.transparent,
-                                          Colors.black.withOpacity(0.3),
-                                        ],
-                                      ).createShader(Rect.fromLTRB(
-                                          0, 0, rect.width, rect.height));
-                                    },
-                                    blendMode: BlendMode.darken,
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.fitWidth,
-                                      imageUrl: message.content,
-                                      placeholder: (context, url) =>
-                                          CircularProgressIndicator(),
-                                      errorWidget: (context, url, error) =>
-                                          Icon(Icons.error),
-                                    ),
-                                  ),
-                                )),
-                          ),
-                          Positioned.fill(
-                            child: Align(
-                              alignment: Alignment.bottomRight,
-                              child: Container(
-                                padding: EdgeInsets.fromLTRB(0, 1, 10, 0),
-                                child: Text(
-                                  getChatTime(message.timeStamp),
-                                  style: TextStyle(
-                                    color: Colors.grey[300],
-                                    fontSize: 10.0,
-                                    // fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
+                          Text(
+                            message.content,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ],
                       ),
                     )
-                  : message.type == 'audio'
-                      ? Container()
-                      : Container(),
-          message.type != 'image'
-              ? Text(
-                  getChatTime(message.timeStamp),
-                  style: TextStyle(
-                    color: Colors.grey[300],
-                    fontSize: 10.0,
-                    // fontWeight: FontWeight.w600,
-                  ),
-                )
-              : Container()
-        ],
-      ),
-    );
+                  : message.type == 'image'
+                      ? Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: message.senderId == uid
+                                ? Color(0xff56B7D7)
+                                : Color(0xFF353A50),
+                          ),
+                          padding: EdgeInsets.all(3),
+                          margin: EdgeInsets.symmetric(vertical: 4),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(9.0),
+                                child: GestureDetector(
+                                    onTap: () {
+                                      pushNewScreenWithRouteSettings(
+                                        context,
+                                        settings:
+                                            RouteSettings(name: '/imageViewer'),
+                                        screen: ImageViewer(
+                                            photoUrl: message.content),
+                                        pageTransitionAnimation:
+                                            PageTransitionAnimation.cupertino,
+                                        withNavBar: false,
+                                      );
+                                    },
+                                    child: Container(
+                                      // width: 200,
+                                      constraints: BoxConstraints(
+                                          maxHeight: 300, maxWidth: 300),
+                                      child: ShaderMask(
+                                        shaderCallback: (rect) {
+                                          return LinearGradient(
+                                            begin: Alignment.center,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.transparent,
+                                              Colors.black.withOpacity(0.3),
+                                            ],
+                                          ).createShader(Rect.fromLTRB(
+                                              0, 0, rect.width, rect.height));
+                                        },
+                                        blendMode: BlendMode.darken,
+                                        child: CachedNetworkImage(
+                                          fit: BoxFit.fitWidth,
+                                          imageUrl: message.content,
+                                          placeholder: (context, url) =>
+                                              CircularProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
+                                        ),
+                                      ),
+                                    )),
+                              ),
+                              Positioned.fill(
+                                child: Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Container(
+                                    padding: EdgeInsets.fromLTRB(0, 1, 10, 0),
+                                    child: Text(
+                                      getChatTime(message.timeStamp),
+                                      style: TextStyle(
+                                        color: Colors.grey[300],
+                                        fontSize: 10.0,
+                                        // fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : message.type == 'audio'
+                          ? Container()
+                          : Container(),
+              message.type != 'image'
+                  ? Text(
+                      getChatTime(message.timeStamp),
+                      style: TextStyle(
+                        color: Colors.grey[300],
+                        fontSize: 10.0,
+                        // fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  : Container()
+            ],
+          ),
+        ));
   }
 }
 
@@ -340,7 +385,10 @@ class _ChatTextFieldState extends State<ChatTextField> {
   }
 
   void submitMessage({String uid, String type, String url}) {
+    final messageId = Uuid().v4();
+
     Message message = Message(
+      messageId: messageId,
       content: type == 'text' ? textEditingController.text.trim() : url,
       timeStamp: DateTime.now().toUtc().toString(),
       senderId: uid,
@@ -350,6 +398,8 @@ class _ChatTextFieldState extends State<ChatTextField> {
     if (type == 'text') {
       textEditingController.clear();
     }
+
+    context.read(messagesProvider.notifier).add(message);
     db.sendMessage(message, widget.peer);
   }
 
@@ -468,7 +518,11 @@ class _ChatTextFieldState extends State<ChatTextField> {
                             : Colors.white.withOpacity(0.5),
                       ),
                       onPressed: textEditingController.text.trim().isNotEmpty
-                          ? () => submitMessage(uid: widget.uid, type: 'text')
+                          ? () {
+                              setState(() {
+                                submitMessage(uid: widget.uid, type: 'text');
+                              });
+                            }
                           : null,
                     ),
                   ))

@@ -275,7 +275,7 @@ class DatabaseService {
         messagesCollection
             .doc(message.getChatroomId())
             .collection('messages')
-            .doc(),
+            .doc(message.messageId),
         message.toMap());
 
     batch.commit();

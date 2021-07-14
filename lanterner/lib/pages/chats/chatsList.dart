@@ -111,14 +111,17 @@ class _ChatsListState extends State<ChatsList> {
                 title: Text('${chats[index].username}',
                     style: TextStyle(color: Colors.white)),
                 subtitle: Text(
-                    chats[index].lastMessage.type == 'text'
-                        ? '${chats[index].lastMessage.content}'
-                        : chats[index].lastMessage.type == 'image'
-                            ? 'photo'
-                            : chats[index].lastMessage.type == 'audio'
-                                ? 'audio'
-                                : 'message',
-                    style: TextStyle(color: Colors.grey)),
+                  chats[index].lastMessage.type == 'text'
+                      ? '${chats[index].lastMessage.content}'
+                      : chats[index].lastMessage.type == 'image'
+                          ? 'photo'
+                          : chats[index].lastMessage.type == 'audio'
+                              ? 'audio'
+                              : 'message',
+                  style: TextStyle(color: Colors.grey),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 trailing:
                     Text('${getChatTime(chats[index].lastMessage.timeStamp)}'),
               ),
