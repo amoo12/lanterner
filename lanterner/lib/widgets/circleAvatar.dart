@@ -6,81 +6,6 @@ import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
-GestureDetector buildCircleAvatar(
-    {@required String ownerId,
-    photoUrl,
-    @required currentUserId,
-    @required double size,
-    @required BuildContext context}) {
-  return GestureDetector(
-    onTap: () {
-      if (ownerId == currentUserId) {
-        if (ModalRoute.of(context).settings.name == '/myProfile') {
-          // upload photo
-          // onTap:
-          // () {
-          //   showDialog(
-          //     context: context,
-          //     builder: (context) {
-          //       return SimpleDialog(
-          //         title: Text("Upload image"),
-          //         children: <Widget>[
-          //           SimpleDialogOption(
-          //               child: Text("Photo with Camera"),
-          //               onPressed: () async {
-          //                 await uploadPhoto.handleTakePhoto(context);
-          //                 // setState(() {});
-          //               }),
-          //           SimpleDialogOption(
-          //               child: Text("Image from Gallery"),
-          //               onPressed: () async {
-          //                 await uploadPhoto.handleChooseFromGallery(context);
-          //                 // setState(() {});
-          //               }),
-          //           SimpleDialogOption(
-          //             child: Text("Cancel"),
-          //             onPressed: () => Navigator.pop(context),
-          //           )
-          //         ],
-          //       );
-          //     },
-          //   );
-          // };
-        } else {
-          pushNewScreenWithRouteSettings(
-            context,
-            settings: RouteSettings(name: '/myProfile'),
-            screen: MyProfile(),
-            pageTransitionAnimation: PageTransitionAnimation.slideUp,
-            withNavBar: false,
-          );
-        }
-      } else {
-        if (ModalRoute.of(context).settings.name != '/profile') {
-          pushNewScreenWithRouteSettings(
-            context,
-            settings: RouteSettings(name: '/profile'),
-            screen: Profile(uid: ownerId),
-            pageTransitionAnimation: PageTransitionAnimation.slideUp,
-            withNavBar: false,
-          );
-        }
-      }
-    },
-    child: CircleAvatar(
-      radius: size,
-      backgroundImage: photoUrl != null
-          ? CachedNetworkImageProvider(
-              photoUrl,
-            )
-          : AssetImage('assets/images/avatar_bg.jpg'),
-      child: photoUrl == null
-          ? Icon(Icons.person, size: 40, color: Colors.grey[200])
-          : Container(),
-    ),
-  );
-}
-
 class ProfileImage extends StatefulWidget {
   final String ownerId;
   final photoUrl;
@@ -107,7 +32,8 @@ class _ProfileImageState extends State<ProfileImage> {
   uploadImage(String uid) async {
     String photoUrl;
     await uploadPhoto.compressImage(uid);
-    photoUrl = await uploadPhoto.uploadImage(uploadPhoto.file, uid);
+    photoUrl = await uploadPhoto.uploadImage(
+        imageFile: uploadPhoto.file, id: uid, folder: 'profile');
     await db.updateProfilePicture(uid, photoUrl);
   }
 
@@ -180,7 +106,7 @@ class _ProfileImageState extends State<ProfileImage> {
       child: CircleAvatar(
         radius: widget.size,
         backgroundImage: widget.photoUrl != null
-            ? NetworkImage(
+            ? CachedNetworkImageProvider(
                 widget.photoUrl,
               )
             : AssetImage('assets/images/avatar_bg.jpg'),

@@ -43,12 +43,12 @@ class UploadPhoto {
   }
 
   // move to backend services
-  Future<String> uploadImage(imageFile, String id) async {
-    firebase_storage.Reference ref = FirebaseStorage.instance
-        .ref()
-        .child('playground')
-        .child('/some-image.jpg');
-    UploadTask uploadTask = ref.child("post_$photoId.jpg").putFile(imageFile);
+  Future<String> uploadImage({imageFile, String id, String folder}) async {
+    firebase_storage.Reference ref =
+        FirebaseStorage.instance.ref().child(folder);
+
+    photoId = folder == 'chats' ? photoId : id;
+    UploadTask uploadTask = ref.child("$photoId.jpg").putFile(imageFile);
     TaskSnapshot storageSnap =
         await uploadTask.whenComplete(() => uploadTask.snapshot);
     String downloadUrl = await storageSnap.ref.getDownloadURL();

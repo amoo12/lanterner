@@ -30,7 +30,6 @@ class ChatsListState extends ChangeNotifier {
     if (chats == null) {
       return null;
     } else {
-      print('messages list length is: ' + chats.length.toString());
       this.chats.sort((x, y) => DateTime.parse(x.lastMessage.timeStamp)
           .toLocal()
           .compareTo(DateTime.parse(y.lastMessage.timeStamp).toLocal()));
@@ -53,7 +52,6 @@ class ChatsListState extends ChangeNotifier {
         return;
       }
       if (snapshot.docChanges.first.type == DocumentChangeType.added) {
-        print('getChats is working');
         _onMessageAdded(snapshot.docChanges.first.doc);
       } else if (snapshot.docChanges.first.type == DocumentChangeType.removed) {
         // _onNotificationRemoved(snapshot.docChanges.first.doc);
@@ -93,13 +91,11 @@ class ChatsListState extends ChangeNotifier {
 
       if (map != null) {
         var model = Chat.fromMap(map);
-        print('model Message : ${model.lastMessage.content}');
         model.peerId = snapshot.id;
         if (chats.length > 0 && chats.any((x) => x.peerId == model.peerId)) {
           int index =
               chats.indexWhere((element) => element.peerId == model.peerId);
           chats[index] = model;
-          //   print('skipped');
           notifyListeners();
           return;
         }
@@ -142,7 +138,6 @@ class ChatsListState extends ChangeNotifier {
       });
     } catch (error) {
       print(error);
-      // cprint(error);
     }
   }
 }

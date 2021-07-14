@@ -28,7 +28,6 @@ class MessagesState extends ChangeNotifier {
     if (messages == null) {
       return null;
     } else {
-      print('messages list length is: ' + messages.length.toString());
       this.messages.sort((x, y) => DateTime.parse(x.timeStamp)
           .toLocal()
           .compareTo(DateTime.parse(y.timeStamp).toLocal()));
@@ -51,7 +50,6 @@ class MessagesState extends ChangeNotifier {
         return;
       }
       if (snapshot.docChanges.first.type == DocumentChangeType.added) {
-        print('getMessages is working');
         _onMessageAdded(snapshot.docChanges.first.doc);
       } else if (snapshot.docChanges.first.type == DocumentChangeType.removed) {
         // _onNotificationRemoved(snapshot.docChanges.first.doc);
@@ -135,7 +133,6 @@ class MessagesState extends ChangeNotifier {
       });
     } catch (error) {
       print(error);
-      // cprint(error);
     }
   }
 
@@ -145,7 +142,6 @@ class MessagesState extends ChangeNotifier {
     List<String> list = [user1, user2];
     list.sort();
 
-    // cprint(_channelName); //2RhfE-5kyFB
     return '${list[0]}-${list[1]}';
   }
 }

@@ -83,7 +83,6 @@ class _ChatsListState extends State<ChatsList> {
                     name: chats[index].username,
                     uid: chats[index].peerId,
                     photoUrl: chats[index].photoUrl);
-                print('the user name is assigned ' + peer.name);
 
                 pushNewScreenWithRouteSettings(
                   _scaffold.currentContext,

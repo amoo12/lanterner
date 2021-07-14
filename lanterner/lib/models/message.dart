@@ -45,7 +45,6 @@ class Message {
     list.sort();
 
 
-    // cprint(_channelName); //2RhfE-5kyFB
     return '${list[0]}-${list[1]}';
   }
 

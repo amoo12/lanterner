@@ -46,6 +46,7 @@ dependencies:
   timeago: ^3.0.2
   modal_bottom_sheet: ^2.0.0
   filter_list: ^1.0.0
+  logger: ^1.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

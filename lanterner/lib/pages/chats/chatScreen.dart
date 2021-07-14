@@ -23,7 +23,6 @@ class ChatRoom extends StatelessWidget {
   Widget build(BuildContext context) {
     //! TODO: if the user is recived from the chatList page it only contains name,uid & photoUrl
     final User user = ModalRoute.of(context).settings.arguments ?? peer;
-    print(user.toString());
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Color(0xff181E30),
@@ -151,8 +150,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: Container(
                       // width: 80,
                       constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.7,
-                          minWidth: 30),
+                        maxWidth: MediaQuery.of(context).size.width * 0.85,
+                        // minWidth: 30
+                      ),
                       // width: 300,
                       margin: EdgeInsets.symmetric(vertical: 4),
                       padding: EdgeInsets.symmetric(
@@ -214,11 +214,10 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                         padding: EdgeInsets.all(3),
                         margin: EdgeInsets.symmetric(vertical: 4),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                        child: Stack(
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(12.0),
+                              borderRadius: BorderRadius.circular(9.0),
                               child: GestureDetector(
                                   onTap: () {
                                     pushNewScreenWithRouteSettings(
@@ -233,25 +232,46 @@ class _ChatScreenState extends State<ChatScreen> {
                                     );
                                   },
                                   child: Container(
-                                    width: 200,
-                                    child: CachedNetworkImage(
-                                      fit: BoxFit.fitWidth,
-                                      imageUrl: message.content,
-                                      placeholder: (context, url) =>
-                                          CircularProgressIndicator(),
-                                      errorWidget: (context, url, error) =>
-                                          Icon(Icons.error),
+                                    // width: 200,
+                                    constraints: BoxConstraints(
+                                        maxHeight: 300, maxWidth: 300),
+                                    child: ShaderMask(
+                                      shaderCallback: (rect) {
+                                        return LinearGradient(
+                                          begin: Alignment.center,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            Colors.transparent,
+                                            Colors.black.withOpacity(0.3),
+                                          ],
+                                        ).createShader(Rect.fromLTRB(
+                                            0, 0, rect.width, rect.height));
+                                      },
+                                      blendMode: BlendMode.darken,
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.fitWidth,
+                                        imageUrl: message.content,
+                                        placeholder: (context, url) =>
+                                            CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.error),
+                                      ),
                                     ),
                                   )),
                             ),
-                            Container(
-                              padding: EdgeInsets.fromLTRB(0, 1, 22, 0),
-                              child: Text(
-                                getChatTime(message.timeStamp),
-                                style: TextStyle(
-                                  color: Colors.grey[300],
-                                  fontSize: 10.0,
-                                  // fontWeight: FontWeight.w600,
+                            Positioned.fill(
+                              child: Align(
+                                alignment: Alignment.bottomRight,
+                                child: Container(
+                                  padding: EdgeInsets.fromLTRB(0, 1, 10, 0),
+                                  child: Text(
+                                    getChatTime(message.timeStamp),
+                                    style: TextStyle(
+                                      color: Colors.grey[300],
+                                      fontSize: 10.0,
+                                      // fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -315,8 +335,8 @@ class _ChatTextFieldState extends State<ChatTextField> {
   uploadImage(String uid) async {
     String photoUrl;
     await uploadPhoto.compressImage(uid);
-    photoUrl = await uploadPhoto.uploadImage(uploadPhoto.file, uid);
-    print('we have the link' + photoUrl);
+    photoUrl = await uploadPhoto.uploadImage(
+        imageFile: uploadPhoto.file, id: uid, folder: 'chats');
     submitMessage(uid: widget.uid, type: 'image', url: photoUrl);
   }
 
@@ -331,7 +351,6 @@ class _ChatTextFieldState extends State<ChatTextField> {
     if (type == 'text') {
       textEditingController.clear();
     }
-    print('uploadPhoto with this url' + message.content);
     db.sendMessage(message, widget.peer);
   }
 
@@ -383,9 +402,8 @@ class _ChatTextFieldState extends State<ChatTextField> {
                           child: Text("Image from Gallery"),
                           onPressed: () async {
                             await uploadPhoto.handleChooseFromGallery(context);
-                            print('photo savae1');
+
                             if (uploadPhoto.file != null) {
-                              print('photo savae2');
                               bool confirm = await Navigator.push(
                                   widget.scaffoldKey.currentContext,
                                   MaterialPageRoute(
@@ -502,9 +520,6 @@ class _ConfirmImageSelectionState extends State<ConfirmImageSelection> {
           Container(
             child: Center(
               child: GestureDetector(
-                // onVerticalDragEnd: (drag) {
-                //   Navigator.pop(context);
-                // },
                 child: InteractiveViewer(
                   child: Container(
                     decoration: BoxDecoration(

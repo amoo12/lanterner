@@ -137,7 +137,8 @@ class _SignupState extends State<Signup> {
   uploadImage(String uid) async {
     String photoUrl;
     await uploadPhoto.compressImage(uid);
-    photoUrl = await uploadPhoto.uploadImage(uploadPhoto.file, uid);
+    photoUrl = await uploadPhoto.uploadImage(
+        imageFile: uploadPhoto.file, id: uid, folder: 'profile');
     await db.updateProfilePicture(uid, photoUrl);
   }
 

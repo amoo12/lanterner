@@ -35,7 +35,6 @@ class DatabaseService {
     //     {'postsCount': FieldValue.increment(1)});
     // // add the post to the posts collection
     // batch.set(newPostRef, post.toMap());
-    // print('posted');
     await usersCollection
         .doc(post.user.uid)
         .update({'postsCount': FieldValue.increment(1)});
@@ -182,8 +181,6 @@ class DatabaseService {
     //     .get();
     // if (querySnapshot.size > 0) {
     // if there's at least one uesr check if I follow them
-    print(currentUserId);
-    print(uid);
     return await usersCollection
         .doc(currentUserId)
         .collection('following')
@@ -281,7 +278,7 @@ class DatabaseService {
             .doc(),
         message.toMap());
 
-    batch.commit().then((value) => print('message sent'));
+    batch.commit();
   }
 
   //! TODO: duplicate function also exists in messagesProvider
@@ -291,7 +288,6 @@ class DatabaseService {
     List<String> list = [user1, user2];
     list.sort();
 
-    // cprint(_channelName); //2RhfE-5kyFB
     return '${list[0]}-${list[1]}';
   }
 }
