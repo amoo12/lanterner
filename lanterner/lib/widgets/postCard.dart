@@ -1,4 +1,5 @@
 import 'package:auto_direction/auto_direction.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/post.dart';
@@ -218,26 +219,30 @@ class _PostCardState extends State<PostCard> {
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: GestureDetector(
-                              onTap: () {
-                                pushNewScreenWithRouteSettings(
-                                  context,
-                                  settings: RouteSettings(name: '/imageViewer'),
-                                  screen: ImageViewer(
-                                      photoUrl: widget.post.photoUrl),
-                                  pageTransitionAnimation:
-                                      PageTransitionAnimation.cupertino,
-                                  withNavBar: false,
-                                );
-                              },
-                              child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  child: Image.network(
-                                    widget.post.photoUrl,
-                                    height: 180,
-                                    // centerSlice: Rect,
-                                    fit: BoxFit.fitWidth,
-                                  ))),
+                            onTap: () {
+                              pushNewScreenWithRouteSettings(
+                                context,
+                                settings: RouteSettings(name: '/imageViewer'),
+                                screen:
+                                    ImageViewer(photoUrl: widget.post.photoUrl),
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.cupertino,
+                                withNavBar: false,
+                              );
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: CachedNetworkImage(
+                                height: 180,
+                                fit: BoxFit.fitWidth,
+                                imageUrl: widget.post.photoUrl,
+                                placeholder: (context, url) =>
+                                    CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                              ),
+                            ),
+                          ),
                         )
                       : Container(),
 
@@ -284,7 +289,12 @@ class _ImageViewerState extends State<ImageViewer> {
               Navigator.pop(context);
             },
             child: InteractiveViewer(
-              child: Image.network(widget.photoUrl),
+              child: CachedNetworkImage(
+                fit: BoxFit.fitWidth,
+                imageUrl: widget.photoUrl,
+                placeholder: (context, url) => CircularProgressIndicator(),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
               maxScale: 4,
               minScale: .1,
               panEnabled: true,

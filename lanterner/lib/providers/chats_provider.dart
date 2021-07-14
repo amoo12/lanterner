@@ -93,6 +93,7 @@ class ChatsListState extends ChangeNotifier {
         var model = Chat.fromMap(map);
         model.peerId = snapshot.id;
         if (chats.length > 0 && chats.any((x) => x.peerId == model.peerId)) {
+          // TODO: apply this to messagesPrivider as well
           int index =
               chats.indexWhere((element) => element.peerId == model.peerId);
           chats[index] = model;
@@ -107,7 +108,7 @@ class ChatsListState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onChatScreenClosed() {
+  void onChatListClosed() {
     if (_chatsSubscription != null) {
       _chatsSubscription.cancel();
     }

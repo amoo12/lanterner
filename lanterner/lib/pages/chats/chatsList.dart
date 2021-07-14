@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/chat.dart';
@@ -7,9 +6,12 @@ import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/providers/chats_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
+import 'package:logger/logger.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 import 'chatScreen.dart';
+
+var logger = Logger();
 
 class ChatsList extends StatefulWidget {
   ChatsList({Key key}) : super(key: key);
@@ -62,98 +64,107 @@ class _ChatsListState extends State<ChatsList> {
         .getChatListAsync(context.read(authStateProvider).data.value.uid);
   }
 
+  Future<bool> _onWillPop() async {
+    context.read(chatsProvider.notifier).onChatListClosed();
+    logger.d('chats list cancelled');
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        key: _scaffold,
-        appBar: AppBar(
-          title: Text('chats'),
-          centerTitle: true,
-        ),
-        body: Consumer(builder: (context, watch, child) {
-          final _authState = watch(authStateProvider);
-          List<Chat> chats = watch(chatsProvider).chatsList ?? [];
-          return ListView.builder(
-            itemCount: chats.length,
-            itemBuilder: (context, index) => ListTile(
-              onTap: () async {
-                // TODO: becarful with sending a user with null values
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+          key: _scaffold,
+          appBar: AppBar(
+            title: Text('chats'),
+            centerTitle: true,
+          ),
+          body: Consumer(builder: (context, watch, child) {
+            final _authState = watch(authStateProvider);
+            List<Chat> chats = watch(chatsProvider).chatsList ?? [];
+            return ListView.builder(
+              itemCount: chats.length,
+              itemBuilder: (context, index) => ListTile(
+                onTap: () async {
+                  // TODO: becarful with sending a user with null values
 
-                User peer = User(
-                    name: chats[index].username,
-                    uid: chats[index].peerId,
-                    photoUrl: chats[index].photoUrl);
+                  User peer = User(
+                      name: chats[index].username,
+                      uid: chats[index].peerId,
+                      photoUrl: chats[index].photoUrl);
 
-                pushNewScreenWithRouteSettings(
-                  _scaffold.currentContext,
-                  settings: RouteSettings(name: '/chatRoom'),
-                  screen: ChatRoom(peer: peer),
-                  pageTransitionAnimation: PageTransitionAnimation.slideUp,
-                  withNavBar: false,
-                );
-              },
-              leading: ProfileImage(
-                  size: 22,
-                  ownerId: chats[index].peerId,
-                  context: context,
-                  photoUrl: chats[index].photoUrl,
-                  currentUserId: _authState.data.value.uid),
-              title: Text('${chats[index].username}',
-                  style: TextStyle(color: Colors.white)),
-              subtitle: Text(
-                  chats[index].lastMessage.type == 'text'
-                      ? '${chats[index].lastMessage.content}'
-                      : chats[index].lastMessage.type == 'image'
-                          ? 'photo'
-                          : chats[index].lastMessage.type == 'audio'
-                              ? 'audio'
-                              : 'message',
-                  style: TextStyle(color: Colors.grey)),
-              trailing:
-                  Text('${getChatTime(chats[index].lastMessage.timeStamp)}'),
-            ),
-          );
-        })
+                  pushNewScreenWithRouteSettings(
+                    _scaffold.currentContext,
+                    settings: RouteSettings(name: '/chatRoom'),
+                    screen: ChatRoom(peer: peer),
+                    pageTransitionAnimation: PageTransitionAnimation.slideUp,
+                    withNavBar: false,
+                  );
+                },
+                leading: ProfileImage(
+                    size: 22,
+                    ownerId: chats[index].peerId,
+                    context: context,
+                    photoUrl: chats[index].photoUrl,
+                    currentUserId: _authState.data.value.uid),
+                title: Text('${chats[index].username}',
+                    style: TextStyle(color: Colors.white)),
+                subtitle: Text(
+                    chats[index].lastMessage.type == 'text'
+                        ? '${chats[index].lastMessage.content}'
+                        : chats[index].lastMessage.type == 'image'
+                            ? 'photo'
+                            : chats[index].lastMessage.type == 'audio'
+                                ? 'audio'
+                                : 'message',
+                    style: TextStyle(color: Colors.grey)),
+                trailing:
+                    Text('${getChatTime(chats[index].lastMessage.timeStamp)}'),
+              ),
+            );
+          })
 
-        // Stack(
-        //   children: [
-        //     AnimatedList(
-        //       key: listKey,
-        //       initialItemCount: _items.length,
-        //       itemBuilder: (context, index, animation) {
-        //         return slideIt(context, index, animation); // Refer step 3
-        //       },
-        //     ),
-        //     Align(
-        //         alignment: Alignment.bottomCenter,
-        //         child: Container(
-        //           margin: EdgeInsets.only(bottom: 50),
-        //           child: Row(
-        //             children: [
-        //               ElevatedButton(
-        //                 child: Text('add'),
-        //                 onPressed: () {
-        //                   listKey.currentState.insertItem(0,
-        //                       duration: const Duration(milliseconds: 400));
-        //                   _items = []
-        //                     ..add(counter++)
-        //                     ..addAll(_items);
-        //                 },
-        //               ),
-        //               ElevatedButton(
-        //                 child: Text('remove'),
-        //                 onPressed: () {
-        //                   listKey.currentState.removeItem(0,
-        //                       (_, animation) => slideIt(context, 0, animation),
-        //                       duration: const Duration(milliseconds: 400));
-        //                 },
-        //               ),
-        //             ],
-        //           ),
-        //         ))
-        //   ],
-        // )
-        );
+          // Stack(
+          //   children: [
+          //     AnimatedList(
+          //       key: listKey,
+          //       initialItemCount: _items.length,
+          //       itemBuilder: (context, index, animation) {
+          //         return slideIt(context, index, animation); // Refer step 3
+          //       },
+          //     ),
+          //     Align(
+          //         alignment: Alignment.bottomCenter,
+          //         child: Container(
+          //           margin: EdgeInsets.only(bottom: 50),
+          //           child: Row(
+          //             children: [
+          //               ElevatedButton(
+          //                 child: Text('add'),
+          //                 onPressed: () {
+          //                   listKey.currentState.insertItem(0,
+          //                       duration: const Duration(milliseconds: 400));
+          //                   _items = []
+          //                     ..add(counter++)
+          //                     ..addAll(_items);
+          //                 },
+          //               ),
+          //               ElevatedButton(
+          //                 child: Text('remove'),
+          //                 onPressed: () {
+          //                   listKey.currentState.removeItem(0,
+          //                       (_, animation) => slideIt(context, 0, animation),
+          //                       duration: const Duration(milliseconds: 400));
+          //                 },
+          //               ),
+          //             ],
+          //           ),
+          //         ))
+          //   ],
+          // )
+          ),
+    );
   }
 
 //   Widget slideIt(BuildContext context, int index, animation) {

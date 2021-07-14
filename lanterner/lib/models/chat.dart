@@ -1,6 +1,3 @@
-
-import 'dart:convert';
-
 import 'package:lanterner/models/message.dart';
 
 class Chat {
@@ -9,12 +6,11 @@ class Chat {
   String username;
   String photoUrl;
   Chat({
-     this.peerId,
-     this.lastMessage,
-     this.username,
-     this.photoUrl,
+    this.peerId,
+    this.lastMessage,
+    this.username,
+    this.photoUrl,
   });
-  
 
   Map<String, dynamic> toMap() {
     return {
@@ -33,5 +29,4 @@ class Chat {
       photoUrl: map['photoUrl'],
     );
   }
-
 }
