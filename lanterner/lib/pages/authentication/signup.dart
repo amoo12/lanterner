@@ -11,6 +11,7 @@ import 'package:lanterner/widgets/customTextField.dart';
 import 'package:lanterner/widgets/languagesList.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
 import 'package:lanterner/widgets/radioButtons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_select/smart_select.dart';
 
 import 'dart:math' as math;
@@ -130,6 +131,10 @@ class _SignupState extends State<Signup> {
 
   createAcount(BuildContext context, AuthenticationService _auth) async {
     await _auth.signUp(_user);
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(
+        'preferred_translation_language', _user.nativeLanguage.code);
+    prefs.setString('targetlanguage', _user.targetLanguage.code);
     next();
     Navigator.pop(context);
   }

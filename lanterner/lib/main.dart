@@ -88,6 +88,11 @@ class MyApp extends StatelessWidget {
         dialogBackgroundColor: MaterialColor(0xFF444A66, color4),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: 'OpenSans-Regular',
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Colors.red,
+          selectionColor: MaterialColor(0xFF2CC1D7, color2).shade300,
+          selectionHandleColor: MaterialColor(0xFF2CC1D7, color2),
+        ),
         textTheme: TextTheme(
           headline1: TextStyle(
             fontSize: 72.0,

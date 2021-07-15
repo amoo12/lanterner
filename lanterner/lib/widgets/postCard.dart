@@ -3,15 +3,23 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/post.dart';
+import 'package:lanterner/models/user.dart';
 import 'package:lanterner/pages/comments.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/providers/posts_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/languageIndicator.dart';
+import 'package:lanterner/widgets/progressIndicator.dart';
+import 'package:logger/logger.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
+
+import 'package:translator/translator.dart';
+
+var logger = Logger();
 
 class PostCard extends StatefulWidget {
   final Post post;
@@ -28,6 +36,118 @@ class _PostCardState extends State<PostCard> {
   String secondHalf;
 
   bool flag = true;
+  final translator = GoogleTranslator();
+
+  Future<Translation> translate(String textTotrasnlate) async {
+    final prefs = await SharedPreferences.getInstance();
+    Translation translation;
+    String translateTo;
+    String alternativeTranslation;
+
+    // fetch the user's target translation language
+    if (prefs.containsKey('preferred_translation_language') &&
+        prefs.containsKey('targetlanguage')) {
+      translateTo = prefs.getString('preferred_translation_language');
+      alternativeTranslation = prefs.getString('targetlanguage');
+    } else {
+      final DatabaseService db = DatabaseService();
+      final uid = context.read(authStateProvider).data.value.uid;
+      final User user = await db.getUser(uid);
+      prefs.setString(
+          'preferred_translation_language', user.nativeLanguage.code);
+      prefs.setString('targetlanguage', user.targetLanguage.code);
+      translateTo = user.nativeLanguage.code;
+      alternativeTranslation = user.targetLanguage.code;
+    }
+
+    // auto detect the source language and translates to target language
+    translation = await translator.translate(textTotrasnlate, to: translateTo);
+
+    // if the text is the same as the prefered transaltion language then translate to the user's target language
+    if (translation.sourceLanguage.code == translateTo) {
+      translation = await translator.translate(textTotrasnlate,
+          to: alternativeTranslation);
+    }
+
+    return translation;
+  }
+
+  translationBottomSheet(String textTotrasnlate) {
+    showBarModalBottomSheet(
+      enableDrag: false,
+      useRootNavigator: true,
+      barrierColor: Colors.black.withOpacity(0.3),
+      expand: false,
+      bounce: true,
+      context: context,
+      builder: (context) => Container(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.fromLTRB(20, 20, 20, 2),
+        decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+        child: FutureBuilder(
+            future: translate(textTotrasnlate),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                Translation translation = snapshot.data;
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'Translated from ',
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                          ),
+                        ),
+                        Flexible(
+                          child: Text(
+                            translation.sourceLanguage.name,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.2),
+                      child: SingleChildScrollView(
+                        child: Container(
+                          color: Theme.of(context).cardColor,
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: AutoDirection(
+                                text: translation.text,
+                                child: Text(
+                                  translation.text,
+                                  overflow: TextOverflow.fade,
+                                  style: TextStyle(color: Colors.white),
+                                )),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                print(snapshot.error);
+                return Text("ERROR: Someting went wrong");
+              } else {
+                return circleIndicator(context);
+              }
+            }),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -124,7 +244,7 @@ class _PostCardState extends State<PostCard> {
                                 //       fontSize: 12, color: Colors.grey[600]),
                                 // ),
                                 Container(
-                                  width: 60,
+                                  // width: 60,
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -181,17 +301,34 @@ class _PostCardState extends State<PostCard> {
                         padding: EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 10.0),
                         child: secondHalf.isEmpty
-                            ? Text(
+                            ? SelectableText(
                                 firstHalf,
+                                onTap: () {
+                                  translationBottomSheet(firstHalf);
+                                },
                                 style: TextStyle(color: Colors.white),
                               )
                             : Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
+                                  SelectableText(
                                     flag
                                         ? (firstHalf + "...")
                                         : (firstHalf + secondHalf),
-                                    style: TextStyle(color: Colors.white),
+                                    onTap: () {
+                                      if (flag) {
+                                        setState(() {
+                                          flag = !flag;
+                                        });
+                                      } else {
+                                        translationBottomSheet(
+                                            widget.post.caption);
+                                      }
+                                    },
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
                                   ),
                                   InkWell(
                                     child: Row(
@@ -376,8 +513,10 @@ class _PostCardFooterState extends State<PostCardFooter> {
                     pushNewScreenWithRouteSettings(
                       context,
                       settings: RouteSettings(name: '/comments'),
-                      screen: Comments(postId: widget.post.postId),
-                      pageTransitionAnimation: PageTransitionAnimation.slideUp,
+                      screen: Comments(
+                        post: widget.post,
+                      ),
+                      pageTransitionAnimation: PageTransitionAnimation.fade,
                       withNavBar: false,
                     );
                   }

@@ -131,7 +131,7 @@ class _ProfileState extends State<Profile> {
                                                     ),
                                                     SizedBox(height: 10),
                                                     Container(
-                                                      width: 60,
+                                                      width: 65,
                                                       child: Row(
                                                         mainAxisAlignment:
                                                             MainAxisAlignment

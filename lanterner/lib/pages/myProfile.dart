@@ -128,7 +128,7 @@ class MyProfile extends ConsumerWidget {
                                   // ),
                                   SizedBox(height: 10),
                                   Container(
-                                    width: 60,
+                                    width: 65,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
