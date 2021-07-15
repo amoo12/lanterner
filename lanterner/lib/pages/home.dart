@@ -133,9 +133,12 @@ class _HomeState extends State<Home> {
                                           itemCount: posts.length,
                                           itemBuilder: (BuildContext context,
                                               int index) {
-                                            return PostCard(posts[index],
-                                                key: ValueKey(
-                                                    posts[index].postId));
+                                            return Hero(
+                                              tag: 'post-to-comments'+ posts[index].postId,
+                                              child: PostCard(posts[index],
+                                                  key: ValueKey(
+                                                      posts[index].postId)),
+                                            );
                                           }),
                                     );
                                   });

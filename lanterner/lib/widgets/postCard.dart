@@ -69,8 +69,10 @@ class _PostCardState extends State<PostCard> {
                 pushNewScreenWithRouteSettings(
                   context,
                   settings: RouteSettings(name: '/comments'),
-                  screen: Comments(postId: widget.post.postId),
-                  pageTransitionAnimation: PageTransitionAnimation.slideUp,
+                  screen: Comments(
+                    post: widget.post,
+                  ),
+                  pageTransitionAnimation: PageTransitionAnimation.fade,
                   withNavBar: false,
                 );
               }

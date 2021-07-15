@@ -15,8 +15,9 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 // ignore: must_be_immutable
 class Comments extends StatelessWidget {
-  Comments({Key key, this.postId}) : super(key: key);
+  Comments({Key key, this.postId, this.post}) : super(key: key);
   final String postId;
+  final Post post;
 
   // TextEditingController commentController = TextEditingController();
   Comment comment = Comment();
@@ -24,38 +25,27 @@ class Comments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DatabaseService db = DatabaseService(postId: postId);
-    return FutureBuilder(
-        future: db.getPost(postId),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            Post post = snapshot.data;
-            return Scaffold(
-              backgroundColor: Theme.of(context).primaryColor,
-              appBar: AppBar(),
-              body: Stack(
-                children: <Widget>[
-                  SingleChildScrollView(
-                    child: Column(children: [
-                      PostCard(post),
-                      CommentsListView(db: db, post: post),
-                    ]),
-                  ),
-                  Align(
-                      alignment: Alignment.bottomCenter,
-                      child: CommentField(
-                        comment: comment,
-                        postId: postId,
-                      ))
-                ],
-              ),
-            );
-          } else if (snapshot.hasError) {
-            print(snapshot.error);
-            return Text("ERROR: Someting went wrong");
-          } else {
-            return circleIndicator(context);
-          }
-        });
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      appBar: AppBar(),
+      body: Stack(
+        children: <Widget>[
+          SingleChildScrollView(
+            child: Column(children: [
+              Hero(
+                  tag: 'post-to-comments' + post.postId, child: PostCard(post)),
+              CommentsListView(db: db, post: post),
+            ]),
+          ),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: CommentField(
+                comment: comment,
+                postId: postId,
+              ))
+        ],
+      ),
+    );
   }
 }
 
