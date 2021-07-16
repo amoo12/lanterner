@@ -83,6 +83,17 @@ class _ChatsListState extends State<ChatsList> {
           body: Consumer(builder: (context, watch, child) {
             final _authState = watch(authStateProvider);
             List<Chat> chats = watch(chatsProvider).chatsList ?? [];
+
+            var idSet = <String>{};
+            var distinct = <Chat>[];
+            for (var d in chats) {
+              if (idSet.add(d.peerId)) {
+                distinct.add(d);
+              }
+            }
+            chats.clear();
+            chats = distinct;
+
             return ListView.builder(
               itemCount: chats.length,
               itemBuilder: (context, index) => ListTile(

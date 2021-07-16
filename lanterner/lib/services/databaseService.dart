@@ -281,6 +281,14 @@ class DatabaseService {
     batch.commit();
   }
 
+  Future<void> saveMessageTranslation(Message message) async {
+    messagesCollection
+        .doc(message.getChatroomId())
+        .collection('messages')
+        .doc(message.messageId)
+        .update({'translation': message.translation});
+  }
+
   //! TODO: duplicate function also exists in messagesProvider
   String getChatroomId(String senderId, String peerId) {
     String user1 = senderId.substring(0, 5);

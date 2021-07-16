@@ -43,6 +43,15 @@ class MessagesState extends ChangeNotifier {
           .compareTo(DateTime.parse(y.timeStamp).toLocal()));
       this.messages.reversed;
       this.messages = this.messages.reversed.toList();
+      var idSet = <String>{};
+      var distinct = <Message>[];
+      for (var d in messages) {
+        if (idSet.add(d.messageId)) {
+          distinct.add(d);
+        }
+      }
+      messages.clear();
+      messages = distinct;
       return List.from(this.messages);
     }
   }
