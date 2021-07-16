@@ -25,7 +25,7 @@ class MyPosts extends StatelessWidget {
                 return ListView.builder(
                   itemCount: posts.length,
                   itemBuilder: (context, index) {
-                    return PostCard(posts[index]);
+                    return PostCard(post :posts[index]);
                   },
                 );
               } else {

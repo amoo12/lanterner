@@ -18,6 +18,8 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('posts');
   final CollectionReference messagesCollection =
       FirebaseFirestore.instance.collection('messages');
+  final CollectionReference timelineCollection =
+      FirebaseFirestore.instance.collection('timeline');
 
   // inserts a new user record in Firestore
   Future insertUser(User user) async {
@@ -61,6 +63,15 @@ class DatabaseService {
 //get all users posts
   Future<List<Post>> getPosts() async {
     return await postsCollection
+        .orderBy('timestamp', descending: true)
+        .get()
+        .then((value) => value.docs.map((doc) => Post.fromMap(doc)).toList());
+  }
+
+  Future<List<Post>> getUserTimeline(String uid) async {
+    return await timelineCollection
+        .doc(uid)
+        .collection('timelinePosts')
         .orderBy('timestamp', descending: true)
         .get()
         .then((value) => value.docs.map((doc) => Post.fromMap(doc)).toList());

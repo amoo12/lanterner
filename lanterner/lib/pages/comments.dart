@@ -15,10 +15,10 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 // ignore: must_be_immutable
 class Comments extends StatelessWidget {
-  Comments({Key key, this.postId, this.post}) : super(key: key);
+  Comments({Key key, this.postId, this.post, this.herotag}) : super(key: key);
   final String postId;
   final Post post;
-
+  final String herotag;
   // TextEditingController commentController = TextEditingController();
   Comment comment = Comment();
 
@@ -33,7 +33,8 @@ class Comments extends StatelessWidget {
           SingleChildScrollView(
             child: Column(children: [
               Hero(
-                  tag: 'post-to-comments' + post.postId, child: PostCard(post)),
+                  tag: herotag + post.postId,
+                  child: PostCard(post: post, herotag: herotag)),
               CommentsListView(db: db, post: post),
             ]),
           ),

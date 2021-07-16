@@ -22,8 +22,9 @@ import 'package:translator/translator.dart';
 var logger = Logger();
 
 class PostCard extends StatefulWidget {
+  final herotag;
   final Post post;
-  const PostCard(this.post, {Key key}) : super(key: key);
+  const PostCard({this.post, this.herotag, Key key}) : super(key: key);
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -190,6 +191,7 @@ class _PostCardState extends State<PostCard> {
                   context,
                   settings: RouteSettings(name: '/comments'),
                   screen: Comments(
+                    herotag: widget.herotag != null ? widget.herotag : '',
                     post: widget.post,
                   ),
                   pageTransitionAnimation: PageTransitionAnimation.fade,

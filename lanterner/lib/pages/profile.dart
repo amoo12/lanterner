@@ -646,7 +646,7 @@ class _ProfileState extends State<Profile> {
                                                                           return ListView.builder(
                                                                               itemCount: posts.length,
                                                                               itemBuilder: (BuildContext context, int index) {
-                                                                                return PostCard(posts[index]);
+                                                                                return PostCard(post: posts[index]);
                                                                               });
                                                                         } else {
                                                                           return Container(
