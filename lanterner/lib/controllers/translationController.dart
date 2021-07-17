@@ -14,6 +14,7 @@ class TranslationController {
       {String textTotrasnlate, String uid, Message message}) async {
     final prefs = await SharedPreferences.getInstance();
     String translateTo;
+
     String alternativeTranslation;
 
     // fetch the user's target translation language

@@ -37,16 +37,6 @@ exports.onCreateFollower = functions.firestore
         }
       });
     });
-
-    // 4) add each user post to following user snapshot
-
-    // querySanpshot.forEach((doc) => {
-    //   if (doc.exists) {
-    //     const postId = doc.id;
-    //     const postData = doc.data();
-    //     timelinePostsRef.doc(postId).set(postData);
-    //   }
-    // });
   });
 
 exports.onDeleteFollower = functions.firestore

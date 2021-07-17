@@ -550,7 +550,10 @@ class _ChatTextFieldState extends State<ChatTextField> {
                       borderRadius: BorderRadius.circular(50)),
                   child: Center(
                     child: IconButton(
-                        icon: Icon(Icons.mic, color: Colors.white),
+                        icon: Icon(
+                          Icons.mic,
+                          color: Colors.white,
+                        ),
                         onPressed: () {
                           // TODO: record audio
                         }),
