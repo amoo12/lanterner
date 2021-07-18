@@ -11,12 +11,14 @@ import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
+import 'package:logger/logger.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
+var logger = Logger();
 
 // ignore: must_be_immutable
 class Comments extends StatelessWidget {
-  Comments({Key key, this.postId, this.post, this.herotag}) : super(key: key);
-  final String postId;
+  Comments({Key key, this.post, this.herotag}) : super(key: key);
   final Post post;
   final String herotag;
   // TextEditingController commentController = TextEditingController();
@@ -24,7 +26,8 @@ class Comments extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DatabaseService db = DatabaseService(postId: postId);
+    logger.d(post.postId);
+    DatabaseService db = DatabaseService(postId: post.postId);
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(),
@@ -42,7 +45,7 @@ class Comments extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: CommentField(
                 comment: comment,
-                postId: postId,
+                postId: post.postId,
               ))
         ],
       ),

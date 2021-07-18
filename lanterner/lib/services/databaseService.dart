@@ -45,7 +45,7 @@ class DatabaseService {
     await usersCollection
         .doc(post.user.uid)
         .update({'postsCount': FieldValue.increment(1)});
-    return await postsCollection.add(post.toMap());
+    return await postsCollection.doc(post.postId).set(post.toMap());
   }
 
 //returns user user data (takes a user id)
@@ -246,16 +246,23 @@ class DatabaseService {
     DocumentReference ref =
         postsCollection.doc(postId).collection('comments').doc();
 
-    var batch = FirebaseFirestore.instance.batch();
+    // var batch = FirebaseFirestore.instance.batch();
 
     // assign new doc id to the comment
     comment.cid = ref.id;
     // add the doc to the collection
-    batch.set(postsCollection.doc(postId).collection('comments').doc(ref.id),
-        comment.toMap());
+    // batch.set(
+    logger.d('postId drom ' + postId);
+    // print('postId from the comment: ' + postId);
+
+    postsCollection
+        .doc(postId)
+        .collection('comments')
+        .doc(comment.cid)
+        .set(comment.toMap());
 
     //commit batch
-    batch.commit();
+    // batch.commit();
   }
 
   Future<List<Comment>> getCommetns(String postId) async {
