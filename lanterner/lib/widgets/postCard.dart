@@ -476,8 +476,11 @@ class _PostCardFooterState extends State<PostCardFooter> {
 
   var isSaved = false;
   Stream<DocumentSnapshot> likeStream;
-
+  Stream<DocumentSnapshot> freshPost;
+  Future<DocumentSnapshot> freshPostComment;
   final DatabaseService db = DatabaseService();
+  int likeCountForTimelinePosts = 0;
+  int commentCountForTimelinePosts = 0;
 
   Future<void> like() async {
     if (!isLiked) {
@@ -485,6 +488,7 @@ class _PostCardFooterState extends State<PostCardFooter> {
         // clickable = false;
         isLiked = true;
         widget.post.likeCount++;
+        likeCountForTimelinePosts++;
       });
       return await db.likePost(widget.post, widget.currentUserID, isLiked);
       // clickable = true;
@@ -494,6 +498,8 @@ class _PostCardFooterState extends State<PostCardFooter> {
         // clickable = true;
         isLiked = false;
         widget.post.likeCount--;
+        likeCountForTimelinePosts--;
+        // likeCountForTimelinePosts--;
         //  widget.post.likeCount == 0
         //     ? widget.post.likeCount
         //     :
@@ -516,10 +522,26 @@ class _PostCardFooterState extends State<PostCardFooter> {
     likeStream = db.isLiked(widget.post, widget.currentUserID);
   }
 
+  Stream<DocumentSnapshot> fetchPost() {
+    DocumentReference ref =
+        FirebaseFirestore.instance.collection('posts').doc(widget.post.postId);
+
+    return ref.snapshots();
+  }
+
+  fetchPostforComment() async {
+    DocumentReference ref =
+        FirebaseFirestore.instance.collection('posts').doc(widget.post.postId);
+    return freshPostComment = ref.get();
+  }
+
+  //  freshPostComment =  await dst.postId);
+
   @override
   void initState() {
     super.initState();
     fetchLikeState();
+    freshPost = fetchPost();
   }
 
   @override
@@ -562,10 +584,39 @@ class _PostCardFooterState extends State<PostCardFooter> {
                   Positioned.fill(
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: Text(
-                        widget.post.likeCount.toString(),
-                        style: TextStyle(color: Colors.grey[400], fontSize: 10),
-                      ),
+                      child: widget.herotag == 'follwingPosts-to-comments'
+                          ? StreamBuilder<DocumentSnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('posts')
+                                  .doc(widget.post.postId)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  widget.post.commmentCount =
+                                      snapshot.data.data()['commmentCount'];
+                                  widget.post.likeCount =
+                                      snapshot.data.data()['likeCount'] +
+                                          likeCountForTimelinePosts;
+
+                                  return Text(
+                                    widget.post.likeCount.toString() ?? '0',
+                                    style: TextStyle(
+                                        color: Colors.grey[400], fontSize: 10),
+                                  );
+                                } else {
+                                  return Text(
+                                    '0',
+                                    // snapshot.data.data()['likeCount'].toString(),
+                                    style: TextStyle(
+                                        color: Colors.grey[400], fontSize: 10),
+                                  );
+                                }
+                              })
+                          : Text(
+                              widget.post.likeCount.toString(),
+                              style: TextStyle(
+                                  color: Colors.grey[400], fontSize: 10),
+                            ),
                     ),
                   ),
                 ],
@@ -596,10 +647,25 @@ class _PostCardFooterState extends State<PostCardFooter> {
                   Positioned.fill(
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: Text(
-                        widget.post.commmentCount.toString(),
-                        style: TextStyle(color: Colors.grey[400], fontSize: 10),
-                      ),
+                      child: FutureBuilder<DocumentSnapshot>(
+                          future: freshPostComment,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              widget.post.commmentCount =
+                                  snapshot.data.data()['commmentCount'];
+                              return Text(
+                                widget.post.commmentCount.toString(),
+                                style: TextStyle(
+                                    color: Colors.grey[400], fontSize: 10),
+                              );
+                            } else {
+                              return Text(
+                                widget.post.commmentCount.toString(),
+                                style: TextStyle(
+                                    color: Colors.grey[400], fontSize: 10),
+                              );
+                            }
+                          }),
                     ),
                   ),
                 ],
