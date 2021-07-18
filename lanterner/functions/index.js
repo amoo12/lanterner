@@ -139,7 +139,6 @@ exports.updatePostLikesCount = functions.firestore
       return null;
     }
 
-   
     psotRef.set({ likeCount: admin.firestore.FieldValue.increment(increment) }, { merge: true });
 
     var postOwnerId;

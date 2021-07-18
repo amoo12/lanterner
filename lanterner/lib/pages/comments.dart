@@ -11,10 +11,8 @@ import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
-import 'package:logger/logger.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-var logger = Logger();
 
 // ignore: must_be_immutable
 class Comments extends StatelessWidget {
@@ -26,7 +24,6 @@ class Comments extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    logger.d(post.postId);
     DatabaseService db = DatabaseService(postId: post.postId);
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
@@ -280,6 +277,7 @@ class _CommentFieldState extends State<CommentField> {
 
       com = Comment(
           user: user,
+          postId: widget.postId,
           text: commentController.text.trim(),
           createdAt: createdAt.toString(),
           timestamp: timestamp);

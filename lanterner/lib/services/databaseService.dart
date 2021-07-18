@@ -111,36 +111,44 @@ class DatabaseService {
   }
 
 //update profile photo url in user document
-  Future<void> updateProfilePicture(String uid, String photoUrl) {
+  Future<void> updateProfilePicture(String uid, String photoUrl) async {
     var batch = FirebaseFirestore.instance.batch();
     batch.update(usersCollection.doc(uid), {
       'photoUrl': photoUrl,
     });
 
-    postsCollection.where('user.uid', isEqualTo: uid).get().then((snapshot) {
+    await postsCollection
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
       snapshot.docs.forEach((element) {
         DocumentReference doc = postsCollection.doc(element.id);
         batch.update(doc, {'user.photoUrl': photoUrl});
       });
     });
 
-    // TODO: look up how to query collection groups
-    try {
-      return FirebaseFirestore.instance
-          .collectionGroup('timelinePosts')
-          .where('user.uid', isEqualTo: uid)
-          .get()
-          .then((snapshot) {
-        snapshot.docs.forEach((doc) {
-          // DocumentReference doc = postsCollection.doc(element.id);
+    await FirebaseFirestore.instance
+        .collectionGroup('timelinePosts')
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        // DocumentReference doc = postsCollection.doc(element.id);
 
-          batch.update(doc.reference, {'user.photoUrl': photoUrl});
-        });
-        batch.commit();
+        batch.update(doc.reference, {'user.photoUrl': photoUrl});
       });
-    } catch (e) {
-      logger.d(e.toString());
-    }
+    });
+
+    return FirebaseFirestore.instance
+        .collectionGroup('comments')
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'user.photoUrl': photoUrl});
+      });
+      batch.commit();
+    });
   }
 
   Future<List<User>> searchUsers(String searchText) async {

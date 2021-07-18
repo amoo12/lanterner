@@ -4,6 +4,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class Comment {
   String cid;
+  String postId;
   String text;
   User user;
   String createdAt;
@@ -11,6 +12,7 @@ class Comment {
 
   Comment({
     this.cid,
+    this.postId,
     this.text,
     this.user,
     this.createdAt,
@@ -20,6 +22,7 @@ class Comment {
   Map<String, dynamic> toMap() {
     return {
       'cid': cid,
+      'postId': postId,
       'text': text,
       'user': user.toMap(),
       'createdAt': createdAt,
@@ -31,6 +34,7 @@ class Comment {
     Map data = doc.data();
     return Comment(
       cid: doc.id,
+      postId: data['postId'],
       text: data['text'],
       user: User.fromMap(data['user']),
       createdAt: data['createdAt'],
