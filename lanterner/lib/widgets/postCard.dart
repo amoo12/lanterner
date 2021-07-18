@@ -16,6 +16,8 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tap_debouncer/tap_debouncer.dart';
 
 import 'package:translator/translator.dart';
 
@@ -391,6 +393,7 @@ class _PostCardState extends State<PostCard> {
                     post: widget.post,
                     currentUserID: _authState.data.value.uid,
                     parentContext: context,
+                    herotag: widget.herotag,
                   ),
                 ],
               ),
@@ -453,9 +456,14 @@ class PostCardFooter extends StatefulWidget {
   final Post post;
   final String currentUserID;
   final BuildContext parentContext;
+  final String herotag;
 
   const PostCardFooter(
-      {Key key, this.post, this.currentUserID, this.parentContext})
+      {Key key,
+      this.post,
+      this.currentUserID,
+      this.parentContext,
+      this.herotag})
       : super(key: key);
 
   @override
@@ -464,21 +472,54 @@ class PostCardFooter extends StatefulWidget {
 
 class _PostCardFooterState extends State<PostCardFooter> {
   bool isLiked = false;
+  // bool clickable = true;
 
   var isSaved = false;
+  Stream<DocumentSnapshot> likeStream;
 
   final DatabaseService db = DatabaseService();
 
-  void like() {
-    setState(() {
-      isLiked = !isLiked;
-    });
+  Future<void> like() async {
+    if (!isLiked) {
+      setState(() {
+        // clickable = false;
+        isLiked = true;
+        widget.post.likeCount++;
+      });
+      return await db.likePost(widget.post, widget.currentUserID, isLiked);
+      // clickable = true;
+    } else {
+      setState(() {
+        // clickable = false;
+        // clickable = true;
+        isLiked = false;
+        widget.post.likeCount--;
+        //  widget.post.likeCount == 0
+        //     ? widget.post.likeCount
+        //     :
+      });
+      return await db.likePost(widget.post, widget.currentUserID, isLiked);
+      // clickable = true;
+    }
+    // setState(() {
+    //   isLiked = !isLiked;
+    // });
   }
 
   void savePost() {
     setState(() {
       isSaved = !isSaved;
     });
+  }
+
+  fetchLikeState() async {
+    likeStream = db.isLiked(widget.post, widget.currentUserID);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchLikeState();
   }
 
   @override
@@ -491,38 +532,77 @@ class _PostCardFooterState extends State<PostCardFooter> {
         children: [
           Row(
             children: [
-              isLiked
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.favorite_outline,
-                        color: Colors.grey[400],
-                        size: 20,
+              Stack(
+                children: [
+                  StreamBuilder<DocumentSnapshot>(
+                      stream: likeStream,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData)
+                          return SizedBox(
+                            width: 30,
+                          );
+
+                        isLiked = snapshot.data.exists;
+
+                        return TapDebouncer(
+                          cooldown: const Duration(milliseconds: 500),
+                          onTap: () async {
+                            await like();
+                          },
+                          builder: (context, onTap) => IconButton(
+                            icon: Icon(
+                              isLiked ? Icons.favorite : Icons.favorite_outline,
+                              color: isLiked ? Colors.pink : Colors.grey[400],
+                              size: 20,
+                            ),
+                            onPressed: onTap,
+                          ),
+                        );
+                      }),
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        widget.post.likeCount.toString(),
+                        style: TextStyle(color: Colors.grey[400], fontSize: 10),
                       ),
-                      onPressed: like,
-                    )
-                  : IconButton(
-                      icon: Icon(Icons.favorite, color: Colors.pink, size: 20),
-                      onPressed: like,
                     ),
-              IconButton(
-                icon: Icon(
-                  Icons.comment,
-                  color: Colors.grey[400],
-                  size: 20,
-                ),
-                onPressed: () {
-                  if (ModalRoute.of(context).settings.name != '/comments') {
-                    pushNewScreenWithRouteSettings(
-                      context,
-                      settings: RouteSettings(name: '/comments'),
-                      screen: Comments(
-                        post: widget.post,
+                  ),
+                ],
+              ),
+              Stack(
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.comment,
+                      color: Colors.grey[400],
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      if (ModalRoute.of(context).settings.name != '/comments') {
+                        pushNewScreenWithRouteSettings(
+                          context,
+                          settings: RouteSettings(name: '/comments'),
+                          screen: Comments(
+                            herotag: widget.herotag,
+                            post: widget.post,
+                          ),
+                          pageTransitionAnimation: PageTransitionAnimation.fade,
+                          withNavBar: false,
+                        );
+                      }
+                    },
+                  ),
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        widget.post.commmentCount.toString(),
+                        style: TextStyle(color: Colors.grey[400], fontSize: 10),
                       ),
-                      pageTransitionAnimation: PageTransitionAnimation.fade,
-                      withNavBar: false,
-                    );
-                  }
-                },
+                    ),
+                  ),
+                ],
               ),
               isSaved
                   ? IconButton(

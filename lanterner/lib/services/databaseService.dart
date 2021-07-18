@@ -6,6 +6,10 @@ import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
 import 'dart:async';
 
+import 'package:logger/logger.dart';
+
+var logger = Logger();
+
 // this class talks to cloud firestore and manages queries
 class DatabaseService {
   final String uid;
@@ -20,7 +24,8 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('messages');
   final CollectionReference timelineCollection =
       FirebaseFirestore.instance.collection('timeline');
-
+  // final CollectionReference timelinePostsCollectionGroup =
+  //     FirebaseFirestore.instance.collectionGroup('timelinePosts');
   // inserts a new user record in Firestore
   Future insertUser(User user) async {
     user.setSearchParameters();
@@ -117,8 +122,25 @@ class DatabaseService {
         DocumentReference doc = postsCollection.doc(element.id);
         batch.update(doc, {'user.photoUrl': photoUrl});
       });
-      batch.commit();
     });
+
+    // TODO: look up how to query collection groups
+    try {
+      return FirebaseFirestore.instance
+          .collectionGroup('timelinePosts')
+          .where('user.uid', isEqualTo: uid)
+          .get()
+          .then((snapshot) {
+        snapshot.docs.forEach((doc) {
+          // DocumentReference doc = postsCollection.doc(element.id);
+
+          batch.update(doc.reference, {'user.photoUrl': photoUrl});
+        });
+        batch.commit();
+      });
+    } catch (e) {
+      logger.d(e.toString());
+    }
   }
 
   Future<List<User>> searchUsers(String searchText) async {
@@ -298,6 +320,28 @@ class DatabaseService {
         .collection('messages')
         .doc(message.messageId)
         .update({'translation': message.translation});
+  }
+
+  Future<void> likePost(Post post, String uid, like) async {
+    if (like) {
+      return postsCollection
+          .doc(post.postId)
+          .collection('likes')
+          .doc(uid)
+          .set({'timestamp': DateTime.now().toUtc().toString()});
+    } else if (!like) {
+      return postsCollection
+          .doc(post.postId)
+          .collection('likes')
+          .doc(uid)
+          .delete();
+    }
+  }
+
+  Stream<DocumentSnapshot> isLiked(Post post, uid) {
+    final ref = postsCollection.doc(post.postId).collection('likes').doc(uid);
+
+    return ref.snapshots();
   }
 
   //! TODO: duplicate function also exists in messagesProvider

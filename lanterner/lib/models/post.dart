@@ -6,26 +6,22 @@ class Post {
   String postId;
   String photoUrl;
   String audioUrl;
-  // String ownerId;
-  // String username;
-  // String userPhotoUrl;
   String caption;
   String createdAt;
-  // Language ownerNativeLanguage;
   Timestamp timestamp;
+  int likeCount;
+  int commmentCount;
   User user;
   Post({
     this.audioUrl,
     this.caption,
     this.photoUrl,
     this.postId,
-    // this.ownerId,
-    // this.username,
-    // this.userPhotoUrl,
     this.createdAt,
-    // this.ownerNativeLanguage,
     this.timestamp,
     this.user,
+    this.likeCount,
+    this.commmentCount,
   });
   factory Post.fromMap(DocumentSnapshot doc) {
     Map data = doc.data();
@@ -34,15 +30,11 @@ class Post {
       user: User.fromMap(data['user']),
       photoUrl: data['photoUrl'],
       audioUrl: data['audioUrl'],
-      // ownerId: data['ownerId'],
-      // username: data['username'],
-      // userPhotoUrl: data['userPhotoUrl'],
       caption: data['caption'],
       createdAt: data['createdAt'],
       timestamp: data['timestamp'],
-      // ownerNativeLanguage: Language.fromMap(
-      //   data['ownerNativeLanguage'],
-      // ),
+      likeCount: data['likeCount'] ?? 0,
+      commmentCount: data['commmentCount'] ?? 0,
     );
   }
 
@@ -52,13 +44,11 @@ class Post {
       'user': user.toMap(),
       'photoUrl': photoUrl,
       'audioUrl': audioUrl,
-      // 'ownerId': ownerId,
-      // 'username': username,
-      // 'userPhotoUrl': userPhotoUrl,
       'caption': caption,
       'createdAt': createdAt,
       'timestamp': timestamp,
-      // 'ownerNativeLanguage': ownerNativeLanguage.toMap(),
+      'likeCount': likeCount,
+      'commmentCount': commmentCount,
     };
   }
 

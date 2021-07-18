@@ -1,18 +1,12 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+
 /* eslint-disable */
 exports.onCreateFollower = functions.firestore
   .document("/users/{uid}/followers/{followerId}")
   .onCreate((snapshot, context) => {
-    console.log("Follower Created", snapshot.data());
+    // console.log("Follower Created", snapshot.data());
     const uid = context.params.uid;
     const followerId = context.params.followerId;
 
@@ -62,4 +56,44 @@ exports.onDeleteFollower = functions.firestore
         }
       });
     });
+  });
+
+exports.updatePostLikesCount = functions.firestore
+  .document("posts/{postId}/likes/{uid}")
+  .onWrite((change, context) => {
+    console.log("post Liked" + change.id);
+    const uid = context.params.uid;
+    const postId = context.params.postId;
+
+    let increment;
+
+    const userRef = admin.firestore().collection("users").doc(uid);
+
+    const psotRef = admin.firestore().collection("posts").doc(postId);
+
+    if (change.after.exists && !change.before.exists) {
+      // TODO: set the notification message here
+      increment = 1;
+    } else if (!change.after.exists && change.before.exists) {
+      // TODO: set the notification message here
+      increment = -1;
+    } else {
+      return null;
+    }
+
+    //! TODO: remove the return if you want to add code below later
+    return psotRef.set(
+      { likeCount: admin.firestore.FieldValue.increment(increment) },
+      { merge: true }
+    );
+
+    // likedUid = psotRef.doc.data("user.uid");
+    // console.log("post ownerId" + likedUid);
+    // return admin
+    //   .firestore()
+    //   .collection("activity")
+    //   .doc(likedUid)
+    //   .collection("userActivity")
+    //   .doc()
+    //   .set({ activityType: "like", user: userRef.doc.data() });
   });
