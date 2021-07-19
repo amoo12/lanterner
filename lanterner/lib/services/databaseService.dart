@@ -406,6 +406,13 @@ class DatabaseService {
     return ref.snapshots();
   }
 
+  // Stream<DocumentSnapshot>
+  Stream<User> userStream(String uid) {
+    final ref = usersCollection.doc(uid);
+
+    return ref.snapshots().map((doc) => User.fromSnapShot(doc));
+  }
+
   //! TODO: duplicate function also exists in messagesProvider
   String getChatroomId(String senderId, String peerId) {
     String user1 = senderId.substring(0, 5);

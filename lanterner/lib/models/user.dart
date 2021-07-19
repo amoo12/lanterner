@@ -20,6 +20,7 @@ class User {
   Language nativeLanguage;
   Language targetLanguage;
   List searchOptions;
+  bool admin;
 
   User({
     this.uid,
@@ -36,6 +37,7 @@ class User {
     this.targetLanguage,
     this.searchOptions,
     this.bio,
+    this.admin,
   });
 
   User.signup({
@@ -53,6 +55,7 @@ class User {
     this.targetLanguage,
     this.searchOptions,
     this.bio,
+    this.admin,
   });
 
   factory User.fromMap(Map<dynamic, dynamic> data) {
@@ -69,6 +72,7 @@ class User {
       following: data['following'],
       postsCount: data['postsCount'],
       searchOptions: data['searchOptions'],
+      admin: data['admin'],
       nativeLanguage: Language.fromMap(data['nativeLanguage']),
       targetLanguage: Language.fromMap(data['targetLanguage']),
     );
@@ -89,6 +93,7 @@ class User {
       following: data['following'],
       postsCount: data['postsCount'],
       searchOptions: data['searchOptions'],
+      admin: data['admin'],
       nativeLanguage: Language.fromMap(data['nativeLanguage']),
       targetLanguage: Language.fromMap(data['targetLanguage']),
     );
@@ -108,6 +113,7 @@ class User {
       'following': following ?? 0,
       'postsCount': postsCount ?? 0,
       'searchOptions': searchOptions,
+      'admin': admin,
       'nativeLanguage': nativeLanguage.toMap(),
       'targetLanguage': targetLanguage.toMap(),
     };
@@ -121,6 +127,11 @@ class User {
       searchOptions.add(temp);
     }
     this.searchOptions = searchOptions;
+  }
+
+  @override
+  String toString() {
+    return 'User(uid: $uid, email: $email, password: $password, gender: $gender, name: $name, photoUrl: $photoUrl, dateOfBirth: $dateOfBirth, bio: $bio, followers: $followers, following: $following, postsCount: $postsCount, nativeLanguage: $nativeLanguage, targetLanguage: $targetLanguage, searchOptions: $searchOptions)';
   }
 }
 

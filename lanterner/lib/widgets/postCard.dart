@@ -697,7 +697,10 @@ class _PostCardFooterState extends State<PostCardFooter> {
                 size: 20,
               ),
               onPressed: () async {
-                if (widget.currentUserID == widget.post.user.uid) {
+                User user = await context.read(userProvider.future);
+                print(user.toString());
+                if (widget.currentUserID == widget.post.user.uid ||
+                    user.admin) {
                   showBarModalBottomSheet(
                     useRootNavigator: true,
                     barrierColor: Colors.black.withOpacity(0.3),

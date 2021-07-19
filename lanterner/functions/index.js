@@ -171,9 +171,7 @@ exports.updatePostLikesCount = functions.firestore
 exports.updateCommentsCount = functions.firestore
   .document("posts/{postId}/comments/{cid}")
   .onWrite((change, context) => {
-    console.log("comments changed " + change.after.data().cid);
-    console.log("comments changed from context " + context.params.cid);
-    console.log("postId from context " + context.params.postId);
+   
     const cid = context.params.cid;
     const postId = context.params.postId;
 
@@ -197,6 +195,13 @@ exports.updateCommentsCount = functions.firestore
       { merge: true }
     );
 
+    var data;
+    if (increment == 1) {
+      data = change.after.data();
+    } else if (increment == -1) {
+      data = change.before.data();
+    }
+
     var postOwnerId;
     return psotRef.get().then((doc) => {
       postOwnerId = doc.data().user.uid;
@@ -209,6 +214,6 @@ exports.updateCommentsCount = functions.firestore
         .doc(postOwnerId)
         .collection("userActivity")
         .doc()
-        .set({ activityType: "comment", notification: change.after.data() });
+        .set({ activityType: "comment", notification: data });
     });
   });
