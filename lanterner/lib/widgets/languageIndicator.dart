@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:lanterner/models/user.dart';
 
-languageIndictor(Language language) {
+languageIndictor(Language language, [Color color]) {
   List<double> sizes = [16, 12, 8, 4, 0];
   return Container(
     child: Column(
       children: [
         Text(
           '${language.code}'.toUpperCase(),
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              fontSize: 10, fontWeight: FontWeight.w600, color: color),
         ),
         Container(
           width: 20,

@@ -151,6 +151,46 @@ class DatabaseService {
     });
   }
 
+  Future<void> updateUsername(String uid, String name) async {
+    var batch = FirebaseFirestore.instance.batch();
+
+    batch.update(usersCollection.doc(uid), {
+      'name': name,
+    });
+
+    await postsCollection
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((element) {
+        DocumentReference doc = postsCollection.doc(element.id);
+        batch.update(doc, {'user.name': name});
+      });
+    });
+
+    await FirebaseFirestore.instance
+        .collectionGroup('timelinePosts')
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        // DocumentReference doc = postsCollection.doc(element.id);
+
+        batch.update(doc.reference, {'user.name': name});
+      });
+    });
+    return FirebaseFirestore.instance
+        .collectionGroup('comments')
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'user.name': name});
+      });
+      batch.commit();
+    });
+  }
+
   Future<List<User>> searchUsers(String searchText) async {
     return await usersCollection
         .where('searchOptions', arrayContains: searchText)

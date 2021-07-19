@@ -1,517 +1,275 @@
+import 'package:auto_direction/auto_direction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:lanterner/models/user.dart';
+import 'package:lanterner/services/databaseService.dart';
+import 'package:lanterner/widgets/customTextField.dart';
+import 'package:lanterner/widgets/languageIndicator.dart';
+import 'dart:math' as math;
 import '../providers/auth_provider.dart';
 import '../widgets/progressIndicator.dart';
 
 class Settings extends ConsumerWidget {
-  const Settings({Key key}) : super(key: key);
+  final User user;
+  const Settings({Key key, this.user}) : super(key: key);
 
+  // DatabaseService db = DatabaseService();
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     final _auth = watch(authServicesProvider);
-    return Container(
-      child: Center(
-        child: TextButton(
-          onPressed: () async {
-            customProgressIdicator(context);
-            await _auth.signout();
-            Navigator.pop(context);
-            Navigator.pop(context);
-          },
-          child: Text('signout'),
+    final _authState = watch(authStateProvider);
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.9),
+      appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            'Settings',
+            style: TextStyle(color: Colors.white),
+          )),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            children: [
+              NameListTile(user: user),
+              Divider(
+                thickness: 0.25,
+                // height: 2,
+                color: Colors.grey,
+              ),
+              ListTile(
+                onTap: () {},
+                leading: Text('Language'),
+                title: Center(
+                  child: Container(
+                    width: 90,
+                    // constraints: BoxConstraints(maxWidth: ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        languageIndictor(user.nativeLanguage, Colors.white),
+                        Transform.rotate(
+                          angle: 180 * math.pi / 180,
+                          child: Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.grey,
+                            size: 10,
+                          ),
+                        ),
+                        languageIndictor(user.targetLanguage, Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+                trailing: Transform.rotate(
+                  angle: 180 * math.pi / 180,
+                  child: Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.grey,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            // padding: EdgeInsets.symmetric(vertical: 10),
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                // minimumSize: Size(30, 35),
+                primary: Colors.pink,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              onPressed: () async {
+                customProgressIdicator(context);
+                await _auth.signout();
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: Text('signout'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class NameListTile extends StatefulWidget {
+  const NameListTile({
+    Key key,
+    @required this.user,
+  }) : super(key: key);
+
+  final User user;
+
+  @override
+  _NameListTileState createState() => _NameListTileState();
+}
+
+class _NameListTileState extends State<NameListTile> {
+  String results;
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: () async {
+        results = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UpdateUserName(
+                  uid: widget.user.uid, name: results ?? widget.user.name),
+            ));
+
+        setState(() {});
+        print(widget.user.name);
+      },
+      leading: Text('Name'),
+      title: Center(
+        child: Text(
+          results ?? widget.user.name,
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+      trailing: Transform.rotate(
+        angle: 180 * math.pi / 180,
+        child: Icon(
+          Icons.arrow_back_ios,
+          color: Colors.grey,
+          size: 20,
         ),
       ),
     );
   }
 }
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:lanterner/pages/settings.dart';
-// import 'package:lanterner/providers/auth_provider.dart';
-// import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+class UpdateUserName extends StatelessWidget {
+  final String uid;
+  final String name;
+  UpdateUserName({Key key, this.name, this.uid}) : super(key: key);
+  TextEditingController controller = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-// import '../models/user.dart';
-// import '../services/databaseService.dart';
-// import 'dart:math' as math;
+  final DatabaseService db = DatabaseService();
+  onSaved() {
+    _formKey.currentState.save();
+    print(controller.text);
+  }
 
-// import '../widgets/progressIndicator.dart';
+  @override
+  Widget build(BuildContext context) {
+    controller.text = name;
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Name'),
+          actions: [
+            TextButton(
+                onPressed: controller.text.trim().isNotEmpty
+                    ? () async {
+                        if (controller.text.trim() != name) {
+                          customProgressIdicator(context);
+                          await db.updateUsername(uid, controller.text.trim());
+                          Navigator.pop(context, controller.text.trim());
+                        }
+                      }
+                    : null,
+                child: Text(
+                  'Ok',
+                  style: TextStyle(
+                      color: controller.text.trim().isNotEmpty
+                          ? Colors.white
+                          : Colors.grey[600]),
+                ))
+          ],
+        ),
+        body: Container(
+          // width: MediaQuery.of(context).size.width * 0.8,
 
-// //ignore: must_be_immutable
-// class Profile extends ConsumerWidget {
-//   final BuildContext menuScreenContext;
-//   final Function hideNav;
-//   final Function showNav;
-//   final Function onScreenHideButtonPressed;
-//   bool hideStatus;
-//   DatabaseService db = DatabaseService();
+          margin: EdgeInsets.symmetric(vertical: 20),
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Center(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                'Name',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300),
+              ),
+              Form(
+                key: _formKey,
+                child: TextFormFieldWidget(
+                  // lableText: 'Name',
+                  onSaved: onSaved,
+                  validatorMessage: 'Name must not be empty.',
+                  controller: controller,
+                ),
+              ),
+              Container(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text('Press ok to save'))
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-//   Profile(
-//       {Key key,
-//       this.menuScreenContext,
-//       this.hideNav,
-//       this.showNav,
-//       this.onScreenHideButtonPressed,
-//       this.hideStatus = false})
-//       : super(key: key);
+class EditNameField extends StatefulWidget {
+  EditNameField({Key key}) : super(key: key);
 
-//   @override
-//   Widget build(BuildContext context, ScopedReader watch) {
-//     final _authState = watch(authStateProvider);
+  @override
+  _EditNameFieldState createState() => _EditNameFieldState();
+}
 
-//     return FutureBuilder(
-//         future: db.getUser(_authState.data.value.uid),
-//         builder: (context, snapshot) {
-//           if (snapshot.hasData) {
-//             User user = snapshot.data;
+class _EditNameFieldState extends State<EditNameField> {
+  TextEditingController controller;
 
-//             return Scaffold(
-//               backgroundColor: Theme.of(context).primaryColor,
-//               extendBodyBehindAppBar: true,
-//               appBar: AppBar(
-//                 elevation: 0,
-//                 backgroundColor: Theme.of(context).primaryColor,
-//                 actions: [
-//                   IconButton(
-//                     onPressed: () async {
-//                       pushNewScreenWithRouteSettings(
-//                         context,
-//                         settings: RouteSettings(name: '/settings'),
-//                         screen: Settings(),
-//                         pageTransitionAnimation:
-//                             PageTransitionAnimation.scaleRotate,
-//                         withNavBar: false,
-//                       );
-//                     },
-//                     icon: Icon(
-//                       Icons.settings,
-//                     ),
-//                   )
-//                 ],
-//               ),
-//               body: SafeArea(
-//                 child: Container(
-//                   width: MediaQuery.of(context).size.width,
-//                   height: MediaQuery.of(context).size.height,
-//                   child: Column(
-//                     mainAxisAlignment: MainAxisAlignment.start,
-//                     children: [
-//                       Container(
-//                         width: MediaQuery.of(context).size.width,
-//                         height: MediaQuery.of(context).size.height * 0.28,
-//                         padding: EdgeInsets.only(bottom: 20),
-//                         decoration: BoxDecoration(
-//                             color: Theme.of(context).primaryColor,
-//                             borderRadius: BorderRadius.only(
-//                               bottomLeft: Radius.circular(12),
-//                               bottomRight: Radius.circular(12),
-//                             ),
-//                             boxShadow: [
-//                               BoxShadow(
-//                                 color: Colors.black.withOpacity(0.5),
-//                                 blurRadius: 5,
-//                                 spreadRadius: 2,
-//                               )
-//                             ]),
-//                         child: Column(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             Column(
-//                               children: [
-//                                 CircleAvatar(
-//                                   radius: 50,
-//                                   child: ClipOval(
-//                                     child: user.photoUrl != null
-//                                         ? Image.network(
-//                                             user.photoUrl,
-//                                             errorBuilder: (context, error,
-//                                                     stackTrace) =>
-//                                                 Icon(Icons.person,
-//                                                     size: 50,
-//                                                     color: Colors.grey[700]),
-//                                           )
-//                                         : Icon(Icons.person,
-//                                             size: 50, color: Colors.grey),
-//                                   ),
-//                                 ),
-//                                 Text(
-//                                   user.name,
-//                                   style: TextStyle(color: Colors.white),
-//                                 ),
-//                                 Text(
-//                                   '@' + 'kare_12',
-//                                   style: TextStyle(color: Colors.grey),
-//                                 ),
-//                               ],
-//                             ),
-//                             Container(
-//                               width: MediaQuery.of(context).size.width * 0.85,
-//                               height: 45,
-//                               child: Row(
-//                                 mainAxisAlignment:
-//                                     MainAxisAlignment.spaceEvenly,
-//                                 children: [
-//                                   Column(
-//                                     children: [
-//                                       Text(
-//                                         '0',
-//                                         style: TextStyle(color: Colors.white),
-//                                       ),
-//                                       Text(
-//                                         'Following',
-//                                         style: TextStyle(color: Colors.grey),
-//                                       ),
-//                                     ],
-//                                   ),
-//                                   Container(
-//                                     height: 30,
-//                                     child: VerticalDivider(
-//                                       // width: 1.0,
-//                                       color: Colors.grey[600],
-//                                       thickness: 0.5,
-//                                     ),
-//                                   ),
-//                                   Column(
-//                                     children: [
-//                                       Text(
-//                                         '0',
-//                                         style: TextStyle(color: Colors.white),
-//                                       ),
-//                                       Text(
-//                                         'Following',
-//                                         style: TextStyle(color: Colors.grey),
-//                                       ),
-//                                     ],
-//                                   ),
-//                                   Container(
-//                                     height: 30,
-//                                     child: VerticalDivider(
-//                                       // width: 1.0,
-//                                       color: Colors.grey[600],
-//                                       thickness: 0.5,
-//                                     ),
-//                                   ),
-//                                   Column(
-//                                     children: [
-//                                       Text(
-//                                         '0',
-//                                         style: TextStyle(color: Colors.white),
-//                                       ),
-//                                       Text(
-//                                         'osts',
-//                                         style: TextStyle(color: Colors.grey),
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 ],
-//                               ),
-//                             ),
+  String text = '';
 
-//                             // Container(
-//                             //   width: MediaQuery.of(context).size.width * 0.85,
-//                             //   height: 90,
-//                             //   decoration: BoxDecoration(
-//                             //       color: Theme.of(context).cardColor,
-//                             //       borderRadius: BorderRadius.circular(8.0)),
-//                             //   child: Row(
-//                             //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                             //     children: [
-//                             //       Column(
-//                             //         mainAxisAlignment: MainAxisAlignment.center,
-//                             //         children: [
-//                             //           Container(
-//                             //             decoration: BoxDecoration(
-//                             //                 color: Colors.deepPurple[50],
-//                             //                 borderRadius: BorderRadius.circular(50)),
-//                             //             child: IconButton(
-//                             //                 color: Colors.grey,
-//                             //                 icon: Icon(Icons.translate),
-//                             //                 onPressed: () {}),
-//                             //           ),
-//                             //           Text('0'),
-//                             //         ],
-//                             //       ),
-//                             //       Column(
-//                             //         mainAxisAlignment: MainAxisAlignment.center,
-//                             //         children: [
-//                             //           IconButton(
-//                             //               color: Colors.grey,
-//                             //               icon: Icon(Icons.star_border_rounded),
-//                             //               onPressed: () {}),
-//                             //           Text('0'),
-//                             //         ],
-//                             //       ),
-//                             //       Column(
-//                             //         mainAxisAlignment: MainAxisAlignment.center,
-//                             //         children: [
-//                             //           IconButton(
-//                             //               color: Colors.grey,
-//                             //               icon: Icon(Icons.headset),
-//                             //               onPressed: () {}),
-//                             //           Text('0'),
-//                             //         ],
-//                             //       ),
-//                             //     ],
-//                             //   ),
-//                             // ),
-//                           ],
-//                         ),
-//                       ),
-//                       SizedBox(
-//                         height: 20,
-//                       ),
-//                       Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Padding(
-//                             padding: const EdgeInsets.only(left: 12.0),
-//                             child: Text('Statistics'),
-//                           ),
-//                           Container(
-//                             height: 150,
-//                             child: Column(
-//                               mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                               children: [
-//                                 Row(
-//                                   mainAxisAlignment:
-//                                       MainAxisAlignment.spaceAround,
-//                                   children: [
-//                                     Container(
-//                                       height: 60,
-//                                       width: MediaQuery.of(context).size.width *
-//                                           0.4,
-//                                       padding: EdgeInsets.symmetric(
-//                                           horizontal: 10, vertical: 8),
-//                                       decoration: BoxDecoration(
-//                                         // color: Theme.of(context).cardColor,
-//                                         borderRadius: BorderRadius.circular(8),
-//                                         border: Border.all(
-//                                             color: Colors.grey, width: 1),
-//                                       ),
-//                                       child: Row(
-//                                         mainAxisAlignment:
-//                                             MainAxisAlignment.start,
-//                                         crossAxisAlignment:
-//                                             CrossAxisAlignment.start,
-//                                         children: [
-//                                           IconButton(
-//                                               color: Colors.grey,
-//                                               icon: Icon(
-//                                                 Icons.translate,
-//                                                 size: 20,
-//                                               ),
-//                                               onPressed: () {}),
-//                                           Column(
-//                                             children: [
-//                                               Text(
-//                                                 '0',
-//                                                 style: TextStyle(
-//                                                     color: Colors.white),
-//                                               ),
-//                                               Text(
-//                                                 'Translatoins',
-//                                                 style: TextStyle(fontSize: 12),
-//                                               ),
-//                                             ],
-//                                           ),
-//                                         ],
-//                                       ),
-//                                     ),
-//                                     Container(
-//                                       height: 60,
-//                                       width: MediaQuery.of(context).size.width *
-//                                           0.4,
-//                                       padding: EdgeInsets.symmetric(
-//                                           horizontal: 10, vertical: 8),
-//                                       decoration: BoxDecoration(
-//                                         // color: Theme.of(context).cardColor,
-//                                         borderRadius: BorderRadius.circular(8),
-//                                         border: Border.all(
-//                                             color: Colors.grey, width: 1),
-//                                       ),
-//                                       child: Row(
-//                                         mainAxisAlignment:
-//                                             MainAxisAlignment.start,
-//                                         crossAxisAlignment:
-//                                             CrossAxisAlignment.start,
-//                                         children: [
-//                                           IconButton(
-//                                               color: Colors.grey,
-//                                               icon: Icon(
-//                                                 Icons.headset,
-//                                                 size: 20,
-//                                               ),
-//                                               onPressed: () {}),
-//                                           Column(
-//                                             children: [
-//                                               Text(
-//                                                 '0',
-//                                                 style: TextStyle(
-//                                                     color: Colors.white),
-//                                               ),
-//                                               Text(
-//                                                 'Audio Listend',
-//                                                 style: TextStyle(fontSize: 12),
-//                                               ),
-//                                             ],
-//                                           ),
-//                                         ],
-//                                       ),
-//                                     ),
-//                                   ],
-//                                 ),
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController();
+  }
 
-//                                 Container(
-//                                   height: 60,
-//                                   width:
-//                                       MediaQuery.of(context).size.width * 0.9,
-//                                   decoration: BoxDecoration(
-//                                     //     // color: Colors.deepPurple[50],
-//                                     borderRadius: BorderRadius.circular(8),
-//                                     border: Border.all(
-//                                         color: Colors.grey, width: 0.2),
-//                                   ),
-//                                   child: InkWell(
-//                                     borderRadius: BorderRadius.circular(8),
-//                                     onTap: () {},
-//                                     child: Column(
-//                                       mainAxisSize: MainAxisSize.min,
-//                                       mainAxisAlignment:
-//                                           MainAxisAlignment.center,
-//                                       crossAxisAlignment:
-//                                           CrossAxisAlignment.stretch,
-//                                       children: [
-//                                         Stack(
-//                                           alignment: Alignment.center,
-//                                           children: [
-//                                             Align(
-//                                               alignment: Alignment.center,
-//                                               child: Text(
-//                                                 'Favoirites',
-//                                                 style: TextStyle(
-//                                                     fontWeight:
-//                                                         FontWeight.w500),
-//                                               ),
-//                                             ),
-//                                             Align(
-//                                               alignment: Alignment.centerLeft,
-//                                               child: IconButton(
-//                                                 splashRadius: 0.1,
-//                                                 color: Colors.grey,
-//                                                 icon: Icon(
-//                                                   Icons.star_rounded,
-//                                                   size: 24,
-//                                                 ),
-//                                                 onPressed: () {},
-//                                               ),
-//                                             ),
-//                                             Align(
-//                                               alignment: Alignment.centerRight,
-//                                               child: Transform.rotate(
-//                                                 angle: 180 * math.pi / 180,
-//                                                 child: IconButton(
-//                                                   splashRadius: 0.1,
-//                                                   color: Colors.grey,
-//                                                   icon: Icon(
-//                                                     Icons.arrow_back_ios,
-//                                                     size: 20,
-//                                                   ),
-//                                                   onPressed: () {},
-//                                                 ),
-//                                               ),
-//                                             )
-//                                           ],
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ),
-//                                 ),
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
-//                                 // Row(
-//                                 //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                                 //   children: [
-//                                 //     Container(
-//                                 //       height: 60,
-//                                 //       width: MediaQuery.of(context).size.width * 0.9,
-//                                 //       // padding: EdgeInsets.symmetric(
-//                                 //       //     horizontal: 10, vertical: 8),
-//                                 //       decoration: BoxDecoration(
-//                                 //         //     // color: Colors.deepPurple[50],
-//                                 //         borderRadius: BorderRadius.circular(8),
-//                                 //         border:
-//                                 //             Border.all(color: Colors.grey, width: 0.2),
-//                                 //       ),
-//                                 //       child: ListTile(
-//                                 //         leading: IconButton(
-//                                 //             color: Colors.grey,
-//                                 //             icon: Icon(
-//                                 //               Icons.star_border_rounded,
-//                                 //               size: 20,
-//                                 //             ),
-//                                 //             onPressed: () {}),
-//                                 //         title: Text(
-//                                 //           'Favoirites',
-//                                 //           style: TextStyle(color: Colors.grey),
-//                                 //         ),
-//                                 //       ),
-//                                 //     ),
-//                                 //   ],
-//                                 // ),
-//                               ],
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             );
-//           } else {
-//             return customProgressIdicator(context);
-//           }
-//         });
-//   }
-// }
-
-// Expanded(
-//                 child: Container(
-//                     padding: EdgeInsets.only(top: 20),
-//                     width: MediaQuery.of(context).size.width * 0.95,
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         Text('Moments'),
-//                         Expanded(
-//                             child: FutureBuilder(
-//                                 future:
-//                                     db.getUserPosts(_authState.data.value.uid),
-//                                 builder: (context, snapshot) {
-//                                   if (snapshot.hasData) {
-//                                     List<Post> posts = snapshot.data;
-
-//                                     if (posts.length > 0) {
-//                                       return ListView.builder(
-//                                           controller: _scrollViewController,
-//                                           itemCount: posts.length,
-//                                           itemBuilder: (BuildContext context,
-//                                               int index) {
-//                                             return PostCard(posts[index]);
-//                                           });
-//                                     } else {
-//                                       return Container(
-//                                           child: Center(
-//                                         child: Text('No posts uploaded yet'),
-//                                       ));
-//                                     }
-//                                   } else {
-//                                     return Container(
-//                                         child: Center(
-//                                             child:
-//                                                 CircularProgressIndicator()));
-//                                   }
-//                                 })),
-//                       ],
-//                     )),
-//               )
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: MediaQuery.of(context).size.width * 0.9,
+        child: AutoDirection(
+          text: text,
+          child: TextFormField(
+            cursorColor: Colors.white,
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            autofocus: true,
+            style: TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintStyle: TextStyle(color: Colors.grey),
+              labelStyle: TextStyle(color: Colors.white),
+              focusColor: Colors.white,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+            ),
+            controller: controller,
+            onChanged: (value) {
+              setState(() {
+                text = value;
+              });
+            },
+          ),
+        ));
+  }
+}

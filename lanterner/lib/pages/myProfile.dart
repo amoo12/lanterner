@@ -56,9 +56,9 @@ class MyProfile extends ConsumerWidget {
                       pushNewScreenWithRouteSettings(
                         _scaffold.currentContext,
                         settings: RouteSettings(name: '/settings'),
-                        screen: Settings(),
+                        screen: Settings(user: user),
                         pageTransitionAnimation:
-                            PageTransitionAnimation.scaleRotate,
+                            PageTransitionAnimation.slideRight,
                         withNavBar: false,
                       );
                     },
