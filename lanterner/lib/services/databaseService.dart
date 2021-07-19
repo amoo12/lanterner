@@ -400,10 +400,20 @@ class DatabaseService {
     }
   }
 
-  Stream<DocumentSnapshot> isLiked(Post post, uid) {
+  Stream<bool> isLiked(Post post, uid) {
     final ref = postsCollection.doc(post.postId).collection('likes').doc(uid);
 
-    return ref.snapshots();
+    return ref.snapshots().map((doc) => doc.exists ? true : false);
+  }
+
+  Future<bool> isLikedF(Post post, uid) async {
+    final ref = await postsCollection
+        .doc(post.postId)
+        .collection('likes')
+        .doc(uid)
+        .get();
+
+    return ref.exists ? true : false;
   }
 
   // Stream<DocumentSnapshot>

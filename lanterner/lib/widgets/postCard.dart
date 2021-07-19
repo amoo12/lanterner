@@ -453,12 +453,12 @@ class _ImageViewerState extends State<ImageViewer> {
 }
 
 class PostCardFooter extends StatefulWidget {
-  final Post post;
+  Post post;
   final String currentUserID;
   final BuildContext parentContext;
   final String herotag;
 
-  const PostCardFooter(
+  PostCardFooter(
       {Key key,
       this.post,
       this.currentUserID,
@@ -471,11 +471,10 @@ class PostCardFooter extends StatefulWidget {
 }
 
 class _PostCardFooterState extends State<PostCardFooter> {
-  bool isLiked = false;
-  // bool clickable = true;
-
+  bool isLiked;
+  // final GlobalKey<CommentCountState> _key = GlobalKey();
   var isSaved = false;
-  Stream<DocumentSnapshot> likeStream;
+
   Stream<DocumentSnapshot> freshPost;
   Future<DocumentSnapshot> freshPostComment;
   final DatabaseService db = DatabaseService();
@@ -483,19 +482,15 @@ class _PostCardFooterState extends State<PostCardFooter> {
   int commentCountForTimelinePosts = 0;
 
   Future<void> like() async {
-    if (!isLiked) {
+    if (isLiked == false) {
       setState(() {
-        // clickable = false;
         isLiked = true;
         widget.post.likeCount++;
         likeCountForTimelinePosts++;
       });
       return await db.likePost(widget.post, widget.currentUserID, isLiked);
-      // clickable = true;
-    } else {
+    } else if (isLiked == true) {
       setState(() {
-        // clickable = false;
-        // clickable = true;
         isLiked = false;
         widget.post.likeCount--;
         likeCountForTimelinePosts--;
@@ -505,21 +500,13 @@ class _PostCardFooterState extends State<PostCardFooter> {
         //     :
       });
       return await db.likePost(widget.post, widget.currentUserID, isLiked);
-      // clickable = true;
     }
-    // setState(() {
-    //   isLiked = !isLiked;
-    // });
   }
 
   void savePost() {
     setState(() {
       isSaved = !isSaved;
     });
-  }
-
-  fetchLikeState() async {
-    likeStream = db.isLiked(widget.post, widget.currentUserID);
   }
 
   Stream<DocumentSnapshot> fetchPost() {
@@ -529,18 +516,20 @@ class _PostCardFooterState extends State<PostCardFooter> {
     return ref.snapshots();
   }
 
-  fetchPostforComment() async {
-    DocumentReference ref =
-        FirebaseFirestore.instance.collection('posts').doc(widget.post.postId);
-    return freshPostComment = ref.get();
+//  only checks for the first time the post is loaded then we user the stream
+  heckIsliked() async {
+    isLiked = await db.isLikedF(widget.post, widget.currentUserID);
+    if (widget.herotag == 'follwingPosts-to-comments') {
+      widget.post = await db.getPost(widget.post.postId);
+    }
   }
-
-  //  freshPostComment =  await dst.postId);
 
   @override
   void initState() {
     super.initState();
-    fetchLikeState();
+    heckIsliked();
+
+    // print();
     freshPost = fetchPost();
   }
 
@@ -556,31 +545,12 @@ class _PostCardFooterState extends State<PostCardFooter> {
             children: [
               Stack(
                 children: [
-                  StreamBuilder<DocumentSnapshot>(
-                      stream: likeStream,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData)
-                          return SizedBox(
-                            width: 30,
-                          );
-
-                        isLiked = snapshot.data.exists;
-
-                        return TapDebouncer(
-                          cooldown: const Duration(milliseconds: 500),
-                          onTap: () async {
-                            await like();
-                          },
-                          builder: (context, onTap) => IconButton(
-                            icon: Icon(
-                              isLiked ? Icons.favorite : Icons.favorite_outline,
-                              color: isLiked ? Colors.pink : Colors.grey[400],
-                              size: 20,
-                            ),
-                            onPressed: onTap,
-                          ),
-                        );
-                      }),
+                  LikeButton(
+                    currentUserID: widget.currentUserID,
+                    post: widget.post,
+                    like: like,
+                    isLiked: isLiked,
+                  ),
                   Positioned.fill(
                     child: Align(
                       alignment: Alignment.bottomCenter,
@@ -594,6 +564,7 @@ class _PostCardFooterState extends State<PostCardFooter> {
                                 if (snapshot.hasData) {
                                   widget.post.commmentCount =
                                       snapshot.data.data()['commmentCount'];
+
                                   widget.post.likeCount =
                                       snapshot.data.data()['likeCount'] +
                                           likeCountForTimelinePosts;
@@ -647,25 +618,7 @@ class _PostCardFooterState extends State<PostCardFooter> {
                   Positioned.fill(
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: FutureBuilder<DocumentSnapshot>(
-                          future: freshPostComment,
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              widget.post.commmentCount =
-                                  snapshot.data.data()['commmentCount'];
-                              return Text(
-                                widget.post.commmentCount.toString(),
-                                style: TextStyle(
-                                    color: Colors.grey[400], fontSize: 10),
-                              );
-                            } else {
-                              return Text(
-                                widget.post.commmentCount.toString(),
-                                style: TextStyle(
-                                    color: Colors.grey[400], fontSize: 10),
-                              );
-                            }
-                          }),
+                      child: CommentCount(widget: widget),
                     ),
                   ),
                 ],
@@ -750,5 +703,95 @@ class _PostCardFooterState extends State<PostCardFooter> {
         ],
       ),
     );
+  }
+}
+
+class CommentCount extends StatefulWidget {
+  const CommentCount({
+    Key key,
+    @required this.widget,
+  }) : super(key: key);
+
+  final PostCardFooter widget;
+
+  @override
+  CommentCountState createState() => CommentCountState();
+}
+
+class CommentCountState extends State<CommentCount> {
+  updateCount() {
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateCount();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      widget.widget.post.commmentCount.toString(),
+      style: TextStyle(color: Colors.grey[400], fontSize: 10),
+    );
+  }
+}
+
+class LikeButton extends StatefulWidget {
+  var like;
+  Post post;
+  String currentUserID;
+  bool isLiked;
+  LikeButton({Key key, this.like, this.post, this.currentUserID, this.isLiked})
+      : super(key: key);
+
+  @override
+  _LikeButtonState createState() => _LikeButtonState();
+}
+
+class _LikeButtonState extends State<LikeButton> {
+  Stream<bool> likeStream;
+  fetchLikeState() async {
+    likeStream = db.isLiked(widget.post, widget.currentUserID);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchLikeState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<bool>(
+        stream: likeStream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return SizedBox();
+          }
+          widget.isLiked = snapshot.data;
+          return Container(
+            child: TapDebouncer(
+              cooldown: const Duration(milliseconds: 500),
+              onTap: () async {
+                await widget.like();
+              },
+              builder: (context, onTap) => IconButton(
+                icon: Icon(
+                  widget.isLiked ? Icons.favorite : Icons.favorite_outline,
+                  color: widget.isLiked ? Colors.pink : Colors.grey[400],
+                  size: 20,
+                ),
+                onPressed: onTap,
+              ),
+            ),
+          );
+        });
   }
 }

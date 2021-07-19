@@ -13,7 +13,6 @@ import 'package:lanterner/widgets/postCard.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-
 // ignore: must_be_immutable
 class Comments extends StatelessWidget {
   Comments({Key key, this.post, this.herotag}) : super(key: key);
