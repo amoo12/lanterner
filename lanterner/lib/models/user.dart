@@ -148,4 +148,9 @@ class Language {
       'isNative': isNative,
     };
   }
+
+  @override
+  String toString() {
+    return 'Language(title: $title, code: $code, level: $level, isNative: $isNative)';
+  }
 }

@@ -151,46 +151,53 @@ class DatabaseService {
     });
   }
 
-  Future<void> updateUsername(String uid, String name) async {
+  Future<void> updateUsername(User user) async {
     var batch = FirebaseFirestore.instance.batch();
+    user.setSearchParameters();
 
-    batch.update(usersCollection.doc(uid), {
-      'name': name,
-    });
+    batch.update(usersCollection.doc(user.uid),
+        {'name': user.name, 'searchOptions': user.searchOptions});
 
     await postsCollection
-        .where('user.uid', isEqualTo: uid)
+        .where('user.uid', isEqualTo: user.uid)
         .get()
         .then((snapshot) {
       snapshot.docs.forEach((element) {
         DocumentReference doc = postsCollection.doc(element.id);
-        batch.update(doc, {'user.name': name});
+        batch.update(doc, {'user.name': user.name});
       });
     });
 
     await FirebaseFirestore.instance
         .collectionGroup('timelinePosts')
-        .where('user.uid', isEqualTo: uid)
+        .where('user.uid', isEqualTo: user.uid)
         .get()
         .then((snapshot) {
       snapshot.docs.forEach((doc) {
         // DocumentReference doc = postsCollection.doc(element.id);
 
-        batch.update(doc.reference, {'user.name': name});
+        batch.update(doc.reference, {'user.name': user.name});
       });
     });
     return FirebaseFirestore.instance
         .collectionGroup('comments')
-        .where('user.uid', isEqualTo: uid)
+        .where('user.uid', isEqualTo: user.uid)
         .get()
         .then((snapshot) {
       snapshot.docs.forEach((doc) {
-        batch.update(doc.reference, {'user.name': name});
+        batch.update(doc.reference, {'user.name': user.name});
       });
       batch.commit();
     });
   }
 
+  Future<void> updateTargetLanguage(String uid, Language language) {
+    return usersCollection
+        .doc(uid)
+        .update({'targetLanguage': language.toMap()});
+  }
+
+  // * -------
   Future<List<User>> searchUsers(String searchText) async {
     return await usersCollection
         .where('searchOptions', arrayContains: searchText)
