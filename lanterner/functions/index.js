@@ -8,7 +8,6 @@ admin.initializeApp();
 exports.onCreateFollower = functions.firestore
   .document("/users/{uid}/followers/{followerId}")
   .onCreate((snapshot, context) => {
-    // console.log("Follower Created", snapshot.data());
     const uid = context.params.uid;
     const followerId = context.params.followerId;
 
@@ -23,7 +22,6 @@ exports.onCreateFollower = functions.firestore
       .collection("timelinePosts");
 
     //   3) get followed user timeline posts
-    // const querySanpshot =
     followedUserPostsRef.get().then((docs) => {
       docs.forEach((doc) => {
         if (doc.exists) {
@@ -33,14 +31,31 @@ exports.onCreateFollower = functions.firestore
         }
       });
     });
+
+    // 4) notifiy followed user
+    // return admin
+    //   .firestore()
+    //   .collection("users")
+    //   .doc(followerId)
+    //   .get()
+    //   .then((document) => {
+    //     user = document.data();
+    //     var now = new Date();
+
+    //     admin.firestore().collection("activity").doc(uid).collection("userActivity").doc().set({
+    //       type: "follow",
+    //       postId: null,
+    //       user: user,
+    //       timestamp: admin.firestore().FieldValue,
+    //       seen: false,
+    //     });
+    //   });
   });
 
 //* remove posts from the followers feed when the unfollow
 exports.onDeleteFollower = functions.firestore
   .document("/users/{uid}/followers/{followerId}")
   .onDelete((snapshot, context) => {
-    console.log("followerDeleted " + snapshot.id);
-
     const uid = context.params.uid;
     const followerId = context.params.followerId;
 
@@ -51,10 +66,9 @@ exports.onDeleteFollower = functions.firestore
       .collection("timelinePosts")
       .where("user.uid", "==", uid);
 
-    timelinePostsRef.get().then((docs) => {
+    return timelinePostsRef.get().then((docs) => {
       docs.forEach((doc) => {
         if (doc.exists) {
-          console.log("post deleted from timeline " + doc.id);
           doc.ref.delete();
         }
       });
@@ -68,7 +82,6 @@ exports.onCreatePost = functions.firestore
     const post = snapshot.data();
     const uid = snapshot.data().user.uid;
     const postId = snapshot.data().postId;
-    console.log("postId" + snapshot.data().postId);
 
     const userFollowersRef = admin.firestore().collection("users").doc(uid).collection("followers");
 
@@ -76,8 +89,6 @@ exports.onCreatePost = functions.firestore
       // add new posts to each follower feed
       console.log(docs.size);
       docs.forEach((doc) => {
-        console.log("doc data" + doc.data());
-        console.log("doc id" + doc.id);
         admin
           .firestore()
           .collection("timeline")
@@ -121,50 +132,60 @@ exports.onDeletePost = functions.firestore
 exports.updatePostLikesCount = functions.firestore
   .document("posts/{postId}/likes/{uid}")
   .onWrite((change, context) => {
-    console.log("post Liked" + change.id);
     const uid = context.params.uid;
     const postId = context.params.postId;
 
     let increment;
 
     const psotRef = admin.firestore().collection("posts").doc(postId);
+    var data;
 
     if (change.after.exists && !change.before.exists) {
       // TODO: set the notification message here
       increment = 1;
+      data = change.after.data();
     } else if (!change.after.exists && change.before.exists) {
       // TODO: set the notification message here
       increment = -1;
+      data = change.before.data();
     } else {
       return null;
     }
 
     psotRef.set({ likeCount: admin.firestore.FieldValue.increment(increment) }, { merge: true });
 
-    var postOwnerId;
-    var user;
-    return admin
-      .firestore()
-      .collection("users")
-      .doc(uid)
-      .get()
-      .then((document) => {
-        user = document.data();
+    if (increment == 1) {
+      var postOwnerId;
+      var user;
+      return admin
+        .firestore()
+        .collection("users")
+        .doc(uid)
+        .get()
+        .then((document) => {
+          user = document.data();
 
-        psotRef.get().then((doc) => {
-          postOwnerId = doc.data().user.uid;
-          console.log("post ownerId line 194" + doc.data().user.uid);
+          psotRef.get().then((doc) => {
+            postOwnerId = doc.data().user.uid;
 
-          console.log("post ownerIddd line 197" + postOwnerId);
-          admin
-            .firestore()
-            .collection("activity")
-            .doc(postOwnerId)
-            .collection("userActivity")
-            .doc()
-            .set({ activityType: "like", postId: postId, user: user });
+            if (postOwnerId != uid) {
+              admin
+                .firestore()
+                .collection("activity")
+                .doc(postOwnerId)
+                .collection("userActivity")
+                .doc()
+                .set({
+                  type: "like",
+                  postId: postId,
+                  user: user,
+                  timestamp: data.timestamp,
+                  seen: false,
+                });
+            }
+          });
         });
-      });
+    }
   });
 
 //* update the the number of comments
@@ -178,41 +199,46 @@ exports.updateCommentsCount = functions.firestore
 
     const psotRef = admin.firestore().collection("posts").doc(postId);
 
+    var data;
+
     if (change.after.exists && !change.before.exists) {
       // TODO: set the notification message here
       increment = 1;
+      data = change.after.data();
     } else if (!change.after.exists && change.before.exists) {
       // TODO: set the notification message here
       increment = -1;
+      data = change.before.data();
     } else {
       return null;
     }
 
-    //! TODO: remove the return if you want to add code below later
     psotRef.set(
       { commmentCount: admin.firestore.FieldValue.increment(increment) },
       { merge: true }
     );
 
-    var data;
     if (increment == 1) {
-      data = change.after.data();
-    } else if (increment == -1) {
-      data = change.before.data();
+      var postOwnerId;
+      return psotRef.get().then((doc) => {
+        postOwnerId = doc.data().user.uid;
+
+        if (postOwnerId != data.user.uid) {
+          admin
+            .firestore()
+            .collection("activity")
+            .doc(postOwnerId)
+            .collection("userActivity")
+            .doc()
+            .set({
+              type: "comment",
+              data: data,
+              user: data.user,
+              timestamp: data.createdAt,
+              postId: data.postId,
+              seen: false,
+            });
+        }
+      });
     }
-
-    var postOwnerId;
-    return psotRef.get().then((doc) => {
-      postOwnerId = doc.data().user.uid;
-      console.log("post ownerId line 194" + doc.data().user.uid);
-
-      console.log("post ownerIddd line 197" + postOwnerId);
-      admin
-        .firestore()
-        .collection("activity")
-        .doc(postOwnerId)
-        .collection("userActivity")
-        .doc()
-        .set({ activityType: "comment", notification: data });
-    });
   });

@@ -97,6 +97,7 @@ class _ChatsListState extends State<ChatsList> {
             return ListView.builder(
               itemCount: chats.length,
               itemBuilder: (context, index) => ListTile(
+                dense: true,
                 onTap: () async {
                   // TODO: becarful with sending a user with null values
 
@@ -133,8 +134,10 @@ class _ChatsListState extends State<ChatsList> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                trailing:
-                    Text('${getChatTime(chats[index].lastMessage.timeStamp)}'),
+                trailing: Text(
+                  '${getChatTime(chats[index].lastMessage.timeStamp)}',
+                  style: TextStyle(fontSize: 12),
+                ),
               ),
             );
           })

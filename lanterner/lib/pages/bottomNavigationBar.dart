@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:lanterner/pages/chats/chatsList.dart';
 import 'package:lanterner/pages/new_post.dart';
 import 'package:lanterner/pages/myProfile.dart';
+import 'package:lanterner/pages/activityList.dart';
 import 'package:lanterner/pages/search.dart';
 import 'package:lanterner/routes/routes.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -51,9 +52,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
       Center(
         child: Search(),
       ),
-      Center(
-        child: Text('notifications'),
-      ),
+      ActivityList(menuScreenContext: widget.menuScreenContext),
       MyProfile(
         menuScreenContext: widget.menuScreenContext,
         hideStatus: _hideNavBar,
@@ -105,7 +104,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
         activeColorPrimary: Colors.white,
         inactiveColorPrimary: Colors.grey,
         routeAndNavigatorSettings: RouteAndNavigatorSettings(
-          initialRoute: '/notifications',
+          initialRoute: '/activity',
           routes: routes,
         ),
       ),

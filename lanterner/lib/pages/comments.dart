@@ -25,28 +25,37 @@ class Comments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DatabaseService db = DatabaseService(postId: post.postId);
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Theme.of(context).primaryColor,
-      appBar: AppBar(),
-      body: Stack(
-        children: <Widget>[
-          SingleChildScrollView(
-            child: Column(children: [
-              Hero(
-                  tag: herotag + post.postId,
-                  child: PostCard(post: post, herotag: herotag)),
-              CommentsListView(db: db, post: post),
-            ]),
-          ),
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: CommentField(
-                comment: comment,
-                postId: post.postId,
-                scaffoldKey: _scaffoldKey,
-              ))
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        if (ModalRoute.of(context).settings.name == '/comments_from_activity') {
+          Navigator.pop(context);
+          Navigator.pop(context);
+        }
+        return true;
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: Theme.of(context).primaryColor,
+        appBar: AppBar(),
+        body: Stack(
+          children: <Widget>[
+            SingleChildScrollView(
+              child: Column(children: [
+                Hero(
+                    tag: herotag + post.postId,
+                    child: PostCard(post: post, herotag: herotag)),
+                CommentsListView(db: db, post: post),
+              ]),
+            ),
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: CommentField(
+                  comment: comment,
+                  postId: post.postId,
+                  scaffoldKey: _scaffoldKey,
+                ))
+          ],
+        ),
       ),
     );
   }
@@ -301,7 +310,7 @@ class _CommentFieldState extends State<CommentField> {
 
   comment(String currentUserId) async {
     if (commentController.text.trim().isNotEmpty) {
-      DateTime createdAt = DateTime.now();
+      DateTime createdAt = DateTime.now().toUtc();
       Timestamp timestamp = Timestamp.fromDate(createdAt);
       User user = await db.getUser(currentUserId);
 

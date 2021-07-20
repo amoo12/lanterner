@@ -1,5 +1,6 @@
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lanterner/models/activity.dart';
 import 'package:lanterner/models/comment.dart';
 import 'package:lanterner/models/message.dart';
 import 'package:lanterner/models/post.dart';
@@ -24,6 +25,8 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('messages');
   final CollectionReference timelineCollection =
       FirebaseFirestore.instance.collection('timeline');
+  final CollectionReference activityCollection =
+      FirebaseFirestore.instance.collection('activity');
   // final CollectionReference timelinePostsCollectionGroup =
   //     FirebaseFirestore.instance.collectionGroup('timelinePosts');
   // inserts a new user record in Firestore
@@ -307,8 +310,6 @@ class DatabaseService {
     comment.cid = ref.id;
     // add the doc to the collection
     // batch.set(
- 
-
     postsCollection
         .doc(postId)
         .collection('comments')
@@ -497,7 +498,20 @@ class DatabaseService {
   }
 
   Future<void> incrementTranslations(String uid) {
-    return usersCollection.doc(uid).update({'translationsCount': FieldValue.increment(1) });
+    return usersCollection
+        .doc(uid)
+        .update({'translationsCount': FieldValue.increment(1)});
+  }
+
+  Future<List<Activity>> getUserActivity(String uid) async {
+    
+    return activityCollection
+        .doc(uid)
+        .collection('userActivity')
+        .orderBy('timestamp', descending: true)
+        .get()
+        .then((value) =>
+            value.docs.map((doc) => Activity.fromMap(doc.data())).toList());
   }
 
   //! TODO: duplicate function also exists in messagesProvider
