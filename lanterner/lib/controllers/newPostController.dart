@@ -35,6 +35,8 @@ class NewPostController {
       user: user,
       createdAt: createdAt.toString(),
       timestamp: timestamp,
+      likeCount: 0,
+      commmentCount: 0,
     ));
 
     captionController.clear();

@@ -528,8 +528,6 @@ class _PostCardFooterState extends State<PostCardFooter> {
   void initState() {
     super.initState();
     heckIsliked();
-
-    // print();
     freshPost = fetchPost();
   }
 
@@ -567,7 +565,7 @@ class _PostCardFooterState extends State<PostCardFooter> {
 
                                   widget.post.likeCount =
                                       snapshot.data.data()['likeCount'] +
-                                          likeCountForTimelinePosts;
+                                  likeCountForTimelinePosts;
 
                                   return Text(
                                     widget.post.likeCount.toString() ?? '0',
