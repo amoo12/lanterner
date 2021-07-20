@@ -55,7 +55,7 @@ class User {
     this.targetLanguage,
     this.searchOptions,
     this.bio,
-    this.admin,
+    this.admin = false,
   });
 
   factory User.fromMap(Map<dynamic, dynamic> data) {

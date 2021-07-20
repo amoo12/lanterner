@@ -6,6 +6,8 @@ import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/languageIndicator.dart';
 import 'package:lanterner/widgets/postCard.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import '../models/user.dart';
 import '../services/databaseService.dart';
@@ -50,6 +52,73 @@ class _ProfileState extends State<Profile> {
                           backgroundColor: Theme.of(context).primaryColor,
                           extendBodyBehindAppBar: true,
                           appBar: AppBar(
+                            actions: [
+                              IconButton(
+                                icon: Icon(Icons.more_vert_rounded),
+                                onPressed: () async {
+                                  User currentUser =
+                                      await context.read(userProvider.future);
+                                  print(user.toString());
+                                  if (currentUser.admin) {
+                                    showBarModalBottomSheet(
+                                      useRootNavigator: true,
+                                      barrierColor:
+                                          Colors.black.withOpacity(0.3),
+                                      expand: false,
+                                      context: context,
+                                      builder: (context) => Container(
+                                        height: 100,
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 20),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(8),
+                                                topRight: Radius.circular(8))),
+                                        child: ListView(
+                                          children: [
+                                            user.admin
+                                                ? ListTile(
+                                                    leading: Icon(
+                                                      Icons
+                                                          .admin_panel_settings,
+                                                      color: Colors.black,
+                                                    ),
+                                                    title: Text(
+                                                        'Revoke admin role'),
+                                                    onTap: () async {
+                                                      customProgressIdicator(
+                                                          context);
+                                                      await db.revokeAdmin(
+                                                          widget.uid);
+                                                      Navigator.pop(context);
+                                                      Navigator.pop(context);
+                                                      setState(() {});
+                                                    })
+                                                : ListTile(
+                                                    leading: Icon(
+                                                      Icons.verified,
+                                                    ),
+                                                    title: Text(
+                                                        'Promote to admin'),
+                                                    onTap: () async {
+                                                      //detlte post from db
+                                                      customProgressIdicator(
+                                                          context);
+                                                      await db.promoteToAdmin(
+                                                          widget.uid);
+
+                                                      Navigator.pop(context);
+                                                      Navigator.pop(context);
+                                                      setState(() {});
+                                                    })
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              )
+                            ],
                             elevation: 0,
                             backgroundColor: Theme.of(context).primaryColor,
                             title: Text(user.name),
@@ -103,31 +172,65 @@ class _ProfileState extends State<Profile> {
                                                     photoUrl: user.photoUrl,
                                                     currentUserId: _authState
                                                         .data.value.uid),
-                                                // CircleAvatar(
-                                                //   radius: 40,
-                                                //   backgroundImage: user
-                                                //               .photoUrl !=
-                                                //           null
-                                                //       ? NetworkImage(
-                                                //           user.photoUrl,
-                                                //         )
-                                                //       : NetworkImage(
-                                                //           'https://via.placeholder.com/150'),
-                                                //   child: user.photoUrl == null
-                                                //       ? Icon(Icons.person,
-                                                //           size: 50,
-                                                //           color: Colors.grey)
-                                                //       : Container(),
-                                                // ),
                                                 SizedBox(width: 10),
                                                 Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(
-                                                      user.name,
-                                                      style: TextStyle(
-                                                          color: Colors.white),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          user.name,
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                        Container(
+                                                          width: 24,
+                                                          height: 20,
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 8),
+                                                          decoration: BoxDecoration(
+                                                              color: user.gender ==
+                                                                      'Male'
+                                                                  ? Theme.of(
+                                                                          context)
+                                                                      .accentColor
+                                                                  : Colors.pink,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10)),
+                                                          child: Icon(
+                                                            user.gender ==
+                                                                    'Male'
+                                                                ? MdiIcons
+                                                                    .genderMale
+                                                                : MdiIcons
+                                                                    .genderFemale,
+                                                            size: 14,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                        user.admin
+                                                            ? Container(
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                        left:
+                                                                            8),
+                                                                child: Icon(
+                                                                  Icons
+                                                                      .verified,
+                                                                  color: Colors
+                                                                      .tealAccent,
+                                                                  // Color(
+                                                                  //     0xffFFD700),
+                                                                  size: 18,
+                                                                ),
+                                                              )
+                                                            : SizedBox()
+                                                      ],
                                                     ),
                                                     SizedBox(height: 10),
                                                     Container(

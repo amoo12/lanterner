@@ -20,11 +20,13 @@ class Comments extends StatelessWidget {
   final String herotag;
   // TextEditingController commentController = TextEditingController();
   Comment comment = Comment();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     DatabaseService db = DatabaseService(postId: post.postId);
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(),
       body: Stack(
@@ -42,6 +44,7 @@ class Comments extends StatelessWidget {
               child: CommentField(
                 comment: comment,
                 postId: post.postId,
+                scaffoldKey: _scaffoldKey,
               ))
         ],
       ),
@@ -111,10 +114,13 @@ class _CommentsListViewState extends State<CommentsListView> {
                               children: [
                                 InkWell(
                                   onLongPress: () async {
+                                    User _user =
+                                        await context.read(userProvider.future);
                                     if (_authState.data.value.uid ==
                                             comments[index].user.uid ||
                                         _authState.data.value.uid ==
-                                            widget.post.user.uid) {
+                                            widget.post.user.uid ||
+                                        _user.admin) {
                                       await showBarModalBottomSheet(
                                         barrierColor:
                                             Colors.black.withOpacity(0.3),
@@ -184,13 +190,31 @@ class _CommentsListViewState extends State<CommentsListView> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                '${comments[index].user.name}',
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    '${comments[index].user.name}',
+                                                    style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  comments[index].user.admin
+                                                      ? Container(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 4),
+                                                          child: Icon(
+                                                            Icons.verified,
+                                                            color: Colors
+                                                                .tealAccent,
+                                                            size: 12,
+                                                          ),
+                                                        )
+                                                      : SizedBox(),
+                                                ],
                                               ),
                                               AutoDirection(
                                                 text: '${comments[index].text}',
@@ -255,8 +279,15 @@ class _CommentsListViewState extends State<CommentsListView> {
 class CommentField extends StatefulWidget {
   final postId;
   Comment comment;
-  CommentField({Key key, @required this.postId, this.comment})
-      : super(key: key);
+
+  final GlobalKey<ScaffoldState> scaffoldKey;
+
+  CommentField({
+    Key key,
+    @required this.postId,
+    this.comment,
+    @required this.scaffoldKey,
+  }) : super(key: key);
 
   @override
   _CommentFieldState createState() => _CommentFieldState();
@@ -378,7 +409,8 @@ class _CommentFieldState extends State<CommentField> {
                                 'comment posted',
                               ),
                             );
-                            ScaffoldMessenger.of(context)
+                            ScaffoldMessenger.of(
+                                    widget.scaffoldKey.currentContext)
                                 .showSnackBar(registrationBar);
                           }
                         : null,

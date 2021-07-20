@@ -307,8 +307,7 @@ class DatabaseService {
     comment.cid = ref.id;
     // add the doc to the collection
     // batch.set(
-    logger.d('postId drom ' + postId);
-    // print('postId from the comment: ' + postId);
+ 
 
     postsCollection
         .doc(postId)
@@ -421,6 +420,80 @@ class DatabaseService {
     final ref = usersCollection.doc(uid);
 
     return ref.snapshots().map((doc) => User.fromSnapShot(doc));
+  }
+
+  Future<void> promoteToAdmin(String uid) async {
+    var batch = FirebaseFirestore.instance.batch();
+
+    batch.update(usersCollection.doc(uid), {'admin': true});
+
+    await postsCollection
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((element) {
+        DocumentReference doc = postsCollection.doc(element.id);
+        batch.update(doc, {'user.admin': true});
+      });
+    });
+
+    await FirebaseFirestore.instance
+        .collectionGroup('timelinePosts')
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'user.admin': true});
+      });
+    });
+    // TODO: check again if this is necessary
+    return FirebaseFirestore.instance
+        .collectionGroup('comments')
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'user.admin': true});
+      });
+      batch.commit();
+    });
+  }
+
+  Future<void> revokeAdmin(String uid) async {
+    var batch = FirebaseFirestore.instance.batch();
+
+    batch.update(usersCollection.doc(uid), {'admin': false});
+
+    await postsCollection
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((element) {
+        DocumentReference doc = postsCollection.doc(element.id);
+        batch.update(doc, {'user.admin': false});
+      });
+    });
+
+    await FirebaseFirestore.instance
+        .collectionGroup('timelinePosts')
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'user.admin': false});
+      });
+    });
+    // TODO: check again if this is necessary
+    return FirebaseFirestore.instance
+        .collectionGroup('comments')
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'user.admin': false});
+      });
+      batch.commit();
+    });
   }
 
   //! TODO: duplicate function also exists in messagesProvider

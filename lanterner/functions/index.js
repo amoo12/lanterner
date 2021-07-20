@@ -171,7 +171,6 @@ exports.updatePostLikesCount = functions.firestore
 exports.updateCommentsCount = functions.firestore
   .document("posts/{postId}/comments/{cid}")
   .onWrite((change, context) => {
-   
     const cid = context.params.cid;
     const postId = context.params.postId;
 

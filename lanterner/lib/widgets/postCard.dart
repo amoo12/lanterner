@@ -235,18 +235,29 @@ class _PostCardState extends State<PostCard> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  '${widget.post.user.name}',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[400],
-                                      fontWeight: FontWeight.w500),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '${widget.post.user.name}',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey[400],
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    widget.post.user.admin
+                                        ? Container(
+                                            padding: EdgeInsets.only(left: 6),
+                                            child: Icon(
+                                              Icons.verified,
+                                              color: Colors.tealAccent,
+                                              // Color(
+                                              //     0xffFFD700),
+                                              size: 14,
+                                            ),
+                                          )
+                                        : SizedBox()
+                                  ],
                                 ),
-                                // Text(
-                                //   '@username',
-                                //   style: TextStyle(
-                                //       fontSize: 12, color: Colors.grey[600]),
-                                // ),
                                 Container(
                                   // width: 60,
                                   child: Row(
@@ -565,7 +576,7 @@ class _PostCardFooterState extends State<PostCardFooter> {
 
                                   widget.post.likeCount =
                                       snapshot.data.data()['likeCount'] +
-                                  likeCountForTimelinePosts;
+                                          likeCountForTimelinePosts;
 
                                   return Text(
                                     widget.post.likeCount.toString() ?? '0',
