@@ -2,6 +2,7 @@ import 'package:auto_direction/auto_direction.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lanterner/controllers/translationController.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
 import 'package:lanterner/pages/comments.dart';
@@ -14,7 +15,6 @@ import 'package:lanterner/widgets/progressIndicator.dart';
 import 'package:logger/logger.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tap_debouncer/tap_debouncer.dart';
@@ -35,47 +35,53 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   bool isRTL;
 
+  TranslationController translator = TranslationController();
   String firstHalf;
   String secondHalf;
 
   bool flag = true;
-  final translator = GoogleTranslator();
+  // final translator = GoogleTranslator();
 
-  Future<Translation> translate(String textTotrasnlate) async {
-    final prefs = await SharedPreferences.getInstance();
-    Translation translation;
-    String translateTo;
-    String alternativeTranslation;
+  // Future<Translation> translate(String textTotrasnlate) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   Translation translation;
+  //   String translateTo;
+  //   String alternativeTranslation;
 
-    // fetch the user's target translation language
-    if (prefs.containsKey('preferred_translation_language') &&
-        prefs.containsKey('targetlanguage')) {
-      translateTo = prefs.getString('preferred_translation_language');
-      alternativeTranslation = prefs.getString('targetlanguage');
-    } else {
-      final DatabaseService db = DatabaseService();
-      final uid = context.read(authStateProvider).data.value.uid;
-      final User user = await db.getUser(uid);
-      prefs.setString(
-          'preferred_translation_language', user.nativeLanguage.code);
-      prefs.setString('targetlanguage', user.targetLanguage.code);
-      translateTo = user.nativeLanguage.code;
-      alternativeTranslation = user.targetLanguage.code;
-    }
+  //   // fetch the user's target translation language
+  //   if (prefs.containsKey('preferred_translation_language') &&
+  //       prefs.containsKey('targetlanguage')) {
+  //     translateTo = prefs.getString('preferred_translation_language');
+  //     alternativeTranslation = prefs.getString('targetlanguage');
+  //     logger.e(translateTo);
+  //     logger.d('local store');
+  //   } else {
+  //     final DatabaseService db = DatabaseService();
+  //     final uid = context.read(authStateProvider).data.value.uid;
+  //     final User user = await db.getUser(uid);
+  //     logger.d('Firestore store');
+  //     prefs.setString(
+  //         'preferred_translation_language', user.nativeLanguage.code);
+  //     prefs.setString('targetlanguage', user.targetLanguage.code);
+  //     translateTo = user.nativeLanguage.code;
+  //     alternativeTranslation = user.targetLanguage.code;
+  //   }
 
-    // auto detect the source language and translates to target language
-    translation = await translator.translate(textTotrasnlate, to: translateTo);
+  //   // auto detect the source language and translates to target language
+  //   translation = await translator.translate(textTotrasnlate, to: translateTo);
 
-    // if the text is the same as the prefered transaltion language then translate to the user's target language
-    if (translation.sourceLanguage.code == translateTo) {
-      translation = await translator.translate(textTotrasnlate,
-          to: alternativeTranslation);
-    }
+  //   // if the text is the same as the prefered transaltion language then translate to the user's target language
+  //   if (translation.sourceLanguage.code == translateTo) {
+  //     translation = await translator.translate(textTotrasnlate,
+  //         to: alternativeTranslation);
+  //   }
 
-    return translation;
-  }
+  //   logger.d(translation.sourceLanguage.name);
+  //   logger.d(translation.targetLanguage.name);
+  //   return translation;
+  // }
 
-  translationBottomSheet(String textTotrasnlate) {
+  translationBottomSheet(String textTotrasnlate, String uid) {
     showBarModalBottomSheet(
       enableDrag: false,
       useRootNavigator: true,
@@ -93,7 +99,11 @@ class _PostCardState extends State<PostCard> {
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(8), topRight: Radius.circular(8))),
         child: FutureBuilder(
-            future: translate(textTotrasnlate),
+            // future: translator.translate(
+            //     textTotrasnlate: textTotrasnlate, uid: uid),
+
+            future: translator.translate(
+                textTotrasnlate: textTotrasnlate, uid: uid),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 Translation translation = snapshot.data;
@@ -319,7 +329,13 @@ class _PostCardState extends State<PostCard> {
                             ? SelectableText(
                                 firstHalf,
                                 onTap: () {
-                                  translationBottomSheet(firstHalf);
+                                  translationBottomSheet(
+                                      firstHalf,
+                                      context
+                                          .read(authStateProvider)
+                                          .data
+                                          .value
+                                          .uid);
                                 },
                                 style: TextStyle(color: Colors.white),
                               )
@@ -338,7 +354,12 @@ class _PostCardState extends State<PostCard> {
                                         });
                                       } else {
                                         translationBottomSheet(
-                                            widget.post.caption);
+                                            widget.post.caption,
+                                            context
+                                                .read(authStateProvider)
+                                                .data
+                                                .value
+                                                .uid);
                                       }
                                     },
                                     style: TextStyle(

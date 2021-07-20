@@ -17,6 +17,7 @@ class User {
   int followers;
   int following;
   int postsCount;
+  int translationsCount;
   Language nativeLanguage;
   Language targetLanguage;
   List searchOptions;
@@ -38,6 +39,7 @@ class User {
     this.searchOptions,
     this.bio,
     this.admin,
+    this.translationsCount,
   });
 
   User.signup({
@@ -48,14 +50,15 @@ class User {
     this.name,
     this.photoUrl,
     this.dateOfBirth,
-    this.followers,
-    this.following,
-    this.postsCount,
+    this.followers = 0,
+    this.following = 0,
+    this.postsCount = 0,
     this.nativeLanguage,
     this.targetLanguage,
     this.searchOptions,
     this.bio,
     this.admin = false,
+    this.translationsCount = 0,
   });
 
   factory User.fromMap(Map<dynamic, dynamic> data) {
@@ -68,11 +71,12 @@ class User {
       photoUrl: data['photoUrl'],
       dateOfBirth: data['dateOfBirth'],
       bio: data['bio'],
-      followers: data['followers'],
-      following: data['following'],
-      postsCount: data['postsCount'],
+      followers: data['followers'] ?? 0,
+      following: data['following'] ?? 0,
+      postsCount: data['postsCount'] ?? 0,
       searchOptions: data['searchOptions'],
       admin: data['admin'],
+      translationsCount: data['translationsCount'] ?? 0,
       nativeLanguage: Language.fromMap(data['nativeLanguage']),
       targetLanguage: Language.fromMap(data['targetLanguage']),
     );
@@ -89,11 +93,12 @@ class User {
       photoUrl: data['photoUrl'],
       dateOfBirth: data['dateOfBirth'],
       bio: data['bio'],
-      followers: data['followers'],
-      following: data['following'],
-      postsCount: data['postsCount'],
+      followers: data['followers'] ?? 0,
+      following: data['following'] ?? 0,
+      postsCount: data['postsCount'] ?? 0,
       searchOptions: data['searchOptions'],
       admin: data['admin'],
+      translationsCount: data['translationsCount'] ?? 0,
       nativeLanguage: Language.fromMap(data['nativeLanguage']),
       targetLanguage: Language.fromMap(data['targetLanguage']),
     );
@@ -114,6 +119,7 @@ class User {
       'postsCount': postsCount ?? 0,
       'searchOptions': searchOptions,
       'admin': admin,
+      'translationsCount': translationsCount,
       'nativeLanguage': nativeLanguage.toMap(),
       'targetLanguage': targetLanguage.toMap(),
     };

@@ -496,6 +496,10 @@ class DatabaseService {
     });
   }
 
+  Future<void> incrementTranslations(String uid) {
+    return usersCollection.doc(uid).update({'translationsCount': FieldValue.increment(1) });
+  }
+
   //! TODO: duplicate function also exists in messagesProvider
   String getChatroomId(String senderId, String peerId) {
     String user1 = senderId.substring(0, 5);

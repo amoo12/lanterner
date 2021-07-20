@@ -633,7 +633,9 @@ class _ProfileState extends State<Profile> {
                                                                         ),
                                                                         onPressed:
                                                                             () {}),
-                                                                    Text('0'),
+                                                                    Text(user
+                                                                        .translationsCount
+                                                                        .toString()),
                                                                   ],
                                                                 ),
                                                                 Column(

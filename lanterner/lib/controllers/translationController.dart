@@ -21,6 +21,7 @@ class TranslationController {
     if (prefs.containsKey('preferred_translation_language') &&
         prefs.containsKey('targetlanguage')) {
       translateTo = prefs.getString('preferred_translation_language');
+      logger.e(translateTo);
       alternativeTranslation = prefs.getString('targetlanguage');
     } else {
       // final DatabaseService db = DatabaseService();
@@ -47,6 +48,7 @@ class TranslationController {
       db.saveMessageTranslation(message);
       // prefs.setString(storeId, translation.text);
     }
+    db.incrementTranslations(uid);
 
     return translation;
   }

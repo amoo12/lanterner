@@ -308,7 +308,8 @@ class MyProfile extends ConsumerWidget {
                                             Column(
                                               children: [
                                                 Text(
-                                                  '0',
+                                                  user.translationsCount
+                                                      .toString(),
                                                   style: TextStyle(
                                                       color: Colors.white),
                                                 ),
