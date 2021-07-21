@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/activity.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/pages/comments.dart';
+import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
@@ -52,73 +53,89 @@ class _ActivityListState extends State<ActivityList> {
             if (snapshot.hasData) {
               List<Activity> activities = snapshot.data;
 
-              return ListView.builder(
-                itemCount: activities.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      ListTile(
-                        dense: true,
-                        tileColor: Theme.of(context).cardColor,
-                        leading: ProfileImage(
-                          size: 20,
-                          context: context,
-                          currentUserId: currentUserId,
-                          ownerId: activities[index].user.uid,
-                          photoUrl: activities[index].user.photoUrl,
+              if (snapshot.data.length > 0) {
+                return ListView.builder(
+                  itemCount: activities.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        ListTile(
+                          dense: true,
+                          tileColor: Theme.of(context).cardColor,
+                          leading: ProfileImage(
+                            size: 20,
+                            context: context,
+                            currentUserId: currentUserId,
+                            ownerId: activities[index].user.uid,
+                            photoUrl: activities[index].user.photoUrl,
+                          ),
+                          title: Text(
+                            activities[index].user.name,
+                            style: TextStyle(color: Colors.grey.shade300),
+                          ),
+                          subtitle: Text(
+                            activities[index].type == 'like'
+                                ? 'liked your post'
+                                : activities[index].type == 'comment'
+                                    ? 'commented on your post'
+                                    : activities[index].type == 'follow'
+                                        ? 'started following you'
+                                        : '',
+                            style: TextStyle(color: Colors.grey.shade500),
+                          ),
+                          trailing: Text(
+                            '${getChatTime(activities[index].timestamp)}',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          onTap: () async {
+                            if (activities[index].type == 'like' ||
+                                activities[index].type == 'comment') {
+                              customProgressIdicator(context);
+                              Post post =
+                                  await db.getPost(activities[index].postId);
+                              pushNewScreenWithRouteSettings(
+                                context,
+                                settings: RouteSettings(
+                                    name: '/comments_from_activity'),
+                                screen: Comments(
+                                  herotag: '',
+                                  post: post,
+                                ),
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.fade,
+                                withNavBar: false,
+                              );
+                            } else if (activities[index].type == 'follow') {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Profile(
+                                      uid: activities[index].user.uid,
+                                    ),
+                                  ));
+                            }
+                          },
                         ),
-                        title: Text(
-                          activities[index].user.name,
-                          style: TextStyle(color: Colors.grey.shade300),
+                        Visibility(
+                          child: Divider(
+                            height: 0,
+                            indent: 70,
+                            color: Colors.grey,
+                            thickness: 0.2,
+                          ),
+                          visible: activities.length != index + 1,
                         ),
-                        subtitle: Text(
-                          activities[index].type == 'like'
-                              ? 'liked your post'
-                              : activities[index].type == 'comment'
-                                  ? 'commented on your post'
-                                  : '',
-                          style: TextStyle(color: Colors.grey.shade500),
-                        ),
-                        trailing: Text(
-                          '${getChatTime(activities[index].timestamp)}',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        onTap: () async {
-                          customProgressIdicator(context);
-                          Post post =
-                              await db.getPost(activities[index].postId);
-                          pushNewScreenWithRouteSettings(
-                            context,
-                            settings:
-                                RouteSettings(name: '/comments_from_activity'),
-                            screen: Comments(
-                              herotag: '',
-                              post: post,
-                            ),
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.fade,
-                            withNavBar: false,
-                          );
-                        },
-                      ),
-                      activities.length == index + 1
-                          ? SizedBox()
-                          : Divider(
-                              height: 0,
-                              indent: 70,
-                              color: Colors.grey,
-                              thickness: 0.2,
-                            ),
-                    ],
-                  );
-                },
-              );
+                      ],
+                    );
+                  },
+                );
+              }
             } else if (snapshot.hasError) {
-              logger.d(snapshot.error.toString());
+              return Container(
+                child: Center(child: Text(snapshot.error.toString())),
+              );
             }
-            return Container(
-              child: Center(child: Text('BS')),
-            );
+            return Container();
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return circleIndicator(context);
           } else {
