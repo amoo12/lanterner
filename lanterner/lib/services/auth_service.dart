@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lanterner/models/user.dart' as u;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'databaseService.dart';
 
@@ -35,6 +36,11 @@ class AuthenticationService {
       user.uid = creCredential.user.uid;
       await DatabaseService(uid: creCredential.user.uid)
           .insertUser(user); // inserts the new user record in firestore
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('preferred_translation_language' + '#' + user.uid,
+          user.nativeLanguage.code);
+      prefs.setString(
+          'targetlanguage' + '#' + user.uid, user.targetLanguage.code);
 
       return "Signup Successful";
     } on FirebaseAuthException catch (e) {
@@ -43,9 +49,10 @@ class AuthenticationService {
     }
   }
 
-  isAlreadyRegistered(String email) async{
+  isAlreadyRegistered(String email) async {
     try {
-    List<String> methods =  await  _firebaseAuth.fetchSignInMethodsForEmail(email);
+      List<String> methods =
+          await _firebaseAuth.fetchSignInMethodsForEmail(email);
       if (methods.isNotEmpty) {
         return false;
       }

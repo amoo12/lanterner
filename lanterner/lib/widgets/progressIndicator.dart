@@ -24,9 +24,9 @@ customProgressIdicator(BuildContext context) {
       });
 }
 
-circleIndicator(BuildContext context) {
+circleIndicator(BuildContext context, [Color color]) {
   return Container(
-    color: Theme.of(context).primaryColor,
+    color: color ?? Theme.of(context).primaryColor,
     child: Center(
       child: Container(
         height: 50,

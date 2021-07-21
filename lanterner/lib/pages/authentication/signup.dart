@@ -145,10 +145,7 @@ class _SignupState extends State<Signup> {
 
   createAcount(BuildContext context) async {
     await _auth.signUp(_user);
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(
-        'preferred_translation_language', _user.nativeLanguage.code);
-    prefs.setString('targetlanguage', _user.targetLanguage.code);
+    
     next();
     Navigator.pop(context);
   }

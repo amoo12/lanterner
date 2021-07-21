@@ -40,46 +40,6 @@ class _PostCardState extends State<PostCard> {
   String secondHalf;
 
   bool flag = true;
-  // final translator = GoogleTranslator();
-
-  // Future<Translation> translate(String textTotrasnlate) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   Translation translation;
-  //   String translateTo;
-  //   String alternativeTranslation;
-
-  //   // fetch the user's target translation language
-  //   if (prefs.containsKey('preferred_translation_language') &&
-  //       prefs.containsKey('targetlanguage')) {
-  //     translateTo = prefs.getString('preferred_translation_language');
-  //     alternativeTranslation = prefs.getString('targetlanguage');
-  //     logger.e(translateTo);
-  //     logger.d('local store');
-  //   } else {
-  //     final DatabaseService db = DatabaseService();
-  //     final uid = context.read(authStateProvider).data.value.uid;
-  //     final User user = await db.getUser(uid);
-  //     logger.d('Firestore store');
-  //     prefs.setString(
-  //         'preferred_translation_language', user.nativeLanguage.code);
-  //     prefs.setString('targetlanguage', user.targetLanguage.code);
-  //     translateTo = user.nativeLanguage.code;
-  //     alternativeTranslation = user.targetLanguage.code;
-  //   }
-
-  //   // auto detect the source language and translates to target language
-  //   translation = await translator.translate(textTotrasnlate, to: translateTo);
-
-  //   // if the text is the same as the prefered transaltion language then translate to the user's target language
-  //   if (translation.sourceLanguage.code == translateTo) {
-  //     translation = await translator.translate(textTotrasnlate,
-  //         to: alternativeTranslation);
-  //   }
-
-  //   logger.d(translation.sourceLanguage.name);
-  //   logger.d(translation.targetLanguage.name);
-  //   return translation;
-  // }
 
   translationBottomSheet(String textTotrasnlate, String uid) {
     showBarModalBottomSheet(
@@ -155,7 +115,7 @@ class _PostCardState extends State<PostCard> {
                 print(snapshot.error);
                 return Text("ERROR: Someting went wrong");
               } else {
-                return circleIndicator(context);
+                return circleIndicator(context, Theme.of(context).cardColor);
               }
             }),
       ),

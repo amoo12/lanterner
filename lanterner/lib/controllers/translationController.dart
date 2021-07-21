@@ -18,18 +18,17 @@ class TranslationController {
     String alternativeTranslation;
 
     // fetch the user's target translation language
-    if (prefs.containsKey('preferred_translation_language') &&
-        prefs.containsKey('targetlanguage')) {
-      translateTo = prefs.getString('preferred_translation_language');
-      logger.e(translateTo);
-      alternativeTranslation = prefs.getString('targetlanguage');
+    if (prefs.containsKey('preferred_translation_language' + '#' + uid) &&
+        prefs.containsKey('targetlanguage' + '#' + uid)) {
+      translateTo =
+          prefs.getString('preferred_translation_language' + '#' + uid);
+
+      alternativeTranslation = prefs.getString('targetlanguage' + '#' + uid);
     } else {
-      // final DatabaseService db = DatabaseService();
-      // final uid = context.read(authStateProvider).data.value.uid;
       final User user = await db.getUser(uid);
-      prefs.setString(
-          'preferred_translation_language', user.nativeLanguage.code);
-      prefs.setString('targetlanguage', user.targetLanguage.code);
+      prefs.setString('preferred_translation_language' + '#' + uid,
+          user.nativeLanguage.code);
+      prefs.setString('targetlanguage' + '#' + uid, user.targetLanguage.code);
       translateTo = user.nativeLanguage.code;
       alternativeTranslation = user.targetLanguage.code;
     }
@@ -46,7 +45,6 @@ class TranslationController {
     if (message != null) {
       message.translation = translation.text;
       db.saveMessageTranslation(message);
-      // prefs.setString(storeId, translation.text);
     }
     db.incrementTranslations(uid);
 

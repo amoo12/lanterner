@@ -6,6 +6,7 @@ import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/customTextField.dart';
 import 'package:lanterner/widgets/languageIndicator.dart';
 import 'package:lanterner/widgets/languagesList.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_select/smart_select.dart';
 import 'dart:math' as math;
 import '../providers/auth_provider.dart';
@@ -319,8 +320,14 @@ class _SignupStep2State extends State<SignupStep2> {
                   ? () async {
                       if (selectedtargetLanguage != null) {
                         customProgressIdicator(context);
+                        // update in DB
                         await db.updateTargetLanguage(
                             widget.user.uid, selectedtargetLanguage);
+                        final prefs = await SharedPreferences.getInstance();
+                        // update in local storage
+                        await prefs.setString(
+                            'targetlanguage' + '#' + widget.user.uid,
+                            selectedtargetLanguage.code);
                         Navigator.pop(context);
                         Navigator.pop(context, selectedtargetLanguage);
                       }

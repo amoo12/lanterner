@@ -504,7 +504,6 @@ class DatabaseService {
   }
 
   Future<List<Activity>> getUserActivity(String uid) async {
-    
     return activityCollection
         .doc(uid)
         .collection('userActivity')
