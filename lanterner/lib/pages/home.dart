@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/providers/posts_provider.dart';
@@ -177,8 +178,20 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                   });
                                 } else {
                                   return Container(
-                                      child: Center(
-                                    child: Text('No posts uploaded yet'),
+                                      child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('No posts uploaded yet'),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      SvgPicture.asset(
+                                        'assets/images/no posts optimised.svg',
+                                        height:
+                                            MediaQuery.of(context).size.width,
+                                        color: Colors.grey.withOpacity(0.3),
+                                      ),
+                                    ],
                                   ));
                                 }
                               } else {
@@ -300,7 +313,21 @@ class FollowingTab extends StatelessWidget {
             } else {
               return Container(
                   child: Center(
-                child: Text('Follow other users to see their posts here'),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('No posts!! \n'),
+                    Text('Follow other users to see their posts here'),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    SvgPicture.asset(
+                      'assets/images/no posts optimised.svg',
+                      height: MediaQuery.of(context).size.width,
+                      color: Colors.grey.withOpacity(0.3),
+                    ),
+                  ],
+                ),
               ));
             }
           } else {

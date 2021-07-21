@@ -85,10 +85,11 @@ class _SearchState extends State<Search> {
         child: ListView(
           shrinkWrap: true,
           children: <Widget>[
-            SvgPicture.asset(
-              'assets/images/search.svg',
-              height: orientaion == Orientation.portrait ? 300.0 : 200,
-            ),
+            // SvgPicture.asset(
+            //   'assets/images/search.svg',
+            //   height: 300.0,
+            //   colorBlendMode: BlendMode.softLight,
+            // ),
             Text(
               'Find Users',
               textAlign: TextAlign.center,
@@ -96,7 +97,7 @@ class _SearchState extends State<Search> {
                 color: Colors.white,
                 // fontStyle: FontStyle.italic,
                 // fontWeight: FontWeight.w600,
-                fontSize: 60.0,
+                // fontSize: 0,
               ),
             )
           ],
