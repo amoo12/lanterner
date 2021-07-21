@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lanterner/pages/chats/chatsList.dart';
@@ -8,7 +10,6 @@ import 'package:lanterner/pages/search.dart';
 import 'package:lanterner/routes/routes.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
-
 import 'home.dart';
 
 BuildContext testContext;
@@ -185,22 +186,37 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
         popActionScreens: PopActionScreensType.all,
         bottomScreenMargin: 0.0,
         onWillPop: (context) async {
-          await showDialog(
-            context: context,
-            useSafeArea: true,
-            builder: (context) => Container(
-              height: 50.0,
-              width: 50.0,
-              color: Colors.white,
-              child: ElevatedButton(
-                child: Text("Close"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          );
-          return false;
+          return showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Are you sure?'),
+                  content: Text('Do you want to exit the App?'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text(
+                        'No',
+                        style: TextStyle(
+                            color: Theme.of(context).scaffoldBackgroundColor),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        exit(0);
+                      },
+                      /*Navigator.of(context).pop(true)*/
+                      child: Text(
+                        'Yes',
+                        style: TextStyle(
+                            color: Theme.of(context).scaffoldBackgroundColor),
+                      ),
+                    ),
+                  ],
+                ),
+              ) ??
+              false;
+
+          // return false;
         },
         selectedTabScreenContext: (context) {
           testContext = context;
