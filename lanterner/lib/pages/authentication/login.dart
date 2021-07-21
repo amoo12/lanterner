@@ -148,7 +148,9 @@ class _LoginState extends State<Login> {
                                           builder: (context) =>
                                               ResetPassword()));
 
-                                  showToast(fToast, toastMessage, 5);
+                                  if (toastMessage != null) {
+                                    showToast(fToast, toastMessage, 5);
+                                  }
                                 },
                                 style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
@@ -296,97 +298,103 @@ class _ResetPasswordState extends State<ResetPassword> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      appBar: AppBar(
-        elevation: 0,
-        leading: Transform.rotate(
-          angle: 45 * math.pi / 180,
-          child: IconButton(
-            icon: Icon(
-              Icons.add,
-              size: 30,
+    return WillPopScope(
+      onWillPop: () async {
+        error = null;
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        appBar: AppBar(
+          elevation: 0,
+          leading: Transform.rotate(
+            angle: 45 * math.pi / 180,
+            child: IconButton(
+              icon: Icon(
+                Icons.add,
+                size: 30,
+              ),
+              // tooltip: 'Show Snackbar',
+              onPressed: () {
+                error = null;
+                Navigator.pop(context);
+              },
             ),
-            // tooltip: 'Show Snackbar',
-            onPressed: () {
-              Navigator.pop(context);
-            },
           ),
         ),
-      ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            children: [
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 30),
-                child: Text(
-                  'Reset password',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Enter your registered email',
-                    style: TextStyle(fontSize: 12),
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 30),
+                  child: Text(
+                    'Reset password',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Form(
-                key: _formKey,
-                child: TextFormFieldWidget(
-                  lableText: 'Email',
-                  onSaved: onSavedEmail,
-                  validatorMessage: 'Enter an email',
-                  controller: emailController,
-                  autofocus: true,
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              if (error != null)
-                Text(
-                  error,
-                  style: TextStyle(color: Colors.red[300], fontSize: 14.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Enter your registered email',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ],
                 ),
-              SizedBox(
-                height: 20,
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: ButtonWidget(
-                    context: context,
-                    text: 'Send Reset Email',
-                    onPressed: () async {
-                      if (!EmailValidator.validate(
-                          emailController.text.trim())) {
-                        setState(() {
-                          error = "enter a valid email";
-                        });
-                      } else {
-                        await _submit();
-
-                        error = 'An email has been sent to ' +
-                            emailController.text.trim();
-                        Navigator.pop(context, error);
-                      }
-                    }),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-            ],
+                SizedBox(
+                  height: 10,
+                ),
+                Form(
+                  key: _formKey,
+                  child: TextFormFieldWidget(
+                    lableText: 'Email',
+                    onSaved: onSavedEmail,
+                    validatorMessage: 'Enter an email',
+                    controller: emailController,
+                    autofocus: true,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                if (error != null)
+                  Text(
+                    error,
+                    style: TextStyle(color: Colors.red[300], fontSize: 14.0),
+                  ),
+                SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ButtonWidget(
+                      context: context,
+                      text: 'Send Reset Email',
+                      onPressed: () async {
+                        if (!EmailValidator.validate(
+                            emailController.text.trim())) {
+                          setState(() {
+                            error = "enter a valid email";
+                          });
+                        } else {
+                          await _submit();
+                          error = 'An email has been sent to ' +
+                              emailController.text.trim();
+                          Navigator.pop(context, error);
+                        }
+                      }),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
           ),
         ),
       ),
