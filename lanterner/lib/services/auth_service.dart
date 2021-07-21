@@ -43,6 +43,26 @@ class AuthenticationService {
     }
   }
 
+  isAlreadyRegistered(String email) async{
+    try {
+    List<String> methods =  await  _firebaseAuth.fetchSignInMethodsForEmail(email);
+      if (methods.isNotEmpty) {
+        return false;
+      }
+    } catch (e) {
+      return e.message;
+    }
+  }
+
+  Future<String> resetPassword(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+      return 'an email has been sent to';
+    } catch (e) {
+      return e.message;
+    }
+  }
+
   // sign out.
   Future<void> signout() async {
     await _firebaseAuth.signOut();

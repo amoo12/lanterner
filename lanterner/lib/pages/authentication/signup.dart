@@ -2,12 +2,14 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lanterner/controllers/uploadPhoto.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/services/auth_service.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/buttons.dart';
 import 'package:lanterner/widgets/customTextField.dart';
+import 'package:lanterner/widgets/customToast.dart';
 import 'package:lanterner/widgets/languagesList.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
 import 'package:lanterner/widgets/radioButtons.dart';
@@ -47,12 +49,17 @@ class _SignupState extends State<Signup> {
   double width = 100;
 
   String imageError = '';
+  FToast fToast;
+  AuthenticationService _auth;
 
   @override
   void initState() {
     uploadPhoto = UploadPhoto();
     super.initState();
     pageController = PageController(initialPage: 0, keepPage: true);
+    _auth = context.read(authServicesProvider);
+    fToast = FToast();
+    fToast.init(context);
   }
 
   @override
@@ -62,7 +69,7 @@ class _SignupState extends State<Signup> {
   }
 
 // validates the input for the first create account page (naem, email, password) id everything next
-  step1Submit() {
+  step1Submit() async {
     final form = _formKey.currentState;
     if (form.validate()) {
       if (onSavedEmail(emailController.text.trim())) {
@@ -73,7 +80,14 @@ class _SignupState extends State<Signup> {
           _user.email = emailController.text.trim();
           _user.password = passwordController.text.trim();
           _user.name = nameController.text.trim();
-          next();
+
+          final isRegistered =
+              await _auth.isAlreadyRegistered(emailController.text.trim());
+          if (isRegistered == false) {
+            showToast(fToast, 'email Already registered');
+          } else {
+            next();
+          }
         }
       }
     }
@@ -129,7 +143,7 @@ class _SignupState extends State<Signup> {
         duration: Duration(milliseconds: 600), curve: Curves.easeInOutExpo);
   }
 
-  createAcount(BuildContext context, AuthenticationService _auth) async {
+  createAcount(BuildContext context) async {
     await _auth.signUp(_user);
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(
@@ -157,7 +171,6 @@ class _SignupState extends State<Signup> {
   Widget build(BuildContext context) {
     final _size = MediaQuery.of(context).size;
     return Consumer(builder: (context, watch, child) {
-      final _auth = watch(authServicesProvider);
       final _authState = watch(authStateProvider);
       return Scaffold(
           backgroundColor: Theme.of(context).primaryColor,
@@ -454,7 +467,7 @@ class _SignupState extends State<Signup> {
                                                 _user.gender = gender;
                                                 _user.dateOfBirth =
                                                     selectedDate.toString();
-                                                createAcount(context, _auth);
+                                                createAcount(context);
                                               }
                                             }),
                                       ),

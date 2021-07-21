@@ -21,7 +21,7 @@ class TextFormFieldWidget extends StatefulWidget {
   final bool bottomBorder;
   final bool autofocus;
   final bool isMultiline;
-
+  final double scrollPadding;
   final int maxlines;
 
   const TextFormFieldWidget({
@@ -45,6 +45,7 @@ class TextFormFieldWidget extends StatefulWidget {
     this.bottomBorder = true,
     this.isMultiline = false,
     this.maxlines = 1,
+    this.scrollPadding,
   });
 
   @override
@@ -70,7 +71,8 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
           obscureText: widget.obscureText,
           expands: widget.expands,
           keyboardType: widget.isMultiline ? TextInputType.multiline : null,
-
+          scrollPadding: EdgeInsets.only(
+              bottom: widget.scrollPadding != null ? widget.scrollPadding : 20),
           maxLines: widget.isMultiline ? null : widget.maxlines,
           // maxLines: null,
           autofocus: widget.autofocus,
@@ -104,6 +106,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
               if (resultValidate != null) {
                 return resultValidate;
               }
+              return '';
             } else {
               return commonValidation(value, widget.validatorMessage);
             }
