@@ -613,23 +613,23 @@ class _PostCardFooterState extends State<PostCardFooter> {
                   ),
                 ],
               ),
-              isSaved
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.bookmark,
-                        color: Colors.grey[400],
-                        size: 20,
-                      ),
-                      onPressed: savePost,
-                    )
-                  : IconButton(
-                      icon: Icon(
-                        Icons.bookmark_outline,
-                        color: Colors.grey[400],
-                        size: 20,
-                      ),
-                      onPressed: savePost,
-                    ),
+              // isSaved
+              //     ? IconButton(
+              //         icon: Icon(
+              //           Icons.bookmark,
+              //           color: Colors.grey[400],
+              //           size: 20,
+              //         ),
+              //         onPressed: savePost,
+              //       )
+              //     : IconButton(
+              //         icon: Icon(
+              //           Icons.bookmark_outline,
+              //           color: Colors.grey[400],
+              //           size: 20,
+              //         ),
+              //         onPressed: savePost,
+              //       ),
             ],
           ),
           Container(

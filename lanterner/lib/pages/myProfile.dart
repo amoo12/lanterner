@@ -270,7 +270,8 @@ class MyProfile extends ConsumerWidget {
                               child: Text('Statistics'),
                             ),
                             Container(
-                              height: 150,
+                              // TODO: increase the height to 150 to add the favorates tile
+                              height: 120,
                               child: Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
@@ -368,71 +369,72 @@ class MyProfile extends ConsumerWidget {
                                       ),
                                     ],
                                   ),
-                                  Container(
-                                    height: 60,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.9,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                          color: Colors.grey, width: 0.2),
-                                    ),
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(8),
-                                      onTap: () {},
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              Align(
-                                                alignment: Alignment.center,
-                                                child: Text(
-                                                  'Favoirites',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: IconButton(
-                                                  splashRadius: 0.1,
-                                                  color: Colors.grey,
-                                                  icon: Icon(
-                                                    Icons.star_rounded,
-                                                    size: 24,
-                                                  ),
-                                                  onPressed: () {},
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment:
-                                                    Alignment.centerRight,
-                                                child: Transform.rotate(
-                                                  angle: 180 * math.pi / 180,
-                                                  child: IconButton(
-                                                    splashRadius: 0.1,
-                                                    color: Colors.grey,
-                                                    icon: Icon(
-                                                      Icons.arrow_back_ios,
-                                                      size: 20,
-                                                    ),
-                                                    onPressed: () {},
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                  // TODO: increase the height of the parent Container to 150 before uncommenting this
+                                  // Container(
+                                  //   height: 60,
+                                  //   width:
+                                  //       MediaQuery.of(context).size.width * 0.9,
+                                  //   decoration: BoxDecoration(
+                                  //     borderRadius: BorderRadius.circular(8),
+                                  //     border: Border.all(
+                                  //         color: Colors.grey, width: 0.2),
+                                  //   ),
+                                  //   child: InkWell(
+                                  //     borderRadius: BorderRadius.circular(8),
+                                  //     onTap: () {},
+                                  //     child: Column(
+                                  //       mainAxisSize: MainAxisSize.min,
+                                  //       mainAxisAlignment:
+                                  //           MainAxisAlignment.center,
+                                  //       crossAxisAlignment:
+                                  //           CrossAxisAlignment.stretch,
+                                  //       children: [
+                                  //         Stack(
+                                  //           alignment: Alignment.center,
+                                  //           children: [
+                                  //             Align(
+                                  //               alignment: Alignment.center,
+                                  //               child: Text(
+                                  //                 'Favoirites',
+                                  //                 style: TextStyle(
+                                  //                     fontWeight:
+                                  //                         FontWeight.w500),
+                                  //               ),
+                                  //             ),
+                                  //             Align(
+                                  //               alignment: Alignment.centerLeft,
+                                  //               child: IconButton(
+                                  //                 splashRadius: 0.1,
+                                  //                 color: Colors.grey,
+                                  //                 icon: Icon(
+                                  //                   Icons.star_rounded,
+                                  //                   size: 24,
+                                  //                 ),
+                                  //                 onPressed: () {},
+                                  //               ),
+                                  //             ),
+                                  //             Align(
+                                  //               alignment:
+                                  //                   Alignment.centerRight,
+                                  //               child: Transform.rotate(
+                                  //                 angle: 180 * math.pi / 180,
+                                  //                 child: IconButton(
+                                  //                   splashRadius: 0.1,
+                                  //                   color: Colors.grey,
+                                  //                   icon: Icon(
+                                  //                     Icons.arrow_back_ios,
+                                  //                     size: 20,
+                                  //                   ),
+                                  //                   onPressed: () {},
+                                  //                 ),
+                                  //               ),
+                                  //             )
+                                  //           ],
+                                  //         ),
+                                  //       ],
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ),

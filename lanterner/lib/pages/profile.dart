@@ -638,23 +638,23 @@ class _ProfileState extends State<Profile> {
                                                                         .toString()),
                                                                   ],
                                                                 ),
-                                                                Column(
-                                                                  children: [
-                                                                    IconButton(
-                                                                        color: Colors
-                                                                            .grey,
-                                                                        icon:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .star_border_rounded,
-                                                                          size:
-                                                                              20,
-                                                                        ),
-                                                                        onPressed:
-                                                                            () {}),
-                                                                    Text('0'),
-                                                                  ],
-                                                                ),
+                                                                // Column(
+                                                                //   children: [
+                                                                //     IconButton(
+                                                                //         color: Colors
+                                                                //             .grey,
+                                                                //         icon:
+                                                                //             Icon(
+                                                                //           Icons
+                                                                //               .star_border_rounded,
+                                                                //           size:
+                                                                //               20,
+                                                                //         ),
+                                                                //         onPressed:
+                                                                //             () {}),
+                                                                //     Text('0'),
+                                                                //   ],
+                                                                // ),
                                                                 Column(
                                                                   children: [
                                                                     IconButton(
