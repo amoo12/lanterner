@@ -1,8 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lanterner/pages/profile.dart';
+import 'package:lanterner/providers/auth_provider.dart';
+import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 import '../models/user.dart';
 import '../services/databaseService.dart';
@@ -18,11 +22,13 @@ class _SearchState extends State<Search> {
   Future<QuerySnapshot> searchResultsFuture;
   DatabaseService db = DatabaseService();
 
+  String uid;
   initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // executes after build
     });
+    uid = context.read(authStateProvider).data.value.uid;
   }
 
   @override
@@ -108,7 +114,7 @@ class _SearchState extends State<Search> {
 
   buildSearchResults() {
     return FutureBuilder(
-        future: db.searchUsers(searchText),
+        future: db.searchUsers(searchText, uid),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<User> searchResults = snapshot.data;
@@ -116,7 +122,7 @@ class _SearchState extends State<Search> {
             return ListView.builder(
               itemCount: searchResults.length,
               itemBuilder: (context, index) {
-                return UserResult(searchResults[index]);
+                return UserResult(searchResults[index], uid);
               },
             );
           } else {
@@ -142,8 +148,9 @@ class _SearchState extends State<Search> {
 
 class UserResult extends StatelessWidget {
   final User user;
+  final String currentUserId;
 
-  UserResult(this.user);
+  UserResult(this.user, this.currentUserId);
 
   @override
   Widget build(BuildContext context) {
@@ -153,10 +160,23 @@ class UserResult extends StatelessWidget {
         children: <Widget>[
           GestureDetector(
             child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.grey,
-                backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+              onTap: () {
+                pushNewScreenWithRouteSettings(
+                  context,
+                  settings: RouteSettings(name: '/profile'),
+                  screen: Profile(uid: user.uid),
+                  pageTransitionAnimation: PageTransitionAnimation.slideUp,
+                  withNavBar: false,
+                );
+              },
+              leading: ProfileImage(
+                size: 25,
+                context: context,
+                currentUserId: currentUserId,
+                ownerId: user.uid,
+                photoUrl: user.photoUrl,
               ),
+              // CachedNetworkImageProvider(user.photoUrl),
               title: Text(
                 user.name,
                 style:

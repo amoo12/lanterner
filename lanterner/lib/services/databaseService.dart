@@ -201,8 +201,9 @@ class DatabaseService {
   }
 
   // * -------
-  Future<List<User>> searchUsers(String searchText) async {
+  Future<List<User>> searchUsers(String searchText, String uid) async {
     return await usersCollection
+        .where('uid', isNotEqualTo: uid)
         .where('searchOptions', arrayContains: searchText)
         .get()
         .then((value) =>

@@ -106,13 +106,15 @@ class _ActivityListState extends State<ActivityList> {
                                 withNavBar: false,
                               );
                             } else if (activities[index].type == 'follow') {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Profile(
-                                      uid: activities[index].user.uid,
-                                    ),
-                                  ));
+                              pushNewScreenWithRouteSettings(
+                                context,
+                                settings: RouteSettings(name: '/profile'),
+                                screen:
+                                    Profile(uid: activities[index].user.uid),
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.slideUp,
+                                withNavBar: false,
+                              );
                             }
                           },
                         ),

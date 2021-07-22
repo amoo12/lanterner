@@ -42,78 +42,81 @@ class _ProfileImageState extends State<ProfileImage> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        if (widget.ownerId == widget.currentUserId) {
-          if (ModalRoute.of(context).settings.name == '/myProfile') {
-            // upload photo
+        onTap: () {
+          if (widget.ownerId == widget.currentUserId) {
+            if (ModalRoute.of(context).settings.name == '/myProfile') {
+              // upload photo
 
-            showDialog(
-              context: context,
-              builder: (context) {
-                return SimpleDialog(
-                  title: Text("Upload image"),
-                  children: <Widget>[
-                    SimpleDialogOption(
-                        child: Text("Photo with Camera"),
-                        onPressed: () async {
-                          await uploadPhoto.handleTakePhoto(context);
-                          if (uploadPhoto.file != null) {
-                            // customProgressIdicator(context);
-                            await uploadImage(widget.currentUserId);
-                          }
-                          setState(() {});
-                        }),
-                    SimpleDialogOption(
-                        child: Text("Image from Gallery"),
-                        onPressed: () async {
-                          await uploadPhoto.handleChooseFromGallery(context);
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return SimpleDialog(
+                    title: Text("Upload image"),
+                    children: <Widget>[
+                      SimpleDialogOption(
+                          child: Text("Photo with Camera"),
+                          onPressed: () async {
+                            await uploadPhoto.handleTakePhoto(context);
+                            if (uploadPhoto.file != null) {
+                              // customProgressIdicator(context);
+                              await uploadImage(widget.currentUserId);
+                            }
+                            setState(() {});
+                          }),
+                      SimpleDialogOption(
+                          child: Text("Image from Gallery"),
+                          onPressed: () async {
+                            await uploadPhoto.handleChooseFromGallery(context);
 
-                          if (uploadPhoto.file != null) {
-                            // customProgressIdicator(context);
-                            await uploadImage(widget.currentUserId);
-                          }
-                          setState(() {});
-                        }),
-                    SimpleDialogOption(
-                      child: Text("Cancel"),
-                      onPressed: () => Navigator.pop(context),
-                    )
-                  ],
-                );
-              },
-            );
+                            if (uploadPhoto.file != null) {
+                              // customProgressIdicator(context);
+                              await uploadImage(widget.currentUserId);
+                            }
+                            setState(() {});
+                          }),
+                      SimpleDialogOption(
+                        child: Text("Cancel"),
+                        onPressed: () => Navigator.pop(context),
+                      )
+                    ],
+                  );
+                },
+              );
+            } else {
+              pushNewScreenWithRouteSettings(
+                context,
+                settings: RouteSettings(name: '/myProfile'),
+                screen: MyProfile(),
+                pageTransitionAnimation: PageTransitionAnimation.slideUp,
+                withNavBar: false,
+              );
+            }
           } else {
-            pushNewScreenWithRouteSettings(
-              context,
-              settings: RouteSettings(name: '/myProfile'),
-              screen: MyProfile(),
-              pageTransitionAnimation: PageTransitionAnimation.slideUp,
-              withNavBar: false,
-            );
+            if (ModalRoute.of(context).settings.name != '/profile') {
+              pushNewScreenWithRouteSettings(
+                context,
+                settings: RouteSettings(name: '/profile'),
+                screen: Profile(uid: widget.ownerId),
+                pageTransitionAnimation: PageTransitionAnimation.slideUp,
+                withNavBar: false,
+              );
+            }
           }
-        } else {
-          if (ModalRoute.of(context).settings.name != '/profile') {
-            pushNewScreenWithRouteSettings(
-              context,
-              settings: RouteSettings(name: '/profile'),
-              screen: Profile(uid: widget.ownerId),
-              pageTransitionAnimation: PageTransitionAnimation.slideUp,
-              withNavBar: false,
-            );
-          }
-        }
-      },
-      child: CircleAvatar(
-        radius: widget.size,
-        backgroundImage: widget.photoUrl != null
-            ? CachedNetworkImageProvider(
-                widget.photoUrl,
-              )
-            : AssetImage('assets/images/avatar_bg.jpg'),
-        child: widget.photoUrl == null
-            ? Icon(Icons.person, size: 40, color: Colors.grey[200])
-            : Container(),
-      ),
-    );
+        },
+        child: widget.photoUrl != null
+            ? CircleAvatar(
+                radius: widget.size,
+                backgroundImage: CachedNetworkImageProvider(
+                  widget.photoUrl,
+                ),
+                child: Visibility(
+                  child: Icon(Icons.person,
+                      size: widget.size, color: Colors.grey[300]),
+                  visible: widget.photoUrl == null,
+                ))
+            : CircleAvatar(
+                radius: widget.size,
+                child: Icon(Icons.person,
+                    size: widget.size, color: Colors.grey[300])));
   }
 }

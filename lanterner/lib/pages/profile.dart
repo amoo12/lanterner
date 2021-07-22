@@ -430,6 +430,10 @@ class _ProfileState extends State<Profile> {
                                                             ),
                                                             onPressed:
                                                                 () async {
+                                                              setState(() {
+                                                                isFollowing =
+                                                                    false;
+                                                              });
                                                               User user = await db
                                                                   .getUser(
                                                                       _authState
@@ -440,10 +444,6 @@ class _ProfileState extends State<Profile> {
                                                               await db.unfollow(
                                                                   widget.uid,
                                                                   user);
-                                                              setState(() {
-                                                                isFollowing =
-                                                                    false;
-                                                              });
                                                             },
                                                             child: Row(
                                                               children: [
@@ -491,6 +491,10 @@ class _ProfileState extends State<Profile> {
                                                             ),
                                                             onPressed:
                                                                 () async {
+                                                              setState(() {
+                                                                isFollowing =
+                                                                    true;
+                                                              });
                                                               User user = await db
                                                                   .getUser(
                                                                       _authState
@@ -500,10 +504,6 @@ class _ProfileState extends State<Profile> {
                                                               await db.follow(
                                                                   widget.uid,
                                                                   user);
-                                                              setState(() {
-                                                                isFollowing =
-                                                                    true;
-                                                              });
                                                             },
                                                             child:
                                                                 Text('Follow'),

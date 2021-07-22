@@ -33,23 +33,24 @@ exports.onCreateFollower = functions.firestore
     });
 
     // 4) notifiy followed user
-    // return admin
-    //   .firestore()
-    //   .collection("users")
-    //   .doc(followerId)
-    //   .get()
-    //   .then((document) => {
-    //     user = document.data();
-    //     var now = new Date();
+    return admin
+      .firestore()
+      .collection("users")
+      .doc(followerId)
+      .get()
+      .then((document) => {
+        user = document.data();
+        var now = new Date();
+        var utc = new Date(now.getTime());
 
-    //     admin.firestore().collection("activity").doc(uid).collection("userActivity").doc().set({
-    //       type: "follow",
-    //       postId: null,
-    //       user: user,
-    //       timestamp: admin.firestore().FieldValue,
-    //       seen: false,
-    //     });
-    //   });
+        admin.firestore().collection("activity").doc(uid).collection("userActivity").doc().set({
+          type: "follow",
+          postId: null,
+          user: user,
+          timestamp: utc.toISOString(),
+          seen: false,
+        });
+      });
   });
 
 //* remove posts from the followers feed when the unfollow
