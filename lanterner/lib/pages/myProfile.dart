@@ -231,7 +231,7 @@ class MyProfile extends ConsumerWidget {
                                           pushNewScreenWithRouteSettings(
                                               context,
                                               screen: MyPosts(
-                                                uid: user.uid,
+                                                user: user,
                                               ),
                                               settings: RouteSettings(
                                                   name: '/myPosts'),

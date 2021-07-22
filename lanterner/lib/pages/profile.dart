@@ -359,7 +359,7 @@ class _ProfileState extends State<Profile> {
                                                       pushNewScreenWithRouteSettings(
                                                           context,
                                                           screen: MyPosts(
-                                                            uid: user.uid,
+                                                            user: user,
                                                           ),
                                                           settings: RouteSettings(
                                                               name: '/myPosts'),

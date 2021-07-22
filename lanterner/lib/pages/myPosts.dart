@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:lanterner/models/post.dart';
+import 'package:lanterner/models/user.dart';
 import 'package:lanterner/services/databaseService.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
 
 class MyPosts extends StatelessWidget {
-  final String uid;
-  MyPosts({Key key, this.uid}) : super(key: key);
-  DatabaseService db = DatabaseService();
+  final User user;
+  MyPosts({Key key, this.user}) : super(key: key);
+  final DatabaseService db = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My posts'),
+        title: Text("${user.name}'s posts"),
       ),
       body: FutureBuilder(
-          future: db.getUserPosts(uid),
+          future: db.getUserPosts(user.uid),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<Post> posts = [];
@@ -25,7 +26,7 @@ class MyPosts extends StatelessWidget {
                 return ListView.builder(
                   itemCount: posts.length,
                   itemBuilder: (context, index) {
-                    return PostCard(post :posts[index]);
+                    return PostCard(post: posts[index]);
                   },
                 );
               } else {

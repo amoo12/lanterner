@@ -142,13 +142,31 @@ class DatabaseService {
       });
     });
 
-    return FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collectionGroup('comments')
         .where('user.uid', isEqualTo: uid)
         .get()
         .then((snapshot) {
       snapshot.docs.forEach((doc) {
         batch.update(doc.reference, {'user.photoUrl': photoUrl});
+      });
+    });
+    await FirebaseFirestore.instance
+        .collectionGroup('following')
+        .where('uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'photoUrl': photoUrl});
+      });
+    });
+    return FirebaseFirestore.instance
+        .collectionGroup('followers')
+        .where('uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        batch.update(doc.reference, {'photoUrl': photoUrl});
       });
       batch.commit();
     });
@@ -182,13 +200,37 @@ class DatabaseService {
         batch.update(doc.reference, {'user.name': user.name});
       });
     });
-    return FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collectionGroup('comments')
         .where('user.uid', isEqualTo: user.uid)
         .get()
         .then((snapshot) {
       snapshot.docs.forEach((doc) {
         batch.update(doc.reference, {'user.name': user.name});
+      });
+    });
+
+    await FirebaseFirestore.instance
+        .collectionGroup('following')
+        .where('uid', isEqualTo: user.uid)
+        .get()
+        .then((snapshot) {
+      logger.d('new query running');
+      snapshot.docs.forEach((doc) {
+        batch.update(doc.reference,
+            {'name': user.name, 'searchOptions': user.searchOptions});
+      });
+    });
+
+    return FirebaseFirestore.instance
+        .collectionGroup('followers')
+        .where('uid', isEqualTo: user.uid)
+        .get()
+        .then((snapshot) {
+      logger.d('new query running');
+      snapshot.docs.forEach((doc) {
+        batch.update(doc.reference,
+            {'name': user.name, 'searchOptions': user.searchOptions});
       });
       batch.commit();
     });
