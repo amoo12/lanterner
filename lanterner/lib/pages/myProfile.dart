@@ -353,9 +353,10 @@ class MyProfile extends ConsumerWidget {
                                             Column(
                                               children: [
                                                 Text(
-                                                  '0',
+                                                  user.audioListened.toString(),
                                                   style: TextStyle(
-                                                      color: Colors.white),
+                                                      color: Colors.white,
+                                                      fontSize: 16),
                                                 ),
                                                 Text(
                                                   'Audio played',

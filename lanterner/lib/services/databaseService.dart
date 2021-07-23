@@ -546,6 +546,12 @@ class DatabaseService {
         .update({'translationsCount': FieldValue.increment(1)});
   }
 
+  Future<void> incrementAudioListened(String uid) {
+    return usersCollection
+        .doc(uid)
+        .update({'audioListened': FieldValue.increment(1)});
+  }
+
   Future<List<Activity>> getUserActivity(String uid) async {
     return activityCollection
         .doc(uid)
