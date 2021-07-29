@@ -14,14 +14,12 @@ import '../widgets/progressIndicator.dart';
 import 'followers.dart';
 
 //ignore: must_be_immutable
-class MyProfile extends ConsumerWidget {
+class MyProfile extends StatefulWidget {
   final BuildContext menuScreenContext;
   final Function hideNav;
   final Function showNav;
   final Function onScreenHideButtonPressed;
   bool hideStatus;
-  DatabaseService db = DatabaseService();
-  GlobalKey _scaffold = GlobalKey();
 
   MyProfile(
       {Key key,
@@ -33,9 +31,26 @@ class MyProfile extends ConsumerWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final _authState = watch(authStateProvider);
+  _MyProfileState createState() => _MyProfileState();
+}
 
+class _MyProfileState extends State<MyProfile> {
+  DatabaseService db = DatabaseService();
+
+  GlobalKey _scaffold = GlobalKey();
+  var _authState;
+
+  refreshPhoto() {
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _authState = context.read(authStateProvider);
+  }
+
+  Widget build(BuildContext context) {
     return FutureBuilder(
         future: db.getUser(_authState.data.value.uid),
         builder: (context, snapshot) {
@@ -60,7 +75,7 @@ class MyProfile extends ConsumerWidget {
                         pageTransitionAnimation:
                             PageTransitionAnimation.slideRight,
                         withNavBar: false,
-                      );
+                      )..then((value) => setState(() {}));
                     },
                     icon: Icon(
                       Icons.settings,
@@ -99,33 +114,17 @@ class MyProfile extends ConsumerWidget {
                               Column(
                                 children: [
                                   ProfileImage(
-                                      size: 50,
-                                      ownerId: user.uid,
-                                      context: context,
-                                      photoUrl: user.photoUrl,
-                                      currentUserId: _authState.data.value.uid),
-                                  // CircleAvatar(
-                                  //   radius: 50,
-                                  //   backgroundImage: user.photoUrl != null
-                                  //       ? NetworkImage(
-                                  //           user.photoUrl,
-                                  //         )
-                                  //       : NetworkImage(
-                                  //           'https://via.placeholder.com/150'),
-                                  //   child: user.photoUrl == null
-                                  //       ? Icon(Icons.person,
-                                  //           size: 50, color: Colors.grey)
-                                  //       : Container(),
-                                  // ),
-
+                                    size: 50,
+                                    ownerId: user.uid,
+                                    context: context,
+                                    photoUrl: user.photoUrl,
+                                    currentUserId: _authState.data.value.uid,
+                                    refreshParent: refreshPhoto,
+                                  ),
                                   Text(
                                     user.name,
                                     style: TextStyle(color: Colors.white),
                                   ),
-                                  // Text(
-                                  //   '@' + 'kare_12',
-                                  //   style: TextStyle(color: Colors.grey),
-                                  // ),
                                   SizedBox(height: 10),
                                   Container(
                                     width: 65,

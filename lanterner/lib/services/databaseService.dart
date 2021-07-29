@@ -120,13 +120,32 @@ class DatabaseService {
       'photoUrl': photoUrl,
     });
 
+    QuerySnapshot chatsQuery = await FirebaseFirestore.instance
+        .collectionGroup('chats')
+        .where('peerId', isEqualTo: uid)
+        .get();
+    chatsQuery.docs.forEach((doc) {
+      if (doc.exists) doc.reference.update({'photoUrl': photoUrl});
+    });
+
+    await FirebaseFirestore.instance
+        .collectionGroup('userActivity')
+        .where('user.uid', isEqualTo: uid)
+        .get()
+        .then((snapshot) {
+      snapshot.docs.forEach((doc) {
+        if (doc.exists)
+          batch.update(doc.reference, {'user.photoUrl': photoUrl});
+      });
+    });
+
     await postsCollection
         .where('user.uid', isEqualTo: uid)
         .get()
         .then((snapshot) {
       snapshot.docs.forEach((element) {
         DocumentReference doc = postsCollection.doc(element.id);
-        batch.update(doc, {'user.photoUrl': photoUrl});
+        if (element.exists) batch.update(doc, {'user.photoUrl': photoUrl});
       });
     });
 
@@ -137,8 +156,8 @@ class DatabaseService {
         .then((snapshot) {
       snapshot.docs.forEach((doc) {
         // DocumentReference doc = postsCollection.doc(element.id);
-
-        batch.update(doc.reference, {'user.photoUrl': photoUrl});
+        if (doc.exists)
+          batch.update(doc.reference, {'user.photoUrl': photoUrl});
       });
     });
 
@@ -148,7 +167,8 @@ class DatabaseService {
         .get()
         .then((snapshot) {
       snapshot.docs.forEach((doc) {
-        batch.update(doc.reference, {'user.photoUrl': photoUrl});
+        if (doc.exists)
+          batch.update(doc.reference, {'user.photoUrl': photoUrl});
       });
     });
     await FirebaseFirestore.instance
@@ -157,7 +177,7 @@ class DatabaseService {
         .get()
         .then((snapshot) {
       snapshot.docs.forEach((doc) {
-        batch.update(doc.reference, {'photoUrl': photoUrl});
+        if (doc.exists) batch.update(doc.reference, {'photoUrl': photoUrl});
       });
     });
     return FirebaseFirestore.instance
@@ -166,7 +186,7 @@ class DatabaseService {
         .get()
         .then((snapshot) {
       snapshot.docs.forEach((doc) {
-        batch.update(doc.reference, {'photoUrl': photoUrl});
+        if (doc.exists) batch.update(doc.reference, {'photoUrl': photoUrl});
       });
       batch.commit();
     });
@@ -393,6 +413,7 @@ class DatabaseService {
             .collection('chats')
             .doc(message.peerId),
         {
+          'peerId': peer.uid,
           'username': peer.name,
           'photoUrl': peer.photoUrl,
           'lastMessage': message.toMap()
@@ -404,6 +425,7 @@ class DatabaseService {
             .collection('chats')
             .doc(message.senderId),
         {
+          'peerId': sender.uid,
           'username': sender.name,
           'photoUrl': sender.photoUrl,
           "lastMessage": message.toMap()

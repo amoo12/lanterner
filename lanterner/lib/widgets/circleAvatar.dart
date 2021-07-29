@@ -1,17 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lanterner/controllers/uploadPhoto.dart';
 import 'package:lanterner/pages/myProfile.dart';
 import 'package:lanterner/pages/profile.dart';
 import 'package:lanterner/services/databaseService.dart';
+import 'package:lanterner/widgets/customToast.dart';
+import 'package:lanterner/widgets/progressIndicator.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class ProfileImage extends StatefulWidget {
   final String ownerId;
-  final photoUrl;
+  String photoUrl;
   final currentUserId;
   final double size;
   final BuildContext context;
+  final Function refreshParent;
 
   ProfileImage(
       {Key key,
@@ -19,7 +23,8 @@ class ProfileImage extends StatefulWidget {
       @required this.photoUrl,
       @required this.currentUserId,
       @required this.size,
-      @required this.context})
+      @required this.context,
+      this.refreshParent})
       : super(key: key);
 
   @override
@@ -28,16 +33,27 @@ class ProfileImage extends StatefulWidget {
 
 class _ProfileImageState extends State<ProfileImage> {
   DatabaseService db = DatabaseService();
-
+  FToast fToast;
   uploadImage(String uid) async {
     String photoUrl;
     await uploadPhoto.compressImage(uid);
+
     photoUrl = await uploadPhoto.uploadImage(
         imageFile: uploadPhoto.file, id: uid, folder: 'profile');
+    setState(() {
+      widget.photoUrl = photoUrl;
+    });
+
     await db.updateProfilePicture(uid, photoUrl);
   }
 
   UploadPhoto uploadPhoto = UploadPhoto();
+
+  @override
+  void initState() {
+    super.initState();
+    fToast = FToast();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +74,11 @@ class _ProfileImageState extends State<ProfileImage> {
                           onPressed: () async {
                             await uploadPhoto.handleTakePhoto(context);
                             if (uploadPhoto.file != null) {
-                              // customProgressIdicator(context);
+                              fToast.init(widget.context);
+                              showToast(fToast, 'photo updoated successfully');
+                              // customProgressIdicator(widget.context);
                               await uploadImage(widget.currentUserId);
+                              // widget.refreshParent();
                             }
                             setState(() {});
                           }),
@@ -69,8 +88,13 @@ class _ProfileImageState extends State<ProfileImage> {
                             await uploadPhoto.handleChooseFromGallery(context);
 
                             if (uploadPhoto.file != null) {
-                              // customProgressIdicator(context);
+                              fToast.init(widget.context);
+                              showToast(
+                                  fToast, 'photo updoated successfully', 2);
+                              // customProgressIdicator(widget.context);
                               await uploadImage(widget.currentUserId);
+                              // Navigator.pop(widget.context);
+                              // widget.refreshParent();
                             }
                             setState(() {});
                           }),
