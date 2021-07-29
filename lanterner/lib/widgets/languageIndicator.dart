@@ -15,7 +15,8 @@ languageIndictor(Language language, [Color color]) {
           width: 20,
           padding: language.isNative
               ? EdgeInsets.all(0)
-              : EdgeInsets.only(right: sizes[int.parse(language.level) - 1]),
+              : EdgeInsets.only(
+                  right: sizes[int.parse(language.level ?? 5) - 1]),
           constraints: BoxConstraints(
               minWidth: 20, maxWidth: 20, minHeight: 4, maxHeight: 4),
           decoration: BoxDecoration(

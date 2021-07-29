@@ -238,4 +238,12 @@ class LanguagesList {
     S2Choice<String>(value: '4', title: 'Advanced'),
     S2Choice<String>(value: '5', title: 'Proficient'),
   ];
+
+  static List<Map<String, String>> languageLevels = [
+    {'value': '1', 'title': 'Beginner'},
+    {'value': '2', 'title': 'Elementary'},
+    {'value': '3', 'title': 'Intermediate'},
+    {'value': '4', 'title': 'Advanced'},
+    {'value': '5', 'title': 'Proficient'},
+  ];
 }

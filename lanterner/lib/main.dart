@@ -79,6 +79,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Lanterner',
       theme: ThemeData(
         primarySwatch: MaterialColor(0xFF353A50, color),

@@ -262,11 +262,6 @@ class SignupStep2 extends StatefulWidget {
     @required this.user,
   }) : super(key: key);
 
-  // final Size _size;
-  // String nativeLanguage;
-  // String targetLanguage;
-  // String level;
-  // Function next;
   final User user;
 
   @override
@@ -286,18 +281,15 @@ class _SignupStep2State extends State<SignupStep2> {
   Language selectedtargetLanguage;
   Language translationLanguage;
 
-  GlobalKey<S2SingleState<String>> _nativeSelectKey =
-      GlobalKey<S2SingleState<String>>();
   GlobalKey<S2SingleState<String>> _targetSelectKey =
-      GlobalKey<S2SingleState<String>>();
-  GlobalKey<S2SingleState<String>> _levelSelectKey =
       GlobalKey<S2SingleState<String>>();
 
   DatabaseService db = DatabaseService();
-  var selected = false;
+  bool selected = false;
   @override
   void initState() {
     super.initState();
+    selectedtargetLanguage = widget.user.targetLanguage;
   }
 
   @override
@@ -305,232 +297,259 @@ class _SignupStep2State extends State<SignupStep2> {
     super.dispose();
   }
 
+  toggleSelected() {
+    selected = true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      appBar: AppBar(
-        title: Text(
-          'Languages',
-          style: TextStyle(fontSize: 20),
-        ),
-        actions: [
-          TextButton(
-              onPressed: selected
-                  ? () async {
-                      if (selectedtargetLanguage != null) {
-                        customProgressIdicator(context);
-                        // update in DB
-                        await db.updateTargetLanguage(
-                            widget.user.uid, selectedtargetLanguage);
-                        final prefs = await SharedPreferences.getInstance();
-                        // update in local storage
-                        await prefs.setString(
-                            'targetlanguage' + '#' + widget.user.uid,
-                            selectedtargetLanguage.code);
-                        Navigator.pop(context);
-                        Navigator.pop(context, selectedtargetLanguage);
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, widget.user.targetLanguage);
+        // logger.d(widget.user.targetLanguage.toString());
+        return false;
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Theme.of(context).primaryColor,
+        appBar: AppBar(
+          title: Text(
+            'Languages',
+            style: TextStyle(fontSize: 20),
+          ),
+          actions: [
+            TextButton(
+                onPressed: selected
+                    ? () async {
+                        if (selectedtargetLanguage != null &&
+                            selectedtargetLanguage.level != '') {
+                          customProgressIdicator(context);
+                          // update in DB
+                          await db.updateTargetLanguage(
+                              widget.user.uid, selectedtargetLanguage);
+                          final prefs = await SharedPreferences.getInstance();
+                          // update in local storage
+                          await prefs.setString(
+                              'targetlanguage' + '#' + widget.user.uid,
+                              selectedtargetLanguage.code);
+                          Navigator.pop(context);
+                          Navigator.pop(context, selectedtargetLanguage);
+                        }
                       }
-                    }
-                  : null,
-              child: Text(
-                'Ok',
-                style: TextStyle(color: selected ? Colors.white : Colors.grey),
-              ))
-        ],
-      ),
-      body: Container(
-        // height: MediaQuery.of(context).size.height * 0.9,
-        padding: EdgeInsets.symmetric(
-          horizontal: 24,
-        ),
-        child: Column(
-          // mainAxisAlignment:,
-          children: [
-            Container(
-              padding: EdgeInsets.only(top: 20),
-              height: MediaQuery.of(context).size.height * 0.65,
-              child: Column(
-                children: [
-                  //select Native language
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Native',
-                        ),
-                        ListTile(
-                          leading: Text(
-                            'Native',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          title: Center(
-                              child: languageIndictor(
-                                  widget.user.nativeLanguage, Colors.white)),
-                          trailing: Text(
-                            widget.user.nativeLanguage.title,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Divider(
-                    thickness: 1.5,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  //select target language
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Target'),
-                        SmartSelect<String>.single(
-                          key: _targetSelectKey,
-                          placeholder: widget.user.targetLanguage.title,
-                          title: 'Language',
-                          tileBuilder: (context, state) {
-                            return S2Tile.fromState(state,
-                                leading: Text('Language',
-                                    style: TextStyle(color: Colors.white)),
-                                title: Center(
-                                    child: languageIndictor(
-                                        widget.user.targetLanguage,
-                                        Colors.white)));
-                          },
-                          modalFilterHint: 'search languages',
-                          choiceBuilder: (context, choice, searchText) {
-                            return ListTile(
-                              leading: Text(
-                                choice.title,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              trailing: choice.title ==
-                                      widget.user.targetLanguage.title
-                                  ? Icon(
-                                      Icons.check,
-                                      color: Colors.white,
-                                    )
-                                  : null,
-                              onTap: () {
-                                targetLanguage = choice.value;
-                                tTitle = choice.title;
-                                // selectedtargetLanguage.code = choice.value;
-                                // selectedtargetLanguage.title = choice.title;
-                                widget.user.targetLanguage.code = choice.value;
-                                widget.user.targetLanguage.title = choice.title;
-                                setState(() {
-                                  WidgetsBinding.instance.addPostFrameCallback(
-                                      (_) => _targetSelectKey.currentState
-                                          .closeModal());
-                                  WidgetsBinding.instance.addPostFrameCallback(
-                                      (_) => _levelSelectKey.currentState
-                                          .showModal());
-                                });
-                              },
-                            );
-                          },
-                          choiceHeaderStyle: S2ChoiceHeaderStyle(
-                              textStyle: TextStyle(color: Colors.white)),
-                          modalHeaderStyle: S2ModalHeaderStyle(
-                            actionsIconTheme:
-                                IconThemeData(color: Colors.white),
-                            iconTheme: IconThemeData(color: Colors.white),
-                            textStyle: TextStyle(color: Colors.white),
-                            backgroundColor: Theme.of(context).primaryColor,
-                            elevation: 0,
-                          ),
-                          modalStyle: S2ModalStyle(
-                              backgroundColor: Theme.of(context).cardColor),
-                          modalFilter: true,
-                          modalFilterAuto: true,
-                          value: targetLanguage,
-                          choiceItems: LanguagesList.languages,
-                          onChange: (state) {
-                            setState(() {
-                              selectedtargetLanguage = Language(
-                                  code: targetLanguage,
-                                  isNative: false,
-                                  level: level,
-                                  title: nTitle);
-                              logger.d(selectedtargetLanguage.toString());
-                            });
-                          },
-                        ),
-                        // Native language level selector
-                        SmartSelect<String>.single(
-                          key: _levelSelectKey,
-                          title: 'Level',
-                          tileBuilder: (context, state) {
-                            return Container();
-                          },
-                          choiceBuilder: (context, choice, searchText) {
-                            return ListTile(
-                              leading: Text(
-                                choice.title,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              trailing: choice.title == lTitle
-                                  ? Icon(
-                                      Icons.check,
-                                      color: Colors.white,
-                                    )
-                                  : null,
-                              onTap: () {
-                                level = choice.value;
-                                lTitle = choice.title;
-                                setState(() {
-                                  WidgetsBinding.instance.addPostFrameCallback(
-                                      (_) => _levelSelectKey.currentState
-                                          .closeModal());
-                                });
-                              },
-                            );
-                          },
-                          choiceHeaderStyle: S2ChoiceHeaderStyle(
-                              textStyle: TextStyle(color: Colors.white)),
-                          modalHeaderStyle: S2ModalHeaderStyle(
-                            textStyle: TextStyle(color: Colors.white),
-                            backgroundColor: Theme.of(context).primaryColor,
-                            elevation: 0,
-                          ),
-                          modalStyle: S2ModalStyle(
-                            backgroundColor: Theme.of(context).cardColor,
-                          ),
-                          modalConfig: S2ModalConfig(
-                            barrierDismissible: false,
-                          ),
-                          modalType: S2ModalType.popupDialog,
-                          value: level,
-                          choiceItems: LanguagesList.levels,
-                          onChange: (state) => setState(() {
-                            widget.user.targetLanguage.level = level;
-                            selectedtargetLanguage.level = level;
-                            selected = true;
-                          }),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Container(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Text(
-                      'Changing the target language will only affect your future posts. The language on your previouse posts and comments will not change. \nPress Ok to save changes',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  )
-                ],
-              ),
-            ),
+                    : null,
+                child: Text(
+                  'Ok',
+                  style:
+                      TextStyle(color: selected ? Colors.white : Colors.grey),
+                ))
           ],
         ),
+        body: Container(
+          // height: MediaQuery.of(context).size.height * 0.9,
+          padding: EdgeInsets.symmetric(
+            horizontal: 24,
+          ),
+          child: Column(
+            // mainAxisAlignment:,
+            children: [
+              Container(
+                padding: EdgeInsets.only(top: 20),
+                height: MediaQuery.of(context).size.height * 0.65,
+                child: Column(
+                  children: [
+                    //select Native language
+                    Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Native',
+                          ),
+                          ListTile(
+                            leading: Text(
+                              'Native',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            title: Center(
+                                child: languageIndictor(
+                                    widget.user.nativeLanguage, Colors.white)),
+                            trailing: Text(
+                              widget.user.nativeLanguage.title,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Divider(
+                      thickness: 1.5,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    //select target language
+                    Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Target'),
+                          SmartSelect<String>.single(
+                            key: _targetSelectKey,
+                            placeholder: selectedtargetLanguage.title,
+                            title: 'Language',
+                            tileBuilder: (context, state) {
+                              return S2Tile.fromState(
+                                state,
+                                leading: Text('Target',
+                                    style: TextStyle(color: Colors.white)),
+                                title: Center(
+                                    child: selected
+                                        ? languageIndictor(
+                                            selectedtargetLanguage,
+                                            Colors.white)
+                                        : languageIndictor(
+                                            widget.user.targetLanguage,
+                                            Colors.white)),
+                                // trailing:
+                                //     Text(widget.user.targetLanguage.title)
+                              );
+                            },
+                            modalFilterHint: 'search languages',
+                            choiceBuilder: (context, choice, searchText) {
+                              return ListTile(
+                                leading: Text(
+                                  choice.title,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                trailing:
+                                    choice.title == selectedtargetLanguage.title
+                                        ? Icon(
+                                            Icons.check,
+                                            color: Colors.white,
+                                          )
+                                        : null,
+                                onTap: () async {
+                                  targetLanguage = choice.value;
+                                  tTitle = choice.title;
+
+                                  selectedtargetLanguage = Language(
+                                      code: choice.value,
+                                      isNative: false,
+                                      level: level,
+                                      title: choice.title);
+                                  // widget.user.targetLanguage.code = choice.value;
+                                  // widget.user.targetLanguage.title = choice.title;
+                                  // setState(() async {
+                                  if (_targetSelectKey
+                                      .currentState.filter.activated)
+                                    _targetSelectKey.currentState.filter
+                                        .hide(context);
+
+                                  selectedtargetLanguage =
+                                      await Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => LevelList(
+                                                selectedtargetLanguage:
+                                                    selectedtargetLanguage,
+                                                toggleSelected: toggleSelected),
+                                          ));
+
+                                  setState(() {});
+                                },
+                              );
+                            },
+                            choiceHeaderStyle: S2ChoiceHeaderStyle(
+                                textStyle: TextStyle(color: Colors.white)),
+                            modalHeaderStyle: S2ModalHeaderStyle(
+                              actionsIconTheme:
+                                  IconThemeData(color: Colors.white),
+                              iconTheme: IconThemeData(color: Colors.white),
+                              textStyle: TextStyle(color: Colors.white),
+                              backgroundColor: Theme.of(context).primaryColor,
+                              elevation: 0,
+                            ),
+                            modalStyle: S2ModalStyle(
+                                backgroundColor: Theme.of(context).cardColor),
+                            modalFilter: true,
+                            modalFilterAuto: true,
+                            value: targetLanguage,
+                            choiceItems: LanguagesList.languages,
+                            onChange: (state) {
+                              setState(() {
+                                // selectedtargetLanguage = Language(
+                                //     code: targetLanguage,
+                                //     isNative: false,
+                                //     level: level,
+                                //     title: nTitle);
+                                // logger.d(selectedtargetLanguage.toString());
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Container(
+                      padding: EdgeInsets.only(top: 10),
+                      child: Text(
+                        'Changing the target language will only affect your future posts. The language on your previouse posts and comments will not change. \nPress Ok to save changes',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LevelList extends StatelessWidget {
+  const LevelList({Key key, this.selectedtargetLanguage, this.toggleSelected})
+      : super(key: key);
+  final Language selectedtargetLanguage;
+  final Function toggleSelected;
+  @override
+  Widget build(BuildContext context) {
+    String lTitle;
+    String level;
+
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).cardColor,
+        appBar: AppBar(
+          title: Text('Level'),
+        ),
+        body: ListView.builder(
+            itemCount: LanguagesList.languageLevels.length,
+            itemBuilder: (context, index) => ListTile(
+                  leading: Text(
+                    LanguagesList.languageLevels[index]['title'],
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  trailing:
+                      LanguagesList.languageLevels[index]['value'] == lTitle
+                          ? Icon(
+                              Icons.check,
+                              color: Colors.white,
+                            )
+                          : null,
+                  onTap: () {
+                    level = LanguagesList.languageLevels[index]['value'];
+                    lTitle = LanguagesList.languageLevels[index]['title'];
+                    selectedtargetLanguage.level = level;
+                    toggleSelected();
+                    Navigator.pop(context, selectedtargetLanguage);
+                  },
+                )),
       ),
     );
   }
