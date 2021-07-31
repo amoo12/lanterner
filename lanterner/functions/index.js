@@ -133,14 +133,16 @@ exports.onDeletePost = functions.firestore
 exports.updatePostLikesCount = functions.firestore
   .document("posts/{postId}/likes/{uid}")
   .onWrite((change, context) => {
+    // get the user ID & post ID
     const uid = context.params.uid;
     const postId = context.params.postId;
 
     let increment;
 
+    // get the post document
     const psotRef = admin.firestore().collection("posts").doc(postId);
     var data;
-
+    // check if the change is like/unlike
     if (change.after.exists && !change.before.exists) {
       // TODO: set the notification message here
       increment = 1;
@@ -152,9 +154,10 @@ exports.updatePostLikesCount = functions.firestore
     } else {
       return null;
     }
-
+    // update the likecount field
     psotRef.set({ likeCount: admin.firestore.FieldValue.increment(increment) }, { merge: true });
 
+    // notify the user
     if (increment == 1) {
       var postOwnerId;
       var user;
