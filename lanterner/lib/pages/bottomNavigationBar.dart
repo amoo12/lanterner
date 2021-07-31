@@ -11,6 +11,7 @@ import 'package:lanterner/routes/routes.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'home.dart';
+import 'package:animations/animations.dart';
 
 BuildContext testContext;
 
@@ -140,23 +141,37 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
       floatingActionButton: _controller.index ==
               0 // makes sure the button only appears in home
           ? AnimatedContainer(
+              // color: Colors.transparent,
               duration: Duration(milliseconds: 300),
-              padding: EdgeInsets.only(bottom: _hideNavBar ? 0 : 56),
-              child: FloatingActionButton(
-                // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                child: Icon(
-                  Icons.add_comment,
-                  color: Colors.white,
+              margin: EdgeInsets.only(bottom: _hideNavBar ? 0 : 56),
+              child: OpenContainer(
+                // closedShape: ,
+                closedColor: Colors.transparent,
+                closedElevation: 0.0,
+                closedShape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(50))),
+                transitionDuration: Duration(milliseconds: 500),
+                closedBuilder: (BuildContext c, VoidCallback action) =>
+                    FloatingActionButton(
+                  // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  child: Icon(
+                    Icons.add_comment,
+                    color: Colors.white,
+                  ),
+                  onPressed: null,
+                  // () {
+                  // pushNewScreenWithRouteSettings(
+                  //   context,
+                  //   settings: RouteSettings(name: '/newPost'),
+                  //   screen: NewPost(),
+                  //   pageTransitionAnimation: PageTransitionAnimation.slideUp,
+                  //   withNavBar: false,
+                  // )..then((value) => setState(() {}));
+                  // },
                 ),
-                onPressed: () {
-                  pushNewScreenWithRouteSettings(
-                    context,
-                    settings: RouteSettings(name: '/newPost'),
-                    screen: NewPost(),
-                    pageTransitionAnimation: PageTransitionAnimation.slideUp,
-                    withNavBar: false,
-                  )..then((value) => setState(() {}));
-                },
+
+                openBuilder: (BuildContext c, VoidCallback action) => NewPost(),
+                tappable: true,
               ),
             )
           : Container(
