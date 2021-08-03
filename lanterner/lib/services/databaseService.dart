@@ -69,12 +69,21 @@ class DatabaseService {
   }
 
 //get all users posts
-  Future<List<Post>> getPosts() async {
+  Future<List<Post>> getPosts(String uid) async {
+    User user = await getUser(uid);
     return await postsCollection
+        .where('user.nativeLanguage.code', isEqualTo: user.targetLanguage.code)
         .orderBy('timestamp', descending: true)
         .get()
         .then((value) => value.docs.map((doc) => Post.fromMap(doc)).toList());
   }
+// //get all users posts
+//   Future<List<Post>> getPosts() async {
+//     return await postsCollection
+//         .orderBy('timestamp', descending: true)
+//         .get()
+//         .then((value) => value.docs.map((doc) => Post.fromMap(doc)).toList());
+//   }
 
   Future<List<Post>> getUserTimeline(String uid) async {
     return await timelineCollection

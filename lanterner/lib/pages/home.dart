@@ -139,7 +139,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       // physics: NeverScrollableScrollPhysics(),
                       children: [
                         FutureBuilder(
-                            future: db.getPosts(),
+                            future: db.getPosts(uid),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 if (snapshot.data.length > 0) {
