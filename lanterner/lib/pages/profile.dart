@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lanterner/models/post.dart';
-import 'package:lanterner/pages/myPosts.dart';
 import 'package:lanterner/providers/auth_provider.dart';
+import 'package:lanterner/providers/posts_provider.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/languageIndicator.dart';
 import 'package:lanterner/widgets/postCard.dart';
@@ -132,8 +132,8 @@ class _ProfileState extends State<Profile> {
                           ),
                           body: SafeArea(
                             child: SingleChildScrollView(
-                              physics: NeverScrollableScrollPhysics(),
-                              primary: true,
+                              // physics: NeverScrollableScrollPhysics(),
+                              // primary: true,
                               child: Container(
                                 width: MediaQuery.of(context).size.width,
                                 height:
@@ -368,16 +368,16 @@ class _ProfileState extends State<Profile> {
                                                 ),
                                                 GestureDetector(
                                                   onTap: () {
-                                                    if (user.postsCount > 0) {
-                                                      pushNewScreenWithRouteSettings(
-                                                          context,
-                                                          screen: MyPosts(
-                                                            user: user,
-                                                          ),
-                                                          settings: RouteSettings(
-                                                              name: '/myPosts'),
-                                                          withNavBar: false);
-                                                    }
+                                                    // if (user.postsCount > 0) {
+                                                    //   pushNewScreenWithRouteSettings(
+                                                    //       context,
+                                                    //       screen: MyPosts(
+                                                    //         user: user,
+                                                    //       ),
+                                                    //       settings: RouteSettings(
+                                                    //           name: '/myPosts'),
+                                                    //       withNavBar: false);
+                                                    // }
                                                   },
                                                   child: Column(
                                                     children: [
@@ -652,15 +652,28 @@ class _ProfileState extends State<Profile> {
                                                                             snapshot) {
                                                                       if (snapshot
                                                                           .hasData) {
+                                                                        watch(postProvider).posts =
+                                                                            snapshot.data;
                                                                         List<Post>
                                                                             posts =
-                                                                            snapshot.data;
+                                                                            watch(postProvider).posts;
+                                                                            
+
+                                                                        // [
+                                                                        //     ...watch(postProvider).posts
+                                                                        //   ];
+                                                                        // List<Post>
+                                                                        //     posts =
+                                                                        //     snapshot.data;
                                                                         if (posts.length >
                                                                             0) {
                                                                           return ListView.builder(
                                                                               itemCount: posts.length,
                                                                               itemBuilder: (BuildContext context, int index) {
-                                                                                return PostCard(post: posts[index]);
+                                                                                return PostCard(
+                                                                                  post: posts[index],
+                                                                                  herotag: 'profile',
+                                                                                );
                                                                               });
                                                                         } else {
                                                                           return Container(

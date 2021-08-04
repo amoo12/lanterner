@@ -26,7 +26,8 @@ var logger = Logger();
 class PostCard extends StatefulWidget {
   final herotag;
   final Post post;
-  const PostCard({this.post, this.herotag, Key key}) : super(key: key);
+  const PostCard({this.post, @required this.herotag, Key key})
+      : super(key: key);
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -269,9 +270,7 @@ class _PostCardState extends State<PostCard> {
                   SizedBox(height: 10),
 
                   GestureDetector(
-                    onTap: () {
-                      //TODO: Translete
-                    },
+                    onTap: () {},
                     child: AutoDirection(
                       onDirectionChange: (isRTL) {
                         setState(() {
@@ -677,9 +676,12 @@ class _PostCardFooterState extends State<PostCardFooter> {
 
                                 // delete the post from provider to trigger rebuild
                                 context.read(postProvider).remove(widget.post);
-
-                                Navigator.pop(context);
                               }
+                              context
+                                  .read(followingPostProvider)
+                                  .remove(widget.post);
+
+                              Navigator.pop(context);
                             },
                           ),
                         ],

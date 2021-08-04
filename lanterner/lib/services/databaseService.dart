@@ -98,7 +98,7 @@ class DatabaseService {
   Future<List<Post>> getUserPosts(String uid) async {
     return await postsCollection
         .where('user.uid', isEqualTo: uid)
-        .orderBy('timestamp')
+        .orderBy('timestamp', descending: true)
         .get()
         .then((value) => value.docs.map((doc) => Post.fromMap(doc)).toList());
   }

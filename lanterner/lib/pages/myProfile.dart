@@ -6,6 +6,7 @@ import 'package:lanterner/pages/settings.dart';
 import 'package:lanterner/providers/auth_provider.dart';
 import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/languageIndicator.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import '../models/user.dart';
 import '../services/databaseService.dart';
@@ -121,9 +122,44 @@ class _MyProfileState extends State<MyProfile> {
                                     currentUserId: _authState.data.value.uid,
                                     refreshParent: refreshPhoto,
                                   ),
-                                  Text(
-                                    user.name,
-                                    style: TextStyle(color: Colors.white),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        user.name,
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      Container(
+                                        width: 24,
+                                        height: 20,
+                                        margin: EdgeInsets.only(left: 8),
+                                        decoration: BoxDecoration(
+                                            color: user.gender == 'Male'
+                                                ? Theme.of(context).accentColor
+                                                : Colors.pink,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Icon(
+                                          user.gender == 'Male'
+                                              ? MdiIcons.genderMale
+                                              : MdiIcons.genderFemale,
+                                          size: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      user.admin
+                                          ? Container(
+                                              padding: EdgeInsets.only(left: 8),
+                                              child: Icon(
+                                                Icons.verified,
+                                                color: Colors.tealAccent,
+                                                // Color(
+                                                //     0xffFFD700),
+                                                size: 18,
+                                              ),
+                                            )
+                                          : SizedBox()
+                                    ],
                                   ),
                                   SizedBox(height: 10),
                                   Container(

@@ -131,6 +131,14 @@ class _ActivityListState extends State<ActivityList> {
                     );
                   },
                 );
+              } else {
+                Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                        child: Text(
+                      'No activities yet!!',
+                      textAlign: TextAlign.center,
+                    )));
               }
             } else if (snapshot.hasError) {
               return Container(

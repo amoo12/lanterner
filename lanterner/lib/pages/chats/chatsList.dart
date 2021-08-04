@@ -94,52 +94,62 @@ class _ChatsListState extends State<ChatsList> {
             chats.clear();
             chats = distinct;
 
-            return ListView.builder(
-              itemCount: chats.length,
-              itemBuilder: (context, index) => ListTile(
-                dense: true,
-                onTap: () async {
-                  // TODO: becarful with sending a user with null values
+            if (chats.length > 0) {
+              return ListView.builder(
+                itemCount: chats.length,
+                itemBuilder: (context, index) => ListTile(
+                  dense: true,
+                  onTap: () async {
+                    // TODO: becarful with sending a user with null values
 
-                  User peer = User(
-                      name: chats[index].username,
-                      uid: chats[index].peerId,
-                      photoUrl: chats[index].photoUrl);
+                    User peer = User(
+                        name: chats[index].username,
+                        uid: chats[index].peerId,
+                        photoUrl: chats[index].photoUrl);
 
-                  pushNewScreenWithRouteSettings(
-                    _scaffold.currentContext,
-                    settings: RouteSettings(name: '/chatRoom'),
-                    screen: ChatRoom(peer: peer),
-                    pageTransitionAnimation: PageTransitionAnimation.slideUp,
-                    withNavBar: false,
-                  );
-                },
-                leading: ProfileImage(
-                    size: 22,
-                    ownerId: chats[index].peerId,
-                    context: context,
-                    photoUrl: chats[index].photoUrl,
-                    currentUserId: _authState.data.value.uid),
-                title: Text('${chats[index].username}',
-                    style: TextStyle(color: Colors.white)),
-                subtitle: Text(
-                  chats[index].lastMessage.type == 'text'
-                      ? '${chats[index].lastMessage.content}'
-                      : chats[index].lastMessage.type == 'image'
-                          ? 'photo'
-                          : chats[index].lastMessage.type == 'audio'
-                              ? 'audio'
-                              : 'message',
-                  style: TextStyle(color: Colors.grey),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                    pushNewScreenWithRouteSettings(
+                      _scaffold.currentContext,
+                      settings: RouteSettings(name: '/chatRoom'),
+                      screen: ChatRoom(peer: peer),
+                      pageTransitionAnimation: PageTransitionAnimation.slideUp,
+                      withNavBar: false,
+                    );
+                  },
+                  leading: ProfileImage(
+                      size: 22,
+                      ownerId: chats[index].peerId,
+                      context: context,
+                      photoUrl: chats[index].photoUrl,
+                      currentUserId: _authState.data.value.uid),
+                  title: Text('${chats[index].username}',
+                      style: TextStyle(color: Colors.white)),
+                  subtitle: Text(
+                    chats[index].lastMessage.type == 'text'
+                        ? '${chats[index].lastMessage.content}'
+                        : chats[index].lastMessage.type == 'image'
+                            ? 'photo'
+                            : chats[index].lastMessage.type == 'audio'
+                                ? 'audio'
+                                : 'message',
+                    style: TextStyle(color: Colors.grey),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: Text(
+                    '${getChatTime(chats[index].lastMessage.timeStamp)}',
+                    style: TextStyle(fontSize: 12),
+                  ),
                 ),
-                trailing: Text(
-                  '${getChatTime(chats[index].lastMessage.timeStamp)}',
-                  style: TextStyle(fontSize: 12),
-                ),
-              ),
-            );
+              );
+            } else {
+              return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Center(
+                      child: Text(
+                    'No conversations yet!! \n\n Start conversations with friends to them here.',
+                    textAlign: TextAlign.center,
+                  )));
+            }
           })
 
           // Stack(
