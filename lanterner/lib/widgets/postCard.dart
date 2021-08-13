@@ -370,8 +370,29 @@ class _PostCardState extends State<PostCard> {
                                 height: 180,
                                 fit: BoxFit.fitWidth,
                                 imageUrl: widget.post.photoUrl,
-                                placeholder: (context, url) =>
-                                    CircularProgressIndicator(),
+                                placeholder: (context, url) => Container(
+                                    color: Colors.grey,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.photo,
+                                          color: Colors.grey[400],
+                                          size: 60,
+                                        ),
+                                        SizedBox(height: 10),
+                                        Container(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation(
+                                                Colors.grey[400]),
+                                          ),
+                                        ),
+                                      ],
+                                    )),
                                 errorWidget: (context, url, error) =>
                                     Icon(Icons.error),
                               ),

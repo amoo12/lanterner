@@ -436,7 +436,10 @@ class _AudioFileState extends State<AudioFile> {
       onPressed: () {
         if (isPlaying == false) {
           audioPlayer.play(this.widget.message.content);
-          db.incrementAudioListened(widget.uid);
+          // increment the audio listened counter only if its not yours
+          if (widget.message.senderId != widget.uid) {
+            db.incrementAudioListened(widget.uid);
+          }
           setState(() {
             isPlaying = true;
           });

@@ -10,23 +10,26 @@ class PostsList extends ChangeNotifier {
   PostsList([List<Post> initialPosts]) : super();
 
   void remove([Post post]) {
-    posts.remove(post);
-
+    if (posts != null) {
+      posts.remove(post);
+    }
     //*  must call notifyListeners to trigger rebuild
     notifyListeners();
   }
 }
 
-
 final followingPostProvider =
-    ChangeNotifierProvider.autoDispose<FollowingPostsList>((ref) => FollowingPostsList());
+    ChangeNotifierProvider.autoDispose<FollowingPostsList>(
+        (ref) => FollowingPostsList());
 
 class FollowingPostsList extends ChangeNotifier {
   List<Post> posts;
   FollowingPostsList([List<Post> initialPosts]) : super();
 
   void remove([Post post]) {
-    posts.remove(post);
+    if (posts != null) {
+      posts.remove(post);
+    }
 
     //*  must call notifyListeners to trigger rebuild
     notifyListeners();

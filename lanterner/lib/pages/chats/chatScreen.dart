@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lanterner/pages/chats/audioPlayerWidget.dart';
 import 'package:lanterner/pages/chats/chatMessage.dart';
+import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/nestedWillPopScope.dart';
 import 'package:uuid/uuid.dart';
 import 'package:lanterner/controllers/uploadPhoto.dart';
@@ -31,7 +32,25 @@ class ChatRoom extends StatelessWidget {
       key: _scaffoldKey,
       backgroundColor: Color(0xff181E30),
       appBar: AppBar(
-        title: Text('${user.name}'),
+        title: Row(
+          children: [
+            ProfileImage(
+                ownerId: user.uid,
+                photoUrl: user.photoUrl,
+                currentUserId: '',
+                size: 20,
+                context: context),
+            SizedBox(
+              width: 20,
+            ),
+            Flexible(
+              child: Text(
+                '${user.name}',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
       body: ChatScreen(peer: user, scaffoldKey: _scaffoldKey),
     );
