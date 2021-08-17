@@ -2,6 +2,7 @@ import 'package:auto_direction/auto_direction.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lanterner/controllers/translationController.dart';
 import 'package:lanterner/models/comment.dart';
 import 'package:lanterner/models/post.dart';
 import 'package:lanterner/models/user.dart';
@@ -12,6 +13,7 @@ import 'package:lanterner/widgets/circleAvatar.dart';
 import 'package:lanterner/widgets/postCard.dart';
 import 'package:lanterner/widgets/progressIndicator.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:translator/translator.dart';
 
 // ignore: must_be_immutable
 class Comments extends StatelessWidget {
@@ -77,6 +79,88 @@ class CommentsListView extends StatefulWidget {
 
 class _CommentsListViewState extends State<CommentsListView> {
   Future<List<Comment>> fetchComments;
+  TranslationController translator = TranslationController();
+
+  translationBottomSheet(String textTotrasnlate, String uid) {
+    showBarModalBottomSheet(
+      enableDrag: false,
+      useRootNavigator: true,
+      barrierColor: Colors.black.withOpacity(0.3),
+      expand: false,
+      bounce: true,
+      context: context,
+      builder: (context) => Container(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.fromLTRB(20, 20, 20, 2),
+        decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+        child: FutureBuilder(
+            // future: translator.translate(
+            //     textTotrasnlate: textTotrasnlate, uid: uid),
+
+            future: translator.translate(
+                textTotrasnlate: textTotrasnlate, uid: uid),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                Translation translation = snapshot.data;
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'Translated from ',
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                          ),
+                        ),
+                        Flexible(
+                          child: Text(
+                            translation.sourceLanguage.name,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.2),
+                      child: SingleChildScrollView(
+                        child: Container(
+                          color: Theme.of(context).cardColor,
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: AutoDirection(
+                                text: translation.text,
+                                child: Text(
+                                  translation.text,
+                                  overflow: TextOverflow.fade,
+                                  style: TextStyle(color: Colors.white),
+                                )),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                print(snapshot.error);
+                return Text("ERROR: Someting went wrong");
+              } else {
+                return circleIndicator(context, Theme.of(context).cardColor);
+              }
+            }),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -122,6 +206,15 @@ class _CommentsListViewState extends State<CommentsListView> {
                             child: Column(
                               children: [
                                 InkWell(
+                                  onTap: () {
+                                    translationBottomSheet(
+                                        comments[index].text,
+                                        context
+                                            .read(authStateProvider)
+                                            .data
+                                            .value
+                                            .uid);
+                                  },
                                   onLongPress: () async {
                                     User _user =
                                         await context.read(userProvider.future);

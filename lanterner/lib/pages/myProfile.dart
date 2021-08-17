@@ -350,7 +350,7 @@ class _MyProfileState extends State<MyProfile> {
                                                       color: Colors.white),
                                                 ),
                                                 Text(
-                                                  'Translatoins',
+                                                  'Translations',
                                                   style:
                                                       TextStyle(fontSize: 12),
                                                 ),

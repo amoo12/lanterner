@@ -146,7 +146,7 @@ class _ChatsListState extends State<ChatsList> {
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Center(
                       child: Text(
-                    'No conversations yet!! \n\n Start conversations with friends to them here.',
+                    'No conversations yet!! \n\n Start conversations with friends to see them here.',
                     textAlign: TextAlign.center,
                   )));
             }
