@@ -74,172 +74,172 @@ class _LoginState extends State<Login> {
 
       return Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: SingleChildScrollView(
-            child: Center(
-              child: Container(
-                height: MediaQuery.of(context).copyWith().size.height,
-                width: MediaQuery.of(context).copyWith().size.width,
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  // crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/wishes.svg',
-                      height: MediaQuery.of(context).size.width / 2.5,
-                    ),
-                    Text(
-                      'Lanterner',
-                      style: TextStyle(
-                          fontFamily: 'FORTE',
-                          fontSize: 35,
-                          color: Colors.white),
-                    ),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'Login',
-                      style: TextStyle(
-                          fontFamily: 'OpenSans-Regular',
-                          fontSize: 25,
-                          color: Colors.white),
-                    ),
-                    Form(
-                      key: _formKey,
-                      // autovalidateMode: AutovalidateMode.onUserInteraction,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          TextFormFieldWidget(
-                            lableText: 'Email',
-                            onSaved: onSavedEmail,
-                            validatorMessage: 'Enter an email',
-                            controller: emailController,
-                            scrollPadding: 200,
-                          ),
-                          TextFormFieldWidget(
-                            lableText: 'Password',
-                            onSaved: onSavedPassword,
-                            validatorMessage: 'Enter a password',
-                            controller: passwordController,
-                            obscureText: true,
-                            scrollPadding: 140,
-                          ),
-                          // SizedBox(
-                          //   height: 10,
-                          // ),
-
-                          // SizedBox(
-                          //   height: 10,
-                          // ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              TextButton(
-                                onPressed: () async {
-                                  final toastMessage = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              ResetPassword()));
-
-                                  if (toastMessage != null) {
-                                    showToast(fToast, toastMessage, 5);
-                                  }
-                                },
-                                style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: Size(50, 30),
-                                    alignment: Alignment.centerLeft),
-                                child: Text.rich(TextSpan(
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 10),
-                                    text: 'Forgot Password? ',
-                                    children: <InlineSpan>[
-                                      TextSpan(
-                                        text: 'Reset',
-                                        style: TextStyle(
-                                            color:
-                                                Theme.of(context).accentColor,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    ])),
-                              ),
-                            ],
-                          ),
-                          if (error != null)
-                            Text(
-                              error,
-                              style: TextStyle(
-                                  color: Colors.red[300], fontSize: 14.0),
+          body: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: SingleChildScrollView(
+              child: Center(
+                child: Container(
+                  height: MediaQuery.of(context).copyWith().size.height,
+                  width: MediaQuery.of(context).copyWith().size.width,
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    // crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/wishes.svg',
+                        height: MediaQuery.of(context).size.width / 2.5,
+                      ),
+                      Text(
+                        'Lanterner',
+                        style: TextStyle(
+                            fontFamily: 'FORTE',
+                            fontSize: 35,
+                            color: Colors.white),
+                      ),
+                      SizedBox(height: 20),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Login',
+                        style: TextStyle(
+                            fontFamily: 'OpenSans-Regular',
+                            fontSize: 25,
+                            color: Colors.white),
+                      ),
+                      Form(
+                        key: _formKey,
+                        // autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            TextFormFieldWidget(
+                              lableText: 'Email',
+                              onSaved: onSavedEmail,
+                              validatorMessage: 'Enter an email',
+                              controller: emailController,
+                              scrollPadding: 200,
                             ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ButtonWidget(
-                                context: context,
-                                text: 'Login',
-                                onPressed: () {
-                                  _submit(_auth);
-                                }),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
+                            TextFormFieldWidget(
+                              lableText: 'Password',
+                              onSaved: onSavedPassword,
+                              validatorMessage: 'Enter a password',
+                              controller: passwordController,
+                              obscureText: true,
+                              scrollPadding: 140,
+                            ),
+                            // SizedBox(
+                            //   height: 10,
+                            // ),
 
-                          SizedBox(
-                            width: double.infinity,
-                            child: ButtonWidget(
-                                buttonType: 2,
-                                context: context,
-                                text: 'Create an Account',
-                                onPressed: _goToSignup),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          if (FocusScope.of(context).hasFocus)
+                            // SizedBox(
+                            //   height: 10,
+                            // ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                TextButton(
+                                  onPressed: () async {
+                                    final toastMessage = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ResetPassword()));
+
+                                    if (toastMessage != null) {
+                                      showToast(fToast, toastMessage, 5);
+                                    }
+                                  },
+                                  style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: Size(50, 30),
+                                      alignment: Alignment.centerLeft),
+                                  child: Text.rich(TextSpan(
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 10),
+                                      text: 'Forgot Password? ',
+                                      children: <InlineSpan>[
+                                        TextSpan(
+                                          text: 'Reset',
+                                          style: TextStyle(
+                                              color:
+                                                  Theme.of(context).accentColor,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      ])),
+                                ),
+                              ],
+                            ),
+                            if (error != null)
+                              Text(
+                                error,
+                                style: TextStyle(
+                                    color: Colors.red[300], fontSize: 14.0),
+                              ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ButtonWidget(
+                                  context: context,
+                                  text: 'Login',
+                                  onPressed: () {
+                                    _submit(_auth);
+                                  }),
+                            ),
                             SizedBox(
                               height: 20,
                             ),
-                          // RichText(
-                          //   text: TextSpan(
-                          //       style: Theme.of(context).textTheme.bodyText2,
-                          //       children: [
-                          //         TextSpan(
-                          //           text: "Don't have an account? ",
-                          //         ),
-                          //         TextSpan(
-                          //             style: Theme.of(context)
-                          //                 .textTheme
-                          //                 .bodyText2
-                          //                 .copyWith(
-                          //                     color:
-                          //                         Theme.of(context).accentColor),
-                          //             text: 'Register',
-                          //             recognizer: TapGestureRecognizer()
-                          //               ..onTap = () {
-                          //                 // Navigator.pushNamed(context, 'Signup');
-                          //               }),
-                          //       ]),
-                          // ),
-                        ],
+
+                            SizedBox(
+                              width: double.infinity,
+                              child: ButtonWidget(
+                                  buttonType: 2,
+                                  context: context,
+                                  text: 'Create an Account',
+                                  onPressed: _goToSignup),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            if (FocusScope.of(context).hasFocus)
+                              SizedBox(
+                                height: 20,
+                              ),
+                            // RichText(
+                            //   text: TextSpan(
+                            //       style: Theme.of(context).textTheme.bodyText2,
+                            //       children: [
+                            //         TextSpan(
+                            //           text: "Don't have an account? ",
+                            //         ),
+                            //         TextSpan(
+                            //             style: Theme.of(context)
+                            //                 .textTheme
+                            //                 .bodyText2
+                            //                 .copyWith(
+                            //                     color:
+                            //                         Theme.of(context).accentColor),
+                            //             text: 'Register',
+                            //             recognizer: TapGestureRecognizer()
+                            //               ..onTap = () {
+                            //                 // Navigator.pushNamed(context, 'Signup');
+                            //               }),
+                            //       ]),
+                            // ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
       );
     });
   }

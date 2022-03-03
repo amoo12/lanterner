@@ -27,7 +27,7 @@ dependencies:
   cloud_firestore: ^1.0.7
   firebase_storage: ^8.0.5
   firebase_performance: ^0.7.0+3
-  flutter_riverpod: ^0.14.0+3
+    
   persistent_bottom_nav_bar: ^4.0.2
   cached_network_image: ^3.0.0
   image_picker: ^0.7.4
